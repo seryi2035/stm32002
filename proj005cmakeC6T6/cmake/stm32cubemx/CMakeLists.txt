@@ -28,7 +28,8 @@ set(MX_Application_Src
     ${CMAKE_SOURCE_DIR}/Core/src/tim2_delay.c
     ${CMAKE_SOURCE_DIR}/Core/Src/sysmem.c
     ${CMAKE_SOURCE_DIR}/Core/Src/syscalls.c
-    ${CMAKE_SOURCE_DIR}/startup_stm32f103x6.s
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.s
+    #${CMAKE_SOURCE_DIR}/startup_stm32f103x6.s
 )
 
 # STM32 HAL/LL Drivers

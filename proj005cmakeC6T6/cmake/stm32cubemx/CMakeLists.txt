@@ -10,18 +10,22 @@ set(MX_Defines_Syms
 
 # STM32CubeMX generated include paths
 set(MX_Include_Dirs
+    ${CMAKE_SOURCE_DIR}/Core/inc
     ${CMAKE_SOURCE_DIR}/Core/Inc
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Inc
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/inc
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x
     ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32F1xx/Include
     ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Include
 )
 
 # STM32CubeMX generated application sources
 set(MX_Application_Src
-    ${CMAKE_SOURCE_DIR}/Core/Src/main.c
-    ${CMAKE_SOURCE_DIR}/Core/Src/stm32f1xx_it.c
-    ${CMAKE_SOURCE_DIR}/Core/Src/stm32f1xx_hal_msp.c
+    ${CMAKE_SOURCE_DIR}/Core/src/001.c
+    ${CMAKE_SOURCE_DIR}/Core/src/libmodbus.c
+    ${CMAKE_SOURCE_DIR}/Core/src/main.c
+    ${CMAKE_SOURCE_DIR}/Core/src/modbus.c
+    ${CMAKE_SOURCE_DIR}/Core/src/onewire.c
+    ${CMAKE_SOURCE_DIR}/Core/src/tim2_delay.c
     ${CMAKE_SOURCE_DIR}/Core/Src/sysmem.c
     ${CMAKE_SOURCE_DIR}/Core/Src/syscalls.c
     ${CMAKE_SOURCE_DIR}/startup_stm32f103x6.s
@@ -29,21 +33,31 @@ set(MX_Application_Src
 
 # STM32 HAL/LL Drivers
 set(STM32_Drivers_Src
-    ${CMAKE_SOURCE_DIR}/Core/Src/system_stm32f1xx.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rtc.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rtc_ex.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c
-    ${CMAKE_SOURCE_DIR}/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/system_stm32f10x.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/misc.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_adc.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_bkp.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_can.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_cec.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_crc.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_dac.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_dbgmcu.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_dma.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_exti.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_flash.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_fsmc.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_gpio.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_i2c.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_iwdg.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_pwr.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_rcc.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_rtc.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_sdio.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_spi.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_tim.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_wwdg.c
+
 )
 
 # Drivers Midllewares

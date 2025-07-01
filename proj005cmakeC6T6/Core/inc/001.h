@@ -6,20 +6,20 @@
 #define PRESCALER 72
 
 #define RX_BUF_SIZE 80
-volatile int temp;
-volatile char RX_FLAG_END_LINE;
-volatile unsigned int RXi;
-volatile char RXc;
-char RX_BUF[RX_BUF_SIZE]; //= {"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"};
-u8 RX_BUF08[RX_BUF_SIZE];
-char buffer[80];// = {"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"};
-volatile int TimeResult;
-volatile int iResult;
-volatile float fResult;
-volatile int TimeSec;
-volatile uint8_t TimeState;
-volatile uint8_t FLAG_ECHO;
-uint16_t ds18b20Value;
+static volatile int temp;
+static volatile char RX_FLAG_END_LINE;
+static volatile unsigned int RXi;
+static volatile char RXc;
+static char RX_BUF[RX_BUF_SIZE]; //= {"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"};
+static u8 RX_BUF08[RX_BUF_SIZE];
+static char buffer[80];// = {"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"};
+static volatile int TimeResult;
+static volatile int iResult;
+static volatile float fResult;
+static volatile int TimeSec;
+static volatile uint8_t TimeState;
+static volatile uint8_t FLAG_ECHO;
+static uint16_t ds18b20Value;
 // (UnixTime = 00:00:00 01.01.1970 = JD0 = 2440588)
 #define JULIAN_DATE_BASE    2440588
 typedef struct {
@@ -73,8 +73,8 @@ void wwdgenable(void);
 void WWDG_IRQHandler(void);
 void iwdg_init(void);
 
-uint16_t millisec2;
-uint32_t globalsecs;
+static uint16_t millisec2;
+static uint32_t globalsecs;
 void SETglobalsecs(uint32_t count);
 uint32_t GETglobalsecs(void);
 

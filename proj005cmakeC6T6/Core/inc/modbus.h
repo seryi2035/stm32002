@@ -3,7 +3,7 @@
 #define OBJ_SZ 36 //это количество объектов
 #define SETUP 4 //это просто количество данных в массиве 0-элемент которого означает адрес
 //PARAMETERRS ARRAY 0 PARAMETER = MODBUS ADDRESS
-uint8_t SET_PAR[SETUP];//0-элемент это адрес
+static uint8_t SET_PAR[SETUP];//0-элемент это адрес
 //OBJECT ARRAY WHERE READING AND WRITING OCCURS
 //uint16_t res_table[OBJ_SZ];//массив с объектами то откуда мы читаем и куда пишем
 //float res_ftable[OBJ_SZ];
@@ -22,7 +22,7 @@ typedef struct UART_DATA {
   uint16_t delay;//задержка
   uint8_t ddddddDOBAVKA[1];
 } UART_DATA;
-struct UART_DATA uart1;//структуры для соответсвующих усартов
+static struct UART_DATA uart1;//структуры для соответсвующих усартов
 //timer 0.0001sec one symbol on 9600 ~1ms
 //uart3.delay=30; //modbus gap 9600
 //uart3.delay=10; //modbus gap 38400
@@ -35,8 +35,8 @@ void TX_EXCEPTION(UART_DATA *MODBUS,unsigned char error_type);
 void TX_01(UART_DATA *MODBUS);
 void TX_02(UART_DATA *MODBUS);
 
-uint8_t Coils_RW[OBJ_SZ];
-uint8_t Discrete_Inputs_RO[OBJ_SZ];
+static uint8_t Coils_RW[OBJ_SZ];
+static uint8_t Discrete_Inputs_RO[OBJ_SZ];
 void setCOILS(uint8_t *Coils_RW);
 void read_Discrete_Inputs_RO(void);
 //void startCOILS(uint8_t *Coils_RW);
@@ -51,7 +51,7 @@ union FloatU8  {
   uint16_t tmp_val_u16[2];
   int16_t tmp_val_i16[2];
   int32_t tmp_val_i32;
-} f001;
+} static f001;
 //typedef union FloatU8 ;
 void coilTOback(void);
 void coilFROMback(void);
@@ -64,6 +64,6 @@ typedef union   {
   int16_t tmp_i16[OBJ_SZ*2];
   int32_t tmp_i32[OBJ_SZ];
 } REGISTRS001;
-REGISTRS001 hold_reg;
-REGISTRS001 input_reg;
+static REGISTRS001 hold_reg;
+static REGISTRS001 input_reg;
 //hold_reg, input_reg;

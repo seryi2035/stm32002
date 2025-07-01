@@ -68,12 +68,12 @@ int main(void) {
 
         }
 
-      if (((RTC_Counter02 = GETglobalsecs()) % 3) == 0) {
+      if (((RTC_Counter02 = GETglobalsecs()) % 1000) >= 500) {
         GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
       }else {
         GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
       }
-      if ( ((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01) >= 4) {
+      if ( /*((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01)*/1 >= 4) {
           RTC_Counter01 = RTC_Counter02;
           if ( (RTC_Counter02 - RTC_Counter03) >= 60) {
               n++;

@@ -35,7 +35,7 @@ rule C_COMPILER__proj005cmakeC6T6_unscanned_Debug
 # Rule for linking C executable.
 
 rule C_EXECUTABLE_LINKER__proj005cmakeC6T6_Debug
-  command = $PRE_LINK && /usr/bin/arm-none-eabi-gcc $FLAGS -mcpu=cortex-m3  -T "/media/flexshit/99gentoo/012STM32/stm32002cmake/proj005cmakeC6T6/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/stm32_flash.ld" --specs=nano.specs -Wl,-Map=proj005cmakeC6T6.map -Wl,--gc-sections -Wl,--start-group -lc -lm -Wl,--end-group -Wl,--print-memory-usage $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
+  command = $PRE_LINK && /usr/bin/arm-none-eabi-gcc $FLAGS -mcpu=cortex-m3  -T "/media/flexshit/99gentoo/012STM32/stm32002cmake/proj005cmakeC6T6/STM32F103XX_FLASH.ld" --specs=nano.specs -Wl,-Map=proj005cmakeC6T6.map -Wl,--gc-sections -Wl,--start-group -lc -lm -Wl,--end-group -Wl,--print-memory-usage $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
   description = Linking C executable $TARGET_FILE
   restat = $RESTAT
 

@@ -721,7 +721,7 @@ void TIM2_init(void) {/*
    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
    TIM_TimeBaseStructInit(&TIMER_InitStructure);
 
-   TIMER_InitStructure.TIM_Prescaler = 35999;
+   TIMER_InitStructure.TIM_Prescaler = 127;
    TIMER_InitStructure.TIM_Period = 1;
    TIM_TimeBaseInit(TIM2, &TIMER_InitStructure);
 
@@ -730,9 +730,11 @@ void TIM2_init(void) {/*
    TIM_Cmd(TIM2, ENABLE);
    NVIC_EnableIRQ(TIM2_IRQn);
 }
+static uint32_t millisec2002;
 void TIM2_IRQHandler(void) {
   if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)   {
       millisec2++;
+      millisec2002++;
       if (millisec2 >= 2000) {
           globalsecs = GETglobalsecs();
           globalsecs++;
@@ -748,8 +750,8 @@ void delay_us(uint32_t n_usec) {
 
 }
 void delay_ms(uint32_t n_msec) {
-  TIM2->CNT = 0;
-  while (TIM2->CNT < (2 * n_msec)){}
+  millisec2002 = 0;
+  while (millisec2002 < (2 * n_msec)){}
 
 }
 

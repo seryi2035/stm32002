@@ -36,29 +36,29 @@ int main(void) {
   TIM3_init();
   TIM4_init(); // мкс 0-49999 TIM4->CNT
   usart1_init(); //A9 PP RXD A10 TXD жёлый //RS232 A11 ResetBits //485     //USART 1 and GPIO A (9/10/11) ON A11pp
-  OW_Init(); //usart2 А2 А3
+  //OW_Init(); //usart2 А2 А3
   dev001.port = GPIOA;
   dev001.pin = GPIO_Pin_12;
   dev001.humidity = 0;
   dev001.temparature = 0;
   dev001.pointtemparature = 0;
-  DHT11_init(&dev001, dev001.port, dev001.pin);
+  //DHT11_init(&dev001, dev001.port, dev001.pin);
   GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
   uart1.delay=150; //modbus gap 9600
   uart1.rxtimer = 0;
   //delay_ms(1000);
   GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
-  atSTART();
+  //atSTART();
   //oprosite();
+  globalsecs =1;
 
-
-  iwdg_init();
+  //iwdg_init();
 
   while (1) {
-      if (Coils_RW[8] == 0) {
+      if (0) {
           IWDG_ReloadCounter();
         }
-      if(uart1.rxgap==1) {
+      if(0) {
 
           GPIO_SetBits(USART1PPport, USART1PPpin);
           MODBUS_SLAVE(&uart1);
@@ -68,12 +68,12 @@ int main(void) {
 
         }
 
-      if ((globalsecs % 3) == 0) {
+      if (((RTC_Counter02 = GETglobalsecs()) % 200) >= 100) {
         GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
       }else {
         GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
       }
-      if ( ((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01) >= 4) {
+      if (0 >= 4) {
           RTC_Counter01 = RTC_Counter02;
           if ( (RTC_Counter02 - RTC_Counter03) >= 60) {
               n++;

@@ -696,7 +696,7 @@ void SETglobalsecs(uint32_t count) {
 uint32_t GETglobalsecs(void) {
     return (((uint32_t) BKP_ReadBackupRegister(BKP_DR3) << 16) + ((uint32_t) BKP_ReadBackupRegister(BKP_DR4)));
 }
-void TIM2_init(void) {
+void TIM2_init(void) {/*
   TIM_TimeBaseInitTypeDef TIMER_InitStructure;
   NVIC_InitTypeDef  NVIC_InitStructure;
 
@@ -716,6 +716,19 @@ void TIM2_init(void) {
   NVIC_Init(&NVIC_InitStructure);
   // ñ÷èòàåì îäèí ðàç
   TIM_SelectOnePulseMode(TIM2, TIM_OPMode_Single);
+  NVIC_EnableIRQ(TIM2_IRQn);*/
+   TIM_TimeBaseInitTypeDef TIMER_InitStructure;
+   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+   TIM_TimeBaseStructInit(&TIMER_InitStructure);
+
+   TIMER_InitStructure.TIM_Prescaler = 127;
+   TIMER_InitStructure.TIM_Period = 1;
+   TIM_TimeBaseInit(TIM2, &TIMER_InitStructure);
+
+
+   TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+   TIM_Cmd(TIM2, ENABLE);
+   NVIC_EnableIRQ(TIM2_IRQn);
 }
 void TIM2_IRQHandler(void) {
   if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)   {

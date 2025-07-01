@@ -5,6 +5,8 @@ enable_language(C ASM)
 set(MX_Defines_Syms 
 	USE_HAL_DRIVER 
 	STM32F103x6
+        STM32F10X_MD
+        SYSCLK_FREQ_72MHz
     $<$<CONFIG:Debug>:DEBUG>
 )
 
@@ -15,7 +17,7 @@ set(MX_Include_Dirs
     ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/inc
     ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x
     ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32F1xx/Include
-    ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/Include
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/CoreSupport
 )
 
 # STM32CubeMX generated application sources
@@ -26,8 +28,8 @@ set(MX_Application_Src
     ${CMAKE_SOURCE_DIR}/Core/src/modbus.c
     ${CMAKE_SOURCE_DIR}/Core/src/onewire.c
     ${CMAKE_SOURCE_DIR}/Core/src/tim2_delay.c
-    ${CMAKE_SOURCE_DIR}/Core/Src/sysmem.c
-    ${CMAKE_SOURCE_DIR}/Core/Src/syscalls.c
+    #${CMAKE_SOURCE_DIR}/Core/Src/sysmem.c
+    #${CMAKE_SOURCE_DIR}/Core/Src/syscalls.c
     ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.s
     #${CMAKE_SOURCE_DIR}/startup_stm32f103x6.s
 )
@@ -58,6 +60,7 @@ set(STM32_Drivers_Src
     ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_tim.c
     ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c
     ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_wwdg.c
+    ${CMAKE_SOURCE_DIR}/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/CoreSupport/core_cm3.c
 
 )
 

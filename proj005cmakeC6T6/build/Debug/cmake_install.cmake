@@ -1,4 +1,4 @@
-# Install script for directory: /media/flexshit/99gentoo/016STMcube/qtcreator005/proj005cmakeC6T6
+# Install script for directory: /media/flexshit/99gentoo/012STM32/stm32002cmake/proj005cmakeC6T6
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,13 +39,13 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/media/flexshit/99gentoo/016STMcube/qtcreator005/proj005cmakeC6T6/build/Debug/cmake/stm32cubemx/cmake_install.cmake")
+  include("/media/flexshit/99gentoo/012STM32/stm32002cmake/proj005cmakeC6T6/build/Debug/cmake/stm32cubemx/cmake_install.cmake")
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/media/flexshit/99gentoo/016STMcube/qtcreator005/proj005cmakeC6T6/build/Debug/install_local_manifest.txt"
+  file(WRITE "/media/flexshit/99gentoo/012STM32/stm32002cmake/proj005cmakeC6T6/build/Debug/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
 if(CMAKE_INSTALL_COMPONENT)
@@ -61,6 +61,6 @@ else()
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/media/flexshit/99gentoo/016STMcube/qtcreator005/proj005cmakeC6T6/build/Debug/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "/media/flexshit/99gentoo/012STM32/stm32002cmake/proj005cmakeC6T6/build/Debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

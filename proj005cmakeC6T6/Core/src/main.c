@@ -46,10 +46,10 @@ int main(void) {
   GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
   uart1.delay=150; //modbus gap 9600
   uart1.rxtimer = 0;
-  delay_ms(1000);
+  //delay_ms(1000);
   GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
   atSTART();
-  oprosite();
+  //oprosite();
 
 
   iwdg_init();
@@ -67,12 +67,13 @@ int main(void) {
           GPIO_ResetBits(USART1PPport, USART1PPpin);
 
         }
-      if ((GETglobalsecs()%3)==0) {
+
+      if ((globalsecs % 3) == 0) {
         GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
       }else {
         GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
       }
-      if ( ((RTC_Counter02 = GETglobalsecs()) - RTC_Counter01) >= 4) {
+      if ( ((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01) >= 4) {
           RTC_Counter01 = RTC_Counter02;
           if ( (RTC_Counter02 - RTC_Counter03) >= 60) {
               n++;

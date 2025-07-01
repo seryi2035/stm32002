@@ -75,6 +75,7 @@ void iwdg_init(void);
 
 static uint16_t millisec2;
 static uint32_t globalsecs;
+static uint16_t millisec003delay_ms;
 void SETglobalsecs(uint32_t count);
 uint32_t GETglobalsecs(void);
 

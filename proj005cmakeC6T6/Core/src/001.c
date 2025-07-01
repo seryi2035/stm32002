@@ -721,7 +721,7 @@ void TIM2_init(void) {/*
    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
    TIM_TimeBaseStructInit(&TIMER_InitStructure);
 
-   TIMER_InitStructure.TIM_Prescaler = 127;
+   TIMER_InitStructure.TIM_Prescaler = 35999;
    TIMER_InitStructure.TIM_Period = 1;
    TIM_TimeBaseInit(TIM2, &TIMER_InitStructure);
 

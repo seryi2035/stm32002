@@ -46,7 +46,7 @@ int main(void) {
   GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
   uart1.delay=150; //modbus gap 9600
   uart1.rxtimer = 0;
-  delay_ms(1000);
+  //delay_ms(1000);
   GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
   atSTART();
   //oprosite();
@@ -56,7 +56,7 @@ int main(void) {
 
   while (1) {
       if (Coils_RW[8] == 0) {
-          IWDG_ReloadCounter();
+          //IWDG_ReloadCounter();
         }
       if(uart1.rxgap==1) {
 
@@ -73,7 +73,7 @@ int main(void) {
       }else {
         GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
       }
-      if ( ((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01) >= 4) {
+      if ( /*((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01)*/1 >= 4) {
           RTC_Counter01 = RTC_Counter02;
           if ( (RTC_Counter02 - RTC_Counter03) >= 60) {
               n++;

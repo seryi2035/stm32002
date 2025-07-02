@@ -738,9 +738,11 @@ void TIM2_IRQHandler(void) {
           globalsecs++;
           SETglobalsecs(globalsecs);
           millisec2 = 0;
+        TIM_SetCounter(TIM2, 0);
       }
       TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
   }
+
 }
 void delay_us(uint32_t n_usec) {
   TIM4->CNT = 0;

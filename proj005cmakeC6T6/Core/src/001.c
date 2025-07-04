@@ -721,7 +721,7 @@ void TIM2_init(void) {/*
    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
    TIM_TimeBaseStructInit(&TIMER_InitStructure);
 
-   TIMER_InitStructure.TIM_Prescaler = 35999;
+   TIMER_InitStructure.TIM_Prescaler = 17999;
    TIMER_InitStructure.TIM_Period = 1;
    TIM_TimeBaseInit(TIM2, &TIMER_InitStructure);
 
@@ -762,7 +762,7 @@ void TIM4_init(void) {
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
   //Initialise TIMER4
   TIM_TimBaseStructure.TIM_Period = 50000;
-  TIM_TimBaseStructure.TIM_Prescaler = 72;
+  TIM_TimBaseStructure.TIM_Prescaler = 71;
   TIM_TimBaseStructure.TIM_ClockDivision = 0;
   TIM_TimBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM4, &TIM_TimBaseStructure);

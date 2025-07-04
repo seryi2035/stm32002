@@ -2898,8 +2898,6 @@ Discarded input sections
                 0x00000000       0x36 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
  .text.USART_IrDACmd
                 0x00000000       0x3e cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
- .text.USART_GetFlagStatus
-                0x00000000       0x36 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
  .text.USART_ClearFlag
                 0x00000000       0x20 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
  .debug_macro   0x00000000      0x832 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
@@ -3179,8 +3177,6 @@ Discarded input sections
                 0x00000000       0x40 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
  .text.USART01Send
                 0x00000000       0x40 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
- .text.USART1Send
-                0x00000000       0x40 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
  .text.USART1Send485
                 0x00000000       0x3c CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
  .text.RTC_Init
@@ -3213,8 +3209,6 @@ Discarded input sections
                 0x00000000       0x4c CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
  .text.iwdg_init
                 0x00000000       0x3a CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
- .text.delay_us
-                0x00000000       0x30 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
  .text.delay_ms
                 0x00000000       0x30 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
  .debug_macro   0x00000000      0x832 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
@@ -3823,7 +3817,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtn.o
 .eh_frame       0x0800010c        0x0
  .eh_frame      0x0800010c        0x0 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtbegin.o
 
-.text           0x0800010c     0x22ac
+.text           0x0800010c     0x23f0
                 0x0800010c                        . = ALIGN (0x4)
  *(.text)
  .text          0x0800010c       0x88 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtbegin.o
@@ -3913,260 +3907,271 @@ LOAD /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtn.o
  .text.USART_ReceiveData
                 0x08000d62       0x1e cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
                 0x08000d62                USART_ReceiveData
+ .text.USART_GetFlagStatus
+                0x08000d80       0x36 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
+                0x08000d80                USART_GetFlagStatus
  .text.USART_GetITStatus
-                0x08000d80       0xb4 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
-                0x08000d80                USART_GetITStatus
+                0x08000db6       0xb4 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
+                0x08000db6                USART_GetITStatus
  .text.USART_ClearITPendingBit
-                0x08000e34       0x38 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
-                0x08000e34                USART_ClearITPendingBit
+                0x08000e6a       0x38 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
+                0x08000e6a                USART_ClearITPendingBit
+ *fill*         0x08000ea2        0x2 
  .text.WWDG_SetCounter
-                0x08000e6c       0x24 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_wwdg.c.obj
-                0x08000e6c                WWDG_SetCounter
+                0x08000ea4       0x24 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_wwdg.c.obj
+                0x08000ea4                WWDG_SetCounter
  .text.WWDG_ClearFlag
-                0x08000e90       0x18 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_wwdg.c.obj
-                0x08000e90                WWDG_ClearFlag
+                0x08000ec8       0x18 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_wwdg.c.obj
+                0x08000ec8                WWDG_ClearFlag
  .text.NVIC_EnableIRQ
-                0x08000ea8       0x30 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x08000ee0       0x30 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
  .text.GETonGPIO
-                0x08000ed8      0x128 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
-                0x08000ed8                GETonGPIO
+                0x08000f10      0x128 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x08000f10                GETonGPIO
  .text.usart1_init
-                0x08001000       0xc8 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
-                0x08001000                usart1_init
+                0x08001038       0xc8 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x08001038                usart1_init
  .text.USART1_IRQHandler
-                0x080010c8       0xec CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
-                0x080010c8                USART1_IRQHandler
+                0x08001100       0xec CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x08001100                USART1_IRQHandler
+ .text.USART1Send
+                0x080011ec       0x40 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x080011ec                USART1Send
  .text.WWDG_IRQHandler
-                0x080011b4       0x24 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
-                0x080011b4                WWDG_IRQHandler
+                0x0800122c       0x24 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x0800122c                WWDG_IRQHandler
  .text.SETglobalsecs
-                0x080011d8       0x2a CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
-                0x080011d8                SETglobalsecs
+                0x08001250       0x2a CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x08001250                SETglobalsecs
  .text.GETglobalsecs
-                0x08001202       0x1c CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
-                0x08001202                GETglobalsecs
+                0x0800127a       0x1c CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x0800127a                GETglobalsecs
  .text.TIM2_init
-                0x0800121e       0x50 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
-                0x0800121e                TIM2_init
- *fill*         0x0800126e        0x2 
+                0x08001296       0x50 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x08001296                TIM2_init
+ *fill*         0x080012e6        0x2 
  .text.TIM2_IRQHandler
-                0x08001270       0x70 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
-                0x08001270                TIM2_IRQHandler
+                0x080012e8       0x70 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x080012e8                TIM2_IRQHandler
+ .text.delay_us
+                0x08001358       0x30 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x08001358                delay_us
  .text.TIM4_init
-                0x080012e0       0x58 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
-                0x080012e0                TIM4_init
+                0x08001388       0x58 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x08001388                TIM4_init
  .text.TIM4_IRQHandler
-                0x08001338       0x24 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
-                0x08001338                TIM4_IRQHandler
+                0x080013e0       0x24 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x080013e0                TIM4_IRQHandler
  .text.TIM3_init
-                0x0800135c       0x60 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
-                0x0800135c                TIM3_init
+                0x08001404       0x60 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x08001404                TIM3_init
  .text.TIM3_IRQHandler
-                0x080013bc       0x78 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
-                0x080013bc                TIM3_IRQHandler
- .text.main     0x08001434      0x100 CMakeFiles/proj005cmakeC6T6.dir/Core/src/main.c.obj
-                0x08001434                main
- .text.atSTART  0x08001534       0x58 CMakeFiles/proj005cmakeC6T6.dir/Core/src/main.c.obj
-                0x08001534                atSTART
- .text.crc16    0x0800158c       0x6c CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x0800158c                crc16
- .text.net_tx1  0x080015f8       0x64 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x080015f8                net_tx1
+                0x08001464       0x78 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x08001464                TIM3_IRQHandler
+ .text.main     0x080014dc      0x18c CMakeFiles/proj005cmakeC6T6.dir/Core/src/main.c.obj
+                0x080014dc                main
+ .text.atSTART  0x08001668       0x58 CMakeFiles/proj005cmakeC6T6.dir/Core/src/main.c.obj
+                0x08001668                atSTART
+ .text.crc16    0x080016c0       0x6c CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x080016c0                crc16
+ .text.net_tx1  0x0800172c       0x64 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x0800172c                net_tx1
  .text.MODBUS_SLAVE
-                0x0800165c      0x154 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x0800165c                MODBUS_SLAVE
+                0x08001790      0x154 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x08001790                MODBUS_SLAVE
  .text.TX_EXCEPTION
-                0x080017b0       0x24 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x080017b0                TX_EXCEPTION
- .text.TX_01    0x080017d4      0x158 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x080017d4                TX_01
- .text.TX_02    0x0800192c      0x158 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x0800192c                TX_02
+                0x080018e4       0x24 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x080018e4                TX_EXCEPTION
+ .text.TX_01    0x08001908      0x158 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x08001908                TX_01
+ .text.TX_02    0x08001a60      0x158 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x08001a60                TX_02
  .text.setCOILS
-                0x08001a84       0xb4 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x08001a84                setCOILS
+                0x08001bb8       0xb4 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x08001bb8                setCOILS
  .text.read_Discrete_Inputs_RO
-                0x08001b38      0x12c CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x08001b38                read_Discrete_Inputs_RO
+                0x08001c6c      0x12c CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x08001c6c                read_Discrete_Inputs_RO
  .text.read_Coils_RW
-                0x08001c64      0x134 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x08001c64                read_Coils_RW
- .text.TX_05    0x08001d98       0x88 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x08001d98                TX_05
- .text.TX_04    0x08001e20       0xbc CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x08001e20                TX_04
- .text.TX_03    0x08001edc       0xc0 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x08001edc                TX_03
- .text.TX_06    0x08001f9c       0x5c CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x08001f9c                TX_06
+                0x08001d98      0x134 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x08001d98                read_Coils_RW
+ .text.TX_05    0x08001ecc       0x88 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x08001ecc                TX_05
+ .text.TX_04    0x08001f54       0xbc CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x08001f54                TX_04
+ .text.TX_03    0x08002010       0xc0 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x08002010                TX_03
+ .text.TX_06    0x080020d0       0x5c CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x080020d0                TX_06
  .text.coilTOback
-                0x08001ff8       0x7c CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x08001ff8                coilTOback
+                0x0800212c       0x7c CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x0800212c                coilTOback
  .text.coilFROMback
-                0x08002074       0x58 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x08002074                coilFROMback
- .text.TX_16    0x080020cc       0x74 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
-                0x080020cc                TX_16
+                0x080021a8       0x58 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x080021a8                coilFROMback
+ .text.TX_16    0x08002200       0x74 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x08002200                TX_16
  .text.Reset_Handler
-                0x08002140       0x48 CMakeFiles/proj005cmakeC6T6.dir/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.s.obj
-                0x08002140                Reset_Handler
+                0x08002274       0x48 CMakeFiles/proj005cmakeC6T6.dir/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.s.obj
+                0x08002274                Reset_Handler
  .text.Default_Handler
-                0x08002188        0x2 CMakeFiles/proj005cmakeC6T6.dir/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.s.obj
-                0x08002188                EXTI2_IRQHandler
-                0x08002188                DebugMon_Handler
-                0x08002188                TIM1_CC_IRQHandler
-                0x08002188                HardFault_Handler
-                0x08002188                SysTick_Handler
-                0x08002188                PVD_IRQHandler
-                0x08002188                PendSV_Handler
-                0x08002188                NMI_Handler
-                0x08002188                EXTI3_IRQHandler
-                0x08002188                EXTI0_IRQHandler
-                0x08002188                I2C2_EV_IRQHandler
-                0x08002188                UsageFault_Handler
-                0x08002188                ADC1_2_IRQHandler
-                0x08002188                SPI1_IRQHandler
-                0x08002188                TAMPER_IRQHandler
-                0x08002188                DMA1_Channel4_IRQHandler
-                0x08002188                USART3_IRQHandler
-                0x08002188                RTC_IRQHandler
-                0x08002188                DMA1_Channel7_IRQHandler
-                0x08002188                CAN1_RX1_IRQHandler
-                0x08002188                I2C1_EV_IRQHandler
-                0x08002188                DMA1_Channel6_IRQHandler
-                0x08002188                RCC_IRQHandler
-                0x08002188                TIM1_TRG_COM_IRQHandler
-                0x08002188                DMA1_Channel1_IRQHandler
-                0x08002188                Default_Handler
-                0x08002188                EXTI15_10_IRQHandler
-                0x08002188                EXTI9_5_IRQHandler
-                0x08002188                SPI2_IRQHandler
-                0x08002188                MemManage_Handler
-                0x08002188                SVC_Handler
-                0x08002188                DMA1_Channel5_IRQHandler
-                0x08002188                EXTI4_IRQHandler
-                0x08002188                USB_LP_CAN1_RX0_IRQHandler
-                0x08002188                USB_HP_CAN1_TX_IRQHandler
-                0x08002188                DMA1_Channel3_IRQHandler
-                0x08002188                TIM1_UP_IRQHandler
-                0x08002188                TIM1_BRK_IRQHandler
-                0x08002188                EXTI1_IRQHandler
-                0x08002188                RTCAlarm_IRQHandler
-                0x08002188                USART2_IRQHandler
-                0x08002188                I2C2_ER_IRQHandler
-                0x08002188                DMA1_Channel2_IRQHandler
-                0x08002188                CAN1_SCE_IRQHandler
-                0x08002188                FLASH_IRQHandler
-                0x08002188                BusFault_Handler
-                0x08002188                I2C1_ER_IRQHandler
-                0x08002188                USBWakeUp_IRQHandler
+                0x080022bc        0x2 CMakeFiles/proj005cmakeC6T6.dir/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.s.obj
+                0x080022bc                EXTI2_IRQHandler
+                0x080022bc                DebugMon_Handler
+                0x080022bc                TIM1_CC_IRQHandler
+                0x080022bc                HardFault_Handler
+                0x080022bc                SysTick_Handler
+                0x080022bc                PVD_IRQHandler
+                0x080022bc                PendSV_Handler
+                0x080022bc                NMI_Handler
+                0x080022bc                EXTI3_IRQHandler
+                0x080022bc                EXTI0_IRQHandler
+                0x080022bc                I2C2_EV_IRQHandler
+                0x080022bc                UsageFault_Handler
+                0x080022bc                ADC1_2_IRQHandler
+                0x080022bc                SPI1_IRQHandler
+                0x080022bc                TAMPER_IRQHandler
+                0x080022bc                DMA1_Channel4_IRQHandler
+                0x080022bc                USART3_IRQHandler
+                0x080022bc                RTC_IRQHandler
+                0x080022bc                DMA1_Channel7_IRQHandler
+                0x080022bc                CAN1_RX1_IRQHandler
+                0x080022bc                I2C1_EV_IRQHandler
+                0x080022bc                DMA1_Channel6_IRQHandler
+                0x080022bc                RCC_IRQHandler
+                0x080022bc                TIM1_TRG_COM_IRQHandler
+                0x080022bc                DMA1_Channel1_IRQHandler
+                0x080022bc                Default_Handler
+                0x080022bc                EXTI15_10_IRQHandler
+                0x080022bc                EXTI9_5_IRQHandler
+                0x080022bc                SPI2_IRQHandler
+                0x080022bc                MemManage_Handler
+                0x080022bc                SVC_Handler
+                0x080022bc                DMA1_Channel5_IRQHandler
+                0x080022bc                EXTI4_IRQHandler
+                0x080022bc                USB_LP_CAN1_RX0_IRQHandler
+                0x080022bc                USB_HP_CAN1_TX_IRQHandler
+                0x080022bc                DMA1_Channel3_IRQHandler
+                0x080022bc                TIM1_UP_IRQHandler
+                0x080022bc                TIM1_BRK_IRQHandler
+                0x080022bc                EXTI1_IRQHandler
+                0x080022bc                RTCAlarm_IRQHandler
+                0x080022bc                USART2_IRQHandler
+                0x080022bc                I2C2_ER_IRQHandler
+                0x080022bc                DMA1_Channel2_IRQHandler
+                0x080022bc                CAN1_SCE_IRQHandler
+                0x080022bc                FLASH_IRQHandler
+                0x080022bc                BusFault_Handler
+                0x080022bc                I2C1_ER_IRQHandler
+                0x080022bc                USBWakeUp_IRQHandler
  *(.rodata)
+ *fill*         0x080022be        0x2 
+ .rodata        0x080022c0       0x10 CMakeFiles/proj005cmakeC6T6.dir/Core/src/main.c.obj
  *(.rodata*)
- *fill*         0x0800218a        0x2 
  .rodata.APBAHBPrescTable
-                0x0800218c       0x10 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_rcc.c.obj
+                0x080022d0       0x10 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_rcc.c.obj
  .rodata.ADCPrescTable
-                0x0800219c        0x4 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_rcc.c.obj
+                0x080022e0        0x4 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_rcc.c.obj
  .rodata.table_crc_hi
-                0x080021a0      0x100 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x080022e4      0x100 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
  .rodata.table_crc_lo
-                0x080022a0      0x100 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x080023e4      0x100 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
  *(.glue_7)
- .glue_7        0x080023a0        0x0 linker stubs
+ .glue_7        0x080024e4        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x080023a0        0x0 linker stubs
+ .glue_7t       0x080024e4        0x0 linker stubs
  *(.init)
- .init          0x080023a0        0x4 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crti.o
-                0x080023a0                _init
- .init          0x080023a4        0x8 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtn.o
+ .init          0x080024e4        0x4 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crti.o
+                0x080024e4                _init
+ .init          0x080024e8        0x8 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtn.o
  *(.fini)
- .fini          0x080023ac        0x4 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crti.o
-                0x080023ac                _fini
- .fini          0x080023b0        0x8 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtn.o
-                0x080023b8                        . = ALIGN (0x4)
-                0x080023b8                        _etext = .
+ .fini          0x080024f0        0x4 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crti.o
+                0x080024f0                _fini
+ .fini          0x080024f4        0x8 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtn.o
+                0x080024fc                        . = ALIGN (0x4)
+                0x080024fc                        _etext = .
 
-.vfp11_veneer   0x080023b8        0x0
- .vfp11_veneer  0x080023b8        0x0 linker stubs
+.vfp11_veneer   0x080024fc        0x0
+ .vfp11_veneer  0x080024fc        0x0 linker stubs
 
-.v4_bx          0x080023b8        0x0
- .v4_bx         0x080023b8        0x0 linker stubs
+.v4_bx          0x080024fc        0x0
+ .v4_bx         0x080024fc        0x0 linker stubs
 
-.iplt           0x080023b8        0x0
- .iplt          0x080023b8        0x0 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtbegin.o
+.iplt           0x080024fc        0x0
+ .iplt          0x080024fc        0x0 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtbegin.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM            0x080023b8        0x0
-                0x080023b8                        __exidx_start = .
+.ARM            0x080024fc        0x0
+                0x080024fc                        __exidx_start = .
  *(.ARM.exidx*)
-                0x080023b8                        __exidx_end = .
+                0x080024fc                        __exidx_end = .
 
 .ARM.attributes
-                0x080023b8       0x29
+                0x080024fc       0x29
  *(.ARM.attributes)
  .ARM.attributes
-                0x080023b8       0x1d /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crti.o
+                0x080024fc       0x1d /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crti.o
  .ARM.attributes
-                0x080023d5       0x2d /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtbegin.o
+                0x08002519       0x2d /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtbegin.o
  .ARM.attributes
-                0x08002402       0x2d /usr/lib/gcc/arm-none-eabi/15/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(libc_a-init.o)
+                0x08002546       0x2d /usr/lib/gcc/arm-none-eabi/15/../../../../arm-none-eabi/lib/thumb/v7-m/nofp/libc_nano.a(libc_a-init.o)
  .ARM.attributes
-                0x0800242f       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/system_stm32f10x.c.obj
+                0x08002573       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/system_stm32f10x.c.obj
  .ARM.attributes
-                0x0800245c       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/misc.c.obj
+                0x080025a0       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/misc.c.obj
  .ARM.attributes
-                0x08002489       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_bkp.c.obj
+                0x080025cd       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_bkp.c.obj
  .ARM.attributes
-                0x080024b6       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_gpio.c.obj
+                0x080025fa       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_gpio.c.obj
  .ARM.attributes
-                0x080024e3       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_pwr.c.obj
+                0x08002627       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_pwr.c.obj
  .ARM.attributes
-                0x08002510       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_rcc.c.obj
+                0x08002654       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_rcc.c.obj
  .ARM.attributes
-                0x0800253d       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_tim.c.obj
+                0x08002681       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_tim.c.obj
  .ARM.attributes
-                0x0800256a       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
+                0x080026ae       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
  .ARM.attributes
-                0x08002597       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_wwdg.c.obj
+                0x080026db       0x2d cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_wwdg.c.obj
  .ARM.attributes
-                0x080025c4       0x2d CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
+                0x08002708       0x2d CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
  .ARM.attributes
-                0x080025f1       0x2d CMakeFiles/proj005cmakeC6T6.dir/Core/src/main.c.obj
+                0x08002735       0x2d CMakeFiles/proj005cmakeC6T6.dir/Core/src/main.c.obj
  .ARM.attributes
-                0x0800261e       0x2d CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+                0x08002762       0x2d CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
  .ARM.attributes
-                0x0800264b       0x21 CMakeFiles/proj005cmakeC6T6.dir/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.s.obj
+                0x0800278f       0x21 CMakeFiles/proj005cmakeC6T6.dir/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.s.obj
  .ARM.attributes
-                0x0800266c       0x2d /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtend.o
+                0x080027b0       0x2d /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtend.o
  .ARM.attributes
-                0x08002699       0x1d /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtn.o
+                0x080027dd       0x1d /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtn.o
 
-.preinit_array  0x080023b8        0x0
-                0x080023b8                        PROVIDE (__preinit_array_start = .)
+.preinit_array  0x080024fc        0x0
+                0x080024fc                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array*)
-                0x080023b8                        PROVIDE (__preinit_array_end = .)
+                0x080024fc                        PROVIDE (__preinit_array_end = .)
 
-.init_array     0x080023b8        0x4
-                0x080023b8                        PROVIDE (__init_array_start = .)
+.init_array     0x080024fc        0x4
+                0x080024fc                        PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array*)
- .init_array    0x080023b8        0x4 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtbegin.o
-                0x080023bc                        PROVIDE (__init_array_end = .)
+ .init_array    0x080024fc        0x4 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtbegin.o
+                0x08002500                        PROVIDE (__init_array_end = .)
 
-.fini_array     0x080023bc        0x4
-                0x080023bc                        PROVIDE (__fini_array_start = .)
+.fini_array     0x08002500        0x4
+                0x08002500                        PROVIDE (__fini_array_start = .)
  *(.fini_array*)
- .fini_array    0x080023bc        0x4 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtbegin.o
+ .fini_array    0x08002500        0x4 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtbegin.o
  *(SORT_BY_NAME(.fini_array.*))
-                0x080023c0                        PROVIDE (__fini_array_end = .)
-                0x080023c0                        _sidata = .
+                0x08002504                        PROVIDE (__fini_array_end = .)
+                0x08002504                        _sidata = .
 
-.rel.dyn        0x080023c0        0x0
- .rel.iplt      0x080023c0        0x0 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtbegin.o
+.rel.dyn        0x08002504        0x0
+ .rel.iplt      0x08002504        0x0 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtbegin.o
 
-.data           0x20000000        0x0 load address 0x080023c0
+.data           0x20000000        0x0 load address 0x08002504
                 0x20000000                        . = ALIGN (0x4)
                 0x20000000                        _sdata = .
  *(.data)
@@ -4259,7 +4264,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/libgcc.a
  .comment       0x0000001f       0x20 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
  .comment       0x0000001f       0x20 /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/crtend.o
 
-.debug_info     0x00000000     0x7be9
+.debug_info     0x00000000     0x7c10
  .debug_info    0x00000000      0x422 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/system_stm32f10x.c.obj
  .debug_info    0x00000422      0x4d8 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/misc.c.obj
  .debug_info    0x000008fa      0x781 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_bkp.c.obj
@@ -4270,9 +4275,9 @@ LOAD /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/libgcc.a
  .debug_info    0x00003fd4      0x9f1 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
  .debug_info    0x000049c5      0x22f cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_wwdg.c.obj
  .debug_info    0x00004bf4     0x1ba6 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
- .debug_info    0x0000679a      0x796 CMakeFiles/proj005cmakeC6T6.dir/Core/src/main.c.obj
- .debug_info    0x00006f30      0xc89 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
- .debug_info    0x00007bb9       0x30 CMakeFiles/proj005cmakeC6T6.dir/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.s.obj
+ .debug_info    0x0000679a      0x7bd CMakeFiles/proj005cmakeC6T6.dir/Core/src/main.c.obj
+ .debug_info    0x00006f57      0xc89 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+ .debug_info    0x00007be0       0x30 CMakeFiles/proj005cmakeC6T6.dir/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.s.obj
 
 .debug_abbrev   0x00000000     0x18b6
  .debug_abbrev  0x00000000      0x1b9 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/system_stm32f10x.c.obj
@@ -4423,7 +4428,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/libgcc.a
  .debug_macro   0x0000f009      0x259 CMakeFiles/proj005cmakeC6T6.dir/Core/src/main.c.obj
  .debug_macro   0x0000f262      0x19a CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
 
-.debug_line     0x00000000     0x7a5b
+.debug_line     0x00000000     0x7ab2
  .debug_line    0x00000000      0x691 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/system_stm32f10x.c.obj
  .debug_line    0x00000691      0x64b cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/misc.c.obj
  .debug_line    0x00000cdc      0x6a5 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_bkp.c.obj
@@ -4434,9 +4439,9 @@ LOAD /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/libgcc.a
  .debug_line    0x00004456      0xac3 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
  .debug_line    0x00004f19      0x635 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_wwdg.c.obj
  .debug_line    0x0000554e     0x1073 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
- .debug_line    0x000065c1      0x6c5 CMakeFiles/proj005cmakeC6T6.dir/Core/src/main.c.obj
- .debug_line    0x00006c86      0xd5f CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
- .debug_line    0x000079e5       0x76 CMakeFiles/proj005cmakeC6T6.dir/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.s.obj
+ .debug_line    0x000065c1      0x71c CMakeFiles/proj005cmakeC6T6.dir/Core/src/main.c.obj
+ .debug_line    0x00006cdd      0xd5f CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
+ .debug_line    0x00007a3c       0x76 CMakeFiles/proj005cmakeC6T6.dir/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.s.obj
 
 .debug_str      0x00000000    0x53dd7
  .debug_str     0x00000000    0x53dd7 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/system_stm32f10x.c.obj
@@ -4450,7 +4455,7 @@ LOAD /usr/lib/gcc/arm-none-eabi/15/thumb/v7-m/nofp/libgcc.a
  .debug_str     0x00053dd7    0x4d2d4 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c.obj
  .debug_str     0x00053dd7    0x4cbd1 cmake/stm32cubemx/CMakeFiles/STM32_Drivers.dir/__/__/Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_wwdg.c.obj
  .debug_str     0x00053dd7    0x50ed2 CMakeFiles/proj005cmakeC6T6.dir/Core/src/001.c.obj
- .debug_str     0x00053dd7    0x4fbee CMakeFiles/proj005cmakeC6T6.dir/Core/src/main.c.obj
+ .debug_str     0x00053dd7    0x4fc02 CMakeFiles/proj005cmakeC6T6.dir/Core/src/main.c.obj
  .debug_str     0x00053dd7    0x4cf59 CMakeFiles/proj005cmakeC6T6.dir/Core/src/modbus.c.obj
  .debug_str     0x00053dd7      0x11c CMakeFiles/proj005cmakeC6T6.dir/Drivers/STM32F10x_StdPeriph_Driver/CMSIS/CM3/DeviceSupport/ST/STM32F10x/startup/TrueSTUDIO/startup_stm32f10x_md.s.obj
 

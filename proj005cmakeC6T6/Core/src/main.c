@@ -67,11 +67,35 @@ int main(void) {
           GPIO_ResetBits(USART1PPport, USART1PPpin);
 
         }
+      if (((RTC_Counter01 = GETglobalsecs()) ) != RTC_Counter02) {
+        RTC_Counter03 = 0;
 
-      if (((RTC_Counter02 = GETglobalsecs()) % 3) == 0) {
+      if (((RTC_Counter02 = GETglobalsecs()) % 2) == 0) {
         GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
+        if (RTC_Counter03 == 0) {
+          RTC_Counter03++;
+          USART1Send("1\r\n");
+        }
+
+
       }else {
         GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
+        if (RTC_Counter03 == 0) {
+          RTC_Counter03++;
+          USART1Send("2\r\n");
+
+        for (RTC_Counter01=0; RTC_Counter01 <= 999; RTC_Counter01++) {
+          delay_us(100);
+        }
+        GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
+        USART1Send("3\r\n");
+        for (RTC_Counter01=0; RTC_Counter01 <= 999; RTC_Counter01++) {
+          delay_us(100);
+        }
+        GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
+        USART1Send("4\r\n");
+        }
+      }
       }
       if ( /*((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01)*/1 >= 4) {
           RTC_Counter01 = RTC_Counter02;

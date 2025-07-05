@@ -287,10 +287,21 @@ void TX_02(UART_DATA *MODBUS) {
 void setCOILS(uint8_t *Coils_RW) {
   //coilTOback();
   if (!Coils_RW[0]) { GPIO_SetBits(GPIOC, GPIO_Pin_13);    } else { GPIO_ResetBits(GPIOC, GPIO_Pin_13); }
-  if (Coils_RW[1]) { GPIO_SetBits(GPIOB, GPIO_Pin_11);    } else { GPIO_ResetBits(GPIOB, GPIO_Pin_11);  }
-  if (Coils_RW[2]) { GPIO_SetBits(GPIOB, GPIO_Pin_10);    } else { GPIO_ResetBits(GPIOB, GPIO_Pin_10);  }
-  if (Coils_RW[3]) { GPIO_SetBits(GPIOB, GPIO_Pin_1);     } else { GPIO_ResetBits(GPIOB, GPIO_Pin_1);   }
-  if (Coils_RW[4]) { GPIO_SetBits(GPIOB, GPIO_Pin_0);     } else { GPIO_ResetBits(GPIOB, GPIO_Pin_0);   }
+  if (Coils_RW[1])  { GPIO_SetBits(GPIOB, GPIO_Pin_11);    } else { GPIO_ResetBits(GPIOB, GPIO_Pin_11);  }
+  if (Coils_RW[2])  { GPIO_SetBits(GPIOB, GPIO_Pin_10);    } else { GPIO_ResetBits(GPIOB, GPIO_Pin_10);  }
+  if (Coils_RW[3])  { GPIO_SetBits(GPIOB, GPIO_Pin_1);     } else { GPIO_ResetBits(GPIOB, GPIO_Pin_1);   }
+  if (Coils_RW[4])  { GPIO_SetBits(GPIOB, GPIO_Pin_0);     } else { GPIO_ResetBits(GPIOB, GPIO_Pin_0);   }
+  if (Coils_RW[11])  { servo001use=hold_reg.tmp_u16[11];   } else { servo001use=hold_reg.tmp_u16[10];   }
+  if (Coils_RW[12])  { servo002use=hold_reg.tmp_u16[13];   } else { servo002use=hold_reg.tmp_u16[12];   }
+  if (Coils_RW[13])  { servo003use=hold_reg.tmp_u16[15];   } else { servo003use=hold_reg.tmp_u16[14];   }
+  if (Coils_RW[14])  { servo004use=hold_reg.tmp_u16[17];   } else { servo004use=hold_reg.tmp_u16[16];   }
+  if (Coils_RW[15])  { servo005use=hold_reg.tmp_u16[19];   } else { servo005use=hold_reg.tmp_u16[18];   }
+  TIM2->CCR2 = servo001use;
+  TIM2->CCR4 = servo002use;
+  TIM4->CCR1 = servo003use;
+  TIM4->CCR2 = servo004use;
+  TIM4->CCR4 = servo005use;
+
   coilTOback();
 }
 void read_Discrete_Inputs_RO(void) {
@@ -334,9 +345,7 @@ void read_Coils_RW(void) {
   //GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_5) == (uint8_t)Bit_SET ? Coils_RW[7] = 1; : Coils_RW[7] = 0;
   //if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_9)   == (uint8_t)Bit_SET) { Coils_RW[7] = 1; }else{ Coils_RW[7] = 0;}
   Coils_RW[7] = 0;
-  for(u8 i = 10; i < 16; i++) {
-      Coils_RW[i] = 0;
-    }
+
   for(u8 i = 16; i < 32; i++) {
       Coils_RW[i] = Coils_RW[i-16];
     }

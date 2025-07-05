@@ -105,4 +105,4 @@ static uint16_t servo004use;
 static uint16_t servo005max;
 static uint16_t servo005min;
 static uint16_t servo005use;
-void SERVOinit(void);
+//void SERVOinit(void);

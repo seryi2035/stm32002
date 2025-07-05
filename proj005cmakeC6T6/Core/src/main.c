@@ -91,8 +91,8 @@ int main(void) {
               COILtimerMINUTES(Coils_RW[4], input_reg.tmp_u16[15], BKP_DR8, hold_reg.tmp_u16[31], BKP_DR12);  //B0      slave20_403:7       slave20_302:7
             }
           //ds18b20Value = schitatU16Temp("\x28\xee\xe8\x19\x17\x16\x02\xa1");
-          input_reg.tmp_float[9] = (float) (ds18b20Value / 16.0);   //Number STM20DS03f "DS01 floatTemp [%.2f °C]"   (gmod20_INreg)     {modbus="<[slave20_402:1]"}
-          input_reg.tmp_u16[4] = DHT11_read(&dev001);               //Number STM20DHTres "DHTstatus [%d]"            (gmod20_INreg)     {modbus="<[slave20_4:4]"}
+          //input_reg.tmp_float[9] = (float) (ds18b20Value / 16.0);   //Number STM20DS03f "DS01 floatTemp [%.2f °C]"   (gmod20_INreg)     {modbus="<[slave20_402:1]"}
+          //input_reg.tmp_u16[4] = DHT11_read(&dev001);               //Number STM20DHTres "DHTstatus [%d]"            (gmod20_INreg)     {modbus="<[slave20_4:4]"}
           //if (input_reg.tmp_u16[4] == DHT11_SUCCESS) {
           //    input_reg.tmp_u16[5] = dev001.humidity;               //Number STM20DHThum "humidity [%d %%]"          (gmod20_INreg)     {modbus="<[slave20_4:5]"}
           //    input_reg.tmp_float[8] = ((float)dev001.temparature + (0.1 * dev001.pointtemparature) );
@@ -121,7 +121,7 @@ int main(void) {
 void atSTART(void) {
   coilFROMback(); //######################################## coilFROMback();coilFROMback();coilFROMback(); BKP_DR2 BKP_DR1
   Coils_RW[8] = 0;
-  setCOILS(Coils_RW);
+  //setCOILS(Coils_RW);
   /*for(u8 i = 0; i < OBJ_SZ; i++) {
       input_reg.tmp_u32[i] = 0;
       hold_reg.tmp_u32[i] = 0;
@@ -131,31 +131,32 @@ void atSTART(void) {
   hold_reg.tmp_u16[30] = BKP_ReadBackupRegister(BKP_DR11);
   hold_reg.tmp_u16[31] = BKP_ReadBackupRegister(BKP_DR12);
 
-  hold_reg.tmp_u16[18] = BKP_ReadBackupRegister(BKP_DR13);
-  hold_reg.tmp_u16[19] = BKP_ReadBackupRegister(BKP_DR13);
-  servo001max = hold_reg.tmp_u16[19];
-  servo001use = 900;
-  servo001min = hold_reg.tmp_u16[18];
-  hold_reg.tmp_u16[20] = BKP_ReadBackupRegister(BKP_DR13);
-  hold_reg.tmp_u16[21] = BKP_ReadBackupRegister(BKP_DR13);
-  servo002max = hold_reg.tmp_u16[21];
-  servo002use = 500;
-  servo002min = hold_reg.tmp_u16[20];
-  hold_reg.tmp_u16[22] = BKP_ReadBackupRegister(BKP_DR13);
-  hold_reg.tmp_u16[23] = BKP_ReadBackupRegister(BKP_DR13);
-  servo003max = hold_reg.tmp_u16[23];
-  servo003use = 1000;
-  servo003min = hold_reg.tmp_u16[22];
-  hold_reg.tmp_u16[24] = BKP_ReadBackupRegister(BKP_DR13);
-  hold_reg.tmp_u16[25] = BKP_ReadBackupRegister(BKP_DR13);
-  servo004max = hold_reg.tmp_u16[25];
-  servo004use = 1000;
-  servo004min = hold_reg.tmp_u16[24];
-  hold_reg.tmp_u16[26] = BKP_ReadBackupRegister(BKP_DR13);
-  hold_reg.tmp_u16[27] = BKP_ReadBackupRegister(BKP_DR13);
-  servo005max = hold_reg.tmp_u16[27];
-  servo005use = 1000;
-  servo005min = hold_reg.tmp_u16[26];
+  hold_reg.tmp_u16[10] = BKP_ReadBackupRegister(BKP_DR13);
+  hold_reg.tmp_u16[11] = BKP_ReadBackupRegister(BKP_DR14);
+  //servo001max = hold_reg.tmp_u16[11];
+  //servo001use = 900;
+  //servo001min = hold_reg.tmp_u16[10];
+  hold_reg.tmp_u16[12] = BKP_ReadBackupRegister(BKP_DR15);
+  hold_reg.tmp_u16[13] = BKP_ReadBackupRegister(BKP_DR16);
+  //servo002max = hold_reg.tmp_u16[13];
+  //servo002use = 500;
+  //servo002min = hold_reg.tmp_u16[12];
+  hold_reg.tmp_u16[14] = BKP_ReadBackupRegister(BKP_DR17);
+  hold_reg.tmp_u16[15] = BKP_ReadBackupRegister(BKP_DR18);
+  //servo003max = hold_reg.tmp_u16[15];
+  //servo003use = 1000;
+  //servo003min = hold_reg.tmp_u16[14];
+  hold_reg.tmp_u16[16] = BKP_ReadBackupRegister(BKP_DR19);
+  hold_reg.tmp_u16[17] = BKP_ReadBackupRegister(BKP_DR20);
+  //servo004max = hold_reg.tmp_u16[17];
+  //servo004use = 1000;
+  //servo004min = hold_reg.tmp_u16[16];
+  hold_reg.tmp_u16[18] = BKP_ReadBackupRegister(BKP_DR21);
+  hold_reg.tmp_u16[19] = BKP_ReadBackupRegister(BKP_DR22);
+  //servo005max = hold_reg.tmp_u16[19];
+  //servo005use = 1000;
+  //servo005min = hold_reg.tmp_u16[18];
+  setCOILS(Coils_RW);
 }
 
 void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount,uint16_t inREGbkp, uint16_t holdREGtimer ,uint16_t holdREGbkp) {

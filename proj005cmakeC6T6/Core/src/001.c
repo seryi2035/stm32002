@@ -756,6 +756,7 @@ TIM_OCInitTypeDef timerPWM;
 void TIM2_IRQHandler(void) {
   if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)   {
       millisec2++;
+      millisec003delay_ms = millisec003delay_ms + 20;
       if (millisec2 >= 50) {
           globalsecs = GETglobalsecs();
           globalsecs++;
@@ -773,13 +774,14 @@ void delay_us(uint32_t n_usec) {
 
 }
 void delay_ms(uint32_t n_msec) {
-  millisec003delay_ms = n_msec + 1;
-  while(millisec003delay_ms--) {
-  delay_us(1000);
-  }
+  millisec003delay_ms = 0;
+  //for (millisec003delay_ms = n_msec + 1; millisec003delay_ms !=0; millisec003delay_ms--) {
+  //delay_us(1000);
+
+  //}
   //TIM2->CNT = 0;
   //while (TIM2->CNT < (2 * n_msec)){}
-
+  while (millisec003delay_ms <= n_msec);
 }
 
 void TIM4_init(void) {
@@ -880,7 +882,7 @@ void GPIO_ToggleBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
   GPIOx->ODR ^= GPIO_Pin;
 }
 
-void SERVOinit(void)
+/*void SERVOinit(void)
 {
   //Включем порт А
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB , ENABLE);
@@ -893,7 +895,7 @@ void SERVOinit(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
-  /*// A2
+  // A2
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
@@ -902,8 +904,8 @@ void SERVOinit(void)
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);*/
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 
 
-}
+}*/

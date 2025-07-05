@@ -51,6 +51,10 @@ void GETonGPIO() { //PP B(11/10/1/0) C13 A(7/6) | IPU B4 | IPD B8 FLOAT B9
   GPIO_Init(GPIOB, &GPIO_InitStructure);
 
   //KNOPKA B3 IPU
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
   //RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
@@ -58,13 +62,13 @@ void GETonGPIO() { //PP B(11/10/1/0) C13 A(7/6) | IPU B4 | IPD B8 FLOAT B9
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
   //KNOPKA B4 IPU
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+  //RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
-  //IPD B5
+  //IPD B9 float
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
@@ -721,8 +725,8 @@ void TIM2_init(void) {/*
    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
    TIM_TimeBaseStructInit(&TIMER_InitStructure);
 
-   TIMER_InitStructure.TIM_Prescaler = 17999;
-   TIMER_InitStructure.TIM_Period = 1;
+   TIMER_InitStructure.TIM_Prescaler = 71;
+   TIMER_InitStructure.TIM_Period = 20000;
    TIM_TimeBaseInit(TIM2, &TIMER_InitStructure);
 
 
@@ -733,7 +737,7 @@ void TIM2_init(void) {/*
 void TIM2_IRQHandler(void) {
   if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)   {
       millisec2++;
-      if (millisec2 >= 2000) {
+      if (millisec2 >= 50) {
           globalsecs = GETglobalsecs();
           globalsecs++;
           SETglobalsecs(globalsecs);
@@ -823,4 +827,50 @@ void TIM3_IRQHandler(void) {
           uart1.rxgap=0;
         }
     }
+}
+void GPIO_ToggleBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
+{
+  /* Check the parameters */
+  assert_param(IS_GPIO_ALL_PERIPH(GPIOx));
+  assert_param(IS_GPIO_PIN(GPIO_Pin));
+
+  GPIOx->ODR ^= GPIO_Pin;
+}
+
+void SERVOinit(void)
+{
+  //Включем порт А
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA , ENABLE);
+  //Включаем Таймер 2
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2,ENABLE);
+  GPIO_InitTypeDef GPIO_InitStructure;
+  // Настроим ногу (PA1) к которой подключен сервопривод
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+  //Будем использовать альтернативный режим а не обычный GPIO
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  // A2
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  // A3
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+  TIM_OCStructInit (&timerPWM);
+  timerPWM.TIM_Pulse = 900;
+  timerPWM.TIM_OCMode = TIM_OCMode_PWM1;
+  timerPWM.TIM_OutputState = TIM_OutputState_Enable;
+  timerPWM.TIM_OCPolarity = TIM_OCPolarity_High;
+  TIM_OC1Init(TIM2, &timerPWM);
+  TIM_OC2Init(TIM2, &timerPWM);
+  TIM_OC3Init(TIM2, &timerPWM);
+
+/*  TIM2->PSC=72-1;
+  TIM2->ARR=20000;
+  TIM2->CCR1 = 500*/
 }

@@ -66,36 +66,49 @@ int main(void) {
 
           GPIO_ResetBits(USART1PPport, USART1PPpin);
 
-        }
-      if (((RTC_Counter01 = GETglobalsecs()) ) != RTC_Counter02) {
+      }
+      if (millisec2 != RTC_Counter01) {
+        RTC_Counter01=millisec2;
+        GPIO_ResetBits(GPIOB, GPIO_Pin_11);   // 0
+        GPIO_SetBits(GPIOB, GPIO_Pin_10);     // 1
+        delay_us(900);
+        GPIO_ResetBits(GPIOB, GPIO_Pin_10);   // 0
+        GPIO_SetBits(GPIOB, GPIO_Pin_11);     // 1
+      }
+      if ( GETglobalsecs() != RTC_Counter02) {
         RTC_Counter03 = 0;
-
-      if (((RTC_Counter02 = GETglobalsecs()) % 2) == 0) {
-        GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
-        if (RTC_Counter03 == 0) {
-          RTC_Counter03++;
-          USART1Send("1\r\n");
-        }
-
-
-      }else {
-        GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
-        if (RTC_Counter03 == 0) {
-          RTC_Counter03++;
-          USART1Send("2\r\n");
-
-        for (RTC_Counter01=0; RTC_Counter01 <= 999; RTC_Counter01++) {
-          delay_us(100);
-        }
-        GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
-        USART1Send("3\r\n");
-        for (RTC_Counter01=0; RTC_Counter01 <= 999; RTC_Counter01++) {
-          delay_us(100);
-        }
-        GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
-        USART1Send("4\r\n");
+       if (((RTC_Counter02 = GETglobalsecs()) % 2) == 0) {
+         GPIO_ToggleBits(GPIOC, GPIO_Pin_13);
+         if (RTC_Counter03 == 0) {
+           RTC_Counter03++;
+           USART1Send("1\r\n");
+         }
+        }else {
+          GPIO_ToggleBits(GPIOC, GPIO_Pin_13);
+          //GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
+          if (RTC_Counter03 == 0) {
+            RTC_Counter03++;
+            USART1Send("2\r\n");
+          }
         }
       }
+      if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_3) == 0) {
+        if (servo002use <= servo002max) {
+        servo001use++;
+        servo002use++;
+        servo003use++;
+        TIM2->CCR1 = servo001use;
+        TIM2->CCR2 = servo002use;
+        TIM2->CCR3 = servo003use; }
+      }
+      if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_4) == 0) {
+        if (servo002use >= servo002min) {
+        servo001use--;
+        servo002use--;
+        servo003use--;
+        TIM2->CCR1 = servo001use;
+        TIM2->CCR2 = servo002use;
+        TIM2->CCR3 = servo003use; }
       }
       if ( /*((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01)*/1 >= 4) {
           RTC_Counter01 = RTC_Counter02;
@@ -159,6 +172,15 @@ void atSTART(void) {
   hold_reg.tmp_u16[29] = BKP_ReadBackupRegister(BKP_DR10);
   hold_reg.tmp_u16[30] = BKP_ReadBackupRegister(BKP_DR11);
   hold_reg.tmp_u16[31] = BKP_ReadBackupRegister(BKP_DR12);
+  servo001max = 1500;
+  servo001use = 900;
+  servo001min = 500;
+  servo002max = 2500;
+  servo002use = 500;
+  servo002min = 500;
+  servo003max = 2500;
+  servo004use = 1000;
+  servo004min = 350;
 }
 
 void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount,uint16_t inREGbkp, uint16_t holdREGtimer ,uint16_t holdREGbkp) {

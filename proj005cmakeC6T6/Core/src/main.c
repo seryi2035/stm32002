@@ -66,51 +66,8 @@ int main(void) {
           net_tx1(&uart1);
 
           GPIO_ResetBits(USART1PPport, USART1PPpin);
-
       }
 
-      if ( GETglobalsecs() != RTC_Counter02) {
-        RTC_Counter03 = 0;
-       if (((RTC_Counter02 = GETglobalsecs()) % 2) == 0) {
-         GPIO_ToggleBits(GPIOC, GPIO_Pin_13);
-         if (RTC_Counter03 == 0) {
-           RTC_Counter03++;
-           USART1Send("1\r\n");
-         }
-        }else {
-          GPIO_ToggleBits(GPIOC, GPIO_Pin_13);
-        }
-      }
-      if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_3) == 0) {
-        if (servo002use <= servo002max) {
-        servo001use++;
-        servo002use++;
-        servo003use++;
-        servo004use++;
-        servo005use++;
-        TIM2->CCR2 = servo001use;
-        TIM2->CCR4 = servo002use;
-        TIM4->CCR1 = servo003use;
-        TIM4->CCR2 = servo004use;
-        TIM4->CCR4 = servo005use;
-        }
-        for(n=0; n<= 36000; n++);
-      }
-      if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_4) == 0) {
-        if (servo002use >= servo002min) {
-        servo001use--;
-        servo002use--;
-        servo003use--;
-        servo004use--;
-        servo005use--;
-        TIM2->CCR2 = servo001use;
-        TIM2->CCR4 = servo002use;
-        TIM4->CCR1 = servo003use;
-        TIM4->CCR2 = servo004use;
-        TIM4->CCR4 = servo005use;
-        }
-        for(n=0; n<= 36000; n++);
-      }
       if ( ((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01) >= 4) {
           RTC_Counter01 = RTC_Counter02;
           if ( (RTC_Counter02 - RTC_Counter03) >= 60) {
@@ -136,11 +93,11 @@ int main(void) {
           //ds18b20Value = schitatU16Temp("\x28\xee\xe8\x19\x17\x16\x02\xa1");
           input_reg.tmp_float[9] = (float) (ds18b20Value / 16.0);   //Number STM20DS03f "DS01 floatTemp [%.2f °C]"   (gmod20_INreg)     {modbus="<[slave20_402:1]"}
           input_reg.tmp_u16[4] = DHT11_read(&dev001);               //Number STM20DHTres "DHTstatus [%d]"            (gmod20_INreg)     {modbus="<[slave20_4:4]"}
-          if (input_reg.tmp_u16[4] == DHT11_SUCCESS) {
-              input_reg.tmp_u16[5] = dev001.humidity;               //Number STM20DHThum "humidity [%d %%]"          (gmod20_INreg)     {modbus="<[slave20_4:5]"}
-              input_reg.tmp_float[8] = ((float)dev001.temparature + (0.1 * dev001.pointtemparature) );
-              //Number STM20DHTtemp "DHTtemp [%.1f °C]"  (gmod20_INreg)     {modbus="<[slave20_402:0]"}
-            }
+          //if (input_reg.tmp_u16[4] == DHT11_SUCCESS) {
+          //    input_reg.tmp_u16[5] = dev001.humidity;               //Number STM20DHThum "humidity [%d %%]"          (gmod20_INreg)     {modbus="<[slave20_4:5]"}
+          //    input_reg.tmp_float[8] = ((float)dev001.temparature + (0.1 * dev001.pointtemparature) );
+          //    //Number STM20DHTtemp "DHTtemp [%.1f °C]"  (gmod20_INreg)     {modbus="<[slave20_402:0]"}
+          //  }
           input_reg.tmp_u16[11] = hold_reg.tmp_u16[27];             //Number STM20countPPRO  "ROcountPP [%d]"        (gmod20_INreg)     {modbus="<[slave20_4:11]"}
           hold_reg.tmp_u16[26] = hold_reg.tmp_u16[25];              //prov2
           input_reg.tmp_float[11] = (float) RTC_Counter01;          //Number STM20count "count [%.1f ]"              (gmod20_INreg)     {modbus="<[slave20_402:3]"}
@@ -156,13 +113,13 @@ int main(void) {
               SETglobalsecs(RTC_Counter02);
               //res_ftable[5] = 0;
               Coils_RW[9] = 0;
-            }
+          }
         }
     }
 }
 
 void atSTART(void) {
-  coilFROMback(); //######################################## coilFROMback();coilFROMback();coilFROMback();
+  coilFROMback(); //######################################## coilFROMback();coilFROMback();coilFROMback(); BKP_DR2 BKP_DR1
   Coils_RW[8] = 0;
   setCOILS(Coils_RW);
   /*for(u8 i = 0; i < OBJ_SZ; i++) {
@@ -173,21 +130,32 @@ void atSTART(void) {
   hold_reg.tmp_u16[29] = BKP_ReadBackupRegister(BKP_DR10);
   hold_reg.tmp_u16[30] = BKP_ReadBackupRegister(BKP_DR11);
   hold_reg.tmp_u16[31] = BKP_ReadBackupRegister(BKP_DR12);
-  servo001max = 1500;
+
+  hold_reg.tmp_u16[18] = BKP_ReadBackupRegister(BKP_DR13);
+  hold_reg.tmp_u16[19] = BKP_ReadBackupRegister(BKP_DR13);
+  servo001max = hold_reg.tmp_u16[19];
   servo001use = 900;
-  servo001min = 500;
-  servo002max = 2500;
+  servo001min = hold_reg.tmp_u16[18];
+  hold_reg.tmp_u16[20] = BKP_ReadBackupRegister(BKP_DR13);
+  hold_reg.tmp_u16[21] = BKP_ReadBackupRegister(BKP_DR13);
+  servo002max = hold_reg.tmp_u16[21];
   servo002use = 500;
-  servo002min = 500;
-  servo003max = 2500;
+  servo002min = hold_reg.tmp_u16[20];
+  hold_reg.tmp_u16[22] = BKP_ReadBackupRegister(BKP_DR13);
+  hold_reg.tmp_u16[23] = BKP_ReadBackupRegister(BKP_DR13);
+  servo003max = hold_reg.tmp_u16[23];
   servo003use = 1000;
-  servo003min = 350;
-  servo004max = 2500;
+  servo003min = hold_reg.tmp_u16[22];
+  hold_reg.tmp_u16[24] = BKP_ReadBackupRegister(BKP_DR13);
+  hold_reg.tmp_u16[25] = BKP_ReadBackupRegister(BKP_DR13);
+  servo004max = hold_reg.tmp_u16[25];
   servo004use = 1000;
-  servo004min = 350;
-  servo005max = 2500;
+  servo004min = hold_reg.tmp_u16[24];
+  hold_reg.tmp_u16[26] = BKP_ReadBackupRegister(BKP_DR13);
+  hold_reg.tmp_u16[27] = BKP_ReadBackupRegister(BKP_DR13);
+  servo005max = hold_reg.tmp_u16[27];
   servo005use = 1000;
-  servo005min = 350;
+  servo005min = hold_reg.tmp_u16[26];
 }
 
 void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount,uint16_t inREGbkp, uint16_t holdREGtimer ,uint16_t holdREGbkp) {

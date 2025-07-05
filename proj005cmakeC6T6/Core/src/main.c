@@ -22,7 +22,7 @@ int main(void) {
   uint32_t RTC_Counter01 = 0;
   uint32_t RTC_Counter02 = 0;
   uint32_t RTC_Counter03 = 0;
-  u8 n = 0;
+  uint32_t n = 0;
   // Включить тактирование модулей управления питанием и управлением резервной областью
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
   // Разрешить доступ к области резервных данных
@@ -32,32 +32,32 @@ int main(void) {
   SET_PAR[0] = 30; //адрес этого устройства 20 (modbus) 1-247
 
   GETonGPIO();
-  TIM2_init(); // мkс 0-20000 TIM2->CNT
+  TIM2_init(); // мkс 0-19999 TIM2->CNT
   TIM3_init();
-  TIM4_init(); // мкс 0-49999 TIM4->CNT
+  TIM4_init(); // мкс 0-19999 TIM4->CNT
   usart1_init(); //A9 PP RXD A10 TXD жёлый //RS232 A11 ResetBits //485     //USART 1 and GPIO A (9/10/11) ON A11pp
   //OW_Init(); //usart2 А2 А3
-  dev001.port = GPIOA;
-  dev001.pin = GPIO_Pin_12;
-  dev001.humidity = 0;
-  dev001.temparature = 0;
-  dev001.pointtemparature = 0;
+  //dev001.port = GPIOA;
+  //dev001.pin = GPIO_Pin_12;
+  //dev001.humidity = 0;
+  //dev001.temparature = 0;
+  //dev001.pointtemparature = 0;
   //DHT11_init(&dev001, dev001.port, dev001.pin);
   GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
   uart1.delay=150; //modbus gap 9600
   uart1.rxtimer = 0;
-  //delay_ms(1000);
+  delay_ms(1000);
   GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
   atSTART();
   //oprosite();
 
 
-  //iwdg_init();
+  iwdg_init();
   //SERVOinit();
 
   while (1) {
       if (Coils_RW[8] == 0) {
-          //IWDG_ReloadCounter();
+          IWDG_ReloadCounter();
         }
       if(uart1.rxgap==1) {
 
@@ -79,11 +79,6 @@ int main(void) {
          }
         }else {
           GPIO_ToggleBits(GPIOC, GPIO_Pin_13);
-          //GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
-          if (RTC_Counter03 == 0) {
-            RTC_Counter03++;
-            USART1Send("2\r\n");
-          }
         }
       }
       if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_3) == 0) {
@@ -91,23 +86,32 @@ int main(void) {
         servo001use++;
         servo002use++;
         servo003use++;
-        TIM2->CCR4 = servo001use;
-        //TIM2->CCR2 = servo002use;
-        TIM2->CCR3 = servo003use; }
-        delay_us(1000);
+        servo004use++;
+        servo005use++;
+        TIM2->CCR2 = servo001use;
+        TIM2->CCR4 = servo002use;
+        TIM4->CCR1 = servo003use;
+        TIM4->CCR2 = servo004use;
+        TIM4->CCR4 = servo005use;
+        }
+        for(n=0; n<= 36000; n++);
       }
       if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_4) == 0) {
         if (servo002use >= servo002min) {
         servo001use--;
         servo002use--;
         servo003use--;
-        TIM2->CCR4 = servo001use;
-        TIM2->CCR2 = servo002use;
-        //TIM2->CCR3 = servo003use;
+        servo004use--;
+        servo005use--;
+        TIM2->CCR2 = servo001use;
+        TIM2->CCR4 = servo002use;
+        TIM4->CCR1 = servo003use;
+        TIM4->CCR2 = servo004use;
+        TIM4->CCR4 = servo005use;
         }
-        delay_us(1000);
+        for(n=0; n<= 36000; n++);
       }
-      /*if ( ((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01) >= 4) {
+      if ( ((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01) >= 4) {
           RTC_Counter01 = RTC_Counter02;
           if ( (RTC_Counter02 - RTC_Counter03) >= 60) {
               n++;
@@ -129,7 +133,7 @@ int main(void) {
               COILtimerMINUTES(Coils_RW[3], input_reg.tmp_u16[14], BKP_DR7, hold_reg.tmp_u16[30], BKP_DR11);  //B1      slave20_403:6       slave20_302:6
               COILtimerMINUTES(Coils_RW[4], input_reg.tmp_u16[15], BKP_DR8, hold_reg.tmp_u16[31], BKP_DR12);  //B0      slave20_403:7       slave20_302:7
             }
-          ds18b20Value = schitatU16Temp("\x28\xee\xe8\x19\x17\x16\x02\xa1");
+          //ds18b20Value = schitatU16Temp("\x28\xee\xe8\x19\x17\x16\x02\xa1");
           input_reg.tmp_float[9] = (float) (ds18b20Value / 16.0);   //Number STM20DS03f "DS01 floatTemp [%.2f °C]"   (gmod20_INreg)     {modbus="<[slave20_402:1]"}
           input_reg.tmp_u16[4] = DHT11_read(&dev001);               //Number STM20DHTres "DHTstatus [%d]"            (gmod20_INreg)     {modbus="<[slave20_4:4]"}
           if (input_reg.tmp_u16[4] == DHT11_SUCCESS) {
@@ -141,7 +145,7 @@ int main(void) {
           hold_reg.tmp_u16[26] = hold_reg.tmp_u16[25];              //prov2
           input_reg.tmp_float[11] = (float) RTC_Counter01;          //Number STM20count "count [%.1f ]"              (gmod20_INreg)     {modbus="<[slave20_402:3]"}
 
-          oprosite();
+          //oprosite(); //OW opros
           if (Coils_RW[9] != 0) {
               if (input_reg.tmp_i16[11] > 0) {
                   RTC_Counter02 = RTC_Counter02 + ((uint32_t)input_reg.tmp_i16[7]);
@@ -153,7 +157,7 @@ int main(void) {
               //res_ftable[5] = 0;
               Coils_RW[9] = 0;
             }
-        }*/
+        }
     }
 }
 
@@ -178,6 +182,12 @@ void atSTART(void) {
   servo003max = 2500;
   servo003use = 1000;
   servo003min = 350;
+  servo004max = 2500;
+  servo004use = 1000;
+  servo004min = 350;
+  servo005max = 2500;
+  servo005use = 1000;
+  servo005min = 350;
 }
 
 void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount,uint16_t inREGbkp, uint16_t holdREGtimer ,uint16_t holdREGbkp) {

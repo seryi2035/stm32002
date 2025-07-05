@@ -8,7 +8,7 @@
 //#include "misc.h"
 #include "001.h"
 #include "tim2_delay.h"
-#include "onewire.h"
+//#include "onewire.h"
 #include <string.h>
 //#include "libmodbus.h"
 #include "modbus.h"
@@ -29,10 +29,10 @@ int main(void) {
   PWR_BackupAccessCmd(ENABLE);
 
   //uint16_t res003;
-  SET_PAR[0] = 20; //адрес этого устройства 20 (modbus) 1-247
+  SET_PAR[0] = 30; //адрес этого устройства 20 (modbus) 1-247
 
   GETonGPIO();
-  TIM2_init(); // мс 0-49999 TIM2->CNT/2 25sec
+  TIM2_init(); // мkс 0-20000 TIM2->CNT
   TIM3_init();
   TIM4_init(); // мкс 0-49999 TIM4->CNT
   usart1_init(); //A9 PP RXD A10 TXD жёлый //RS232 A11 ResetBits //485     //USART 1 and GPIO A (9/10/11) ON A11pp
@@ -53,7 +53,7 @@ int main(void) {
 
 
   //iwdg_init();
-  SERVOinit();
+  //SERVOinit();
 
   while (1) {
       if (Coils_RW[8] == 0) {
@@ -91,20 +91,23 @@ int main(void) {
         servo001use++;
         servo002use++;
         servo003use++;
-        TIM2->CCR1 = servo001use;
-        TIM2->CCR2 = servo002use;
+        TIM2->CCR4 = servo001use;
+        //TIM2->CCR2 = servo002use;
         TIM2->CCR3 = servo003use; }
+        delay_us(1000);
       }
       if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_4) == 0) {
         if (servo002use >= servo002min) {
         servo001use--;
         servo002use--;
         servo003use--;
-        TIM2->CCR1 = servo001use;
+        TIM2->CCR4 = servo001use;
         TIM2->CCR2 = servo002use;
-        TIM2->CCR3 = servo003use; }
+        //TIM2->CCR3 = servo003use;
+        }
+        delay_us(1000);
       }
-      if ( /*((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01)*/1 >= 4) {
+      /*if ( ((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01) >= 4) {
           RTC_Counter01 = RTC_Counter02;
           if ( (RTC_Counter02 - RTC_Counter03) >= 60) {
               n++;
@@ -150,7 +153,7 @@ int main(void) {
               //res_ftable[5] = 0;
               Coils_RW[9] = 0;
             }
-        }
+        }*/
     }
 }
 

@@ -1,5 +1,5 @@
 #include "001.h"
-#include "onewire.h"
+//#include "onewire.h"
 #include "tim2_delay.h"
 #include "string.h"
 #include "stdio.h"
@@ -402,7 +402,7 @@ u8 convT_DS18B20(u8 LSB, u8 MSB)
   MSB = (u8) (MSB * 16); // убираем лишние знаки
   return(MSB | LSB); // объединяем 2 байта -> возврат
 }
-void schitatTemp(char* imya) {
+/*void schitatTemp(char* imya) {
   //-----------------------------------------------------------------------------
   // процедура общения с шиной 1-wire
   // sendReset - посылать RESET в начале общения.
@@ -439,7 +439,7 @@ void schitatTemp(char* imya) {
   USARTSend(cifry);
   //sprintf(cifry, ".%d\r\n", (int) (0.0625*1000)*(buf[0] % 16));
   //USARTSend(cifry);
-}
+}*/
 void vvhex(char vv) {
   int a, b;
   char ff[2];
@@ -526,7 +526,7 @@ imya[3],(u8) imya[4],(u8) imya[5],(u8) imya[6],(u8) imya[7],(u8)'\xbe',(u8) '\xf
   ftemp = (float) ( (float) ((buf[1] << 8) | buf[0]) / 16.0);
   return ftemp;
 }*/
-uint16_t schitatU16Temp(char* imya) {
+/*uint16_t schitatU16Temp(char* imya) {
   uint8_t buf[2];
   u8 command01[12] = { 0x55,(u8) imya[0],(u8) imya[1],(u8) imya[2],(u8) imya[3],
                        (u8) imya[4],(u8) imya[5],(u8) imya[6],(u8) imya[7], 0xbe, 0xff, 0xff};
@@ -546,7 +546,7 @@ void oprosite(void) {
   OW_Send(OW_SEND_RESET, comm, 2, NULL, 0, OW_NO_READ);
   //delay_ms(100);
   //USARTSend("oprosheno\n\r");
-}
+}*/
 // ////////////////////////////////////////////////////////DHT11
 int DHT11_init(struct DHT11_Dev* dev, GPIO_TypeDef* port, uint16_t pin) {
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -731,13 +731,14 @@ void TIM2_init(void) {/*
 
 
    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+   SERVOinit();
    TIM_Cmd(TIM2, ENABLE);
    NVIC_EnableIRQ(TIM2_IRQn);
 }
 void TIM2_IRQHandler(void) {
   if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)   {
       millisec2++;
-      if (millisec2 >= 49) {
+      if (millisec2 >= 50) {
           globalsecs = GETglobalsecs();
           globalsecs++;
           SETglobalsecs(globalsecs);
@@ -745,13 +746,6 @@ void TIM2_IRQHandler(void) {
         TIM_SetCounter(TIM2, 0);
       }
       TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-      if (globalsecs > 5) {
-        GPIO_ResetBits(GPIOB, GPIO_Pin_11);   // 0
-        GPIO_SetBits(GPIOB, GPIO_Pin_10);     // 1
-        delay_us(900);
-        GPIO_ResetBits(GPIOB, GPIO_Pin_10);   // 0
-        GPIO_SetBits(GPIOB, GPIO_Pin_11);     // 1
-      }
   }
 
 }
@@ -761,8 +755,8 @@ void delay_us(uint32_t n_usec) {
 
 }
 void delay_ms(uint32_t n_msec) {
-  TIM2->CNT = 0;
-  while (TIM2->CNT < (2 * n_msec)){}
+  //TIM2->CNT = 0;
+  //while (TIM2->CNT < (2 * n_msec)){}
 
 }
 
@@ -772,7 +766,7 @@ void TIM4_init(void) {
 
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
   //Initialise TIMER4
-  TIM_TimBaseStructure.TIM_Period = 50000;
+  TIM_TimBaseStructure.TIM_Period = 20000;
   TIM_TimBaseStructure.TIM_Prescaler = 71;
   TIM_TimBaseStructure.TIM_ClockDivision = 0;
   TIM_TimBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
@@ -851,13 +845,13 @@ void SERVOinit(void)
   //Включаем Таймер 2
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2,ENABLE);
   GPIO_InitTypeDef GPIO_InitStructure;
-  // Настроим ногу (PA1) к которой подключен сервопривод
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+  // Настроим ногу (PA1)A2 A3 к которой подключен сервопривод
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 |GPIO_Pin_2 | GPIO_Pin_3;
   //Будем использовать альтернативный режим а не обычный GPIO
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
-  // A2
+  /*// A2
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
@@ -866,7 +860,7 @@ void SERVOinit(void)
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  GPIO_Init(GPIOA, &GPIO_InitStructure);*/
 
   TIM_OCInitTypeDef timerPWM;
   TIM_OCStructInit (&timerPWM);
@@ -874,11 +868,8 @@ void SERVOinit(void)
   timerPWM.TIM_OCMode = TIM_OCMode_PWM1;
   timerPWM.TIM_OutputState = TIM_OutputState_Enable;
   timerPWM.TIM_OCPolarity = TIM_OCPolarity_High;
-  TIM_OC1Init(TIM2, &timerPWM);
+  TIM_OC4Init(TIM2, &timerPWM);
   TIM_OC2Init(TIM2, &timerPWM);
   TIM_OC3Init(TIM2, &timerPWM);
 
-/*  TIM2->PSC=72-1;
-  TIM2->ARR=20000;
-  TIM2->CCR1 = 500*/
 }

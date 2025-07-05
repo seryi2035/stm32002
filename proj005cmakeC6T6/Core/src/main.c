@@ -53,6 +53,7 @@ int main(void) {
 
 
   //iwdg_init();
+  SERVOinit();
 
   while (1) {
       if (Coils_RW[8] == 0) {
@@ -67,14 +68,7 @@ int main(void) {
           GPIO_ResetBits(USART1PPport, USART1PPpin);
 
       }
-      if (millisec2 != RTC_Counter01) {
-        RTC_Counter01=millisec2;
-        GPIO_ResetBits(GPIOB, GPIO_Pin_11);   // 0
-        GPIO_SetBits(GPIOB, GPIO_Pin_10);     // 1
-        delay_us(900);
-        GPIO_ResetBits(GPIOB, GPIO_Pin_10);   // 0
-        GPIO_SetBits(GPIOB, GPIO_Pin_11);     // 1
-      }
+
       if ( GETglobalsecs() != RTC_Counter02) {
         RTC_Counter03 = 0;
        if (((RTC_Counter02 = GETglobalsecs()) % 2) == 0) {
@@ -179,8 +173,8 @@ void atSTART(void) {
   servo002use = 500;
   servo002min = 500;
   servo003max = 2500;
-  servo004use = 1000;
-  servo004min = 350;
+  servo003use = 1000;
+  servo003min = 350;
 }
 
 void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount,uint16_t inREGbkp, uint16_t holdREGtimer ,uint16_t holdREGbkp) {

@@ -737,7 +737,7 @@ void TIM2_init(void) {/*
 void TIM2_IRQHandler(void) {
   if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)   {
       millisec2++;
-      if (millisec2 >= 50) {
+      if (millisec2 >= 49) {
           globalsecs = GETglobalsecs();
           globalsecs++;
           SETglobalsecs(globalsecs);
@@ -745,6 +745,13 @@ void TIM2_IRQHandler(void) {
         TIM_SetCounter(TIM2, 0);
       }
       TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+      if (globalsecs > 5) {
+        GPIO_ResetBits(GPIOB, GPIO_Pin_11);   // 0
+        GPIO_SetBits(GPIOB, GPIO_Pin_10);     // 1
+        delay_us(900);
+        GPIO_ResetBits(GPIOB, GPIO_Pin_10);   // 0
+        GPIO_SetBits(GPIOB, GPIO_Pin_11);     // 1
+      }
   }
 
 }
@@ -861,6 +868,7 @@ void SERVOinit(void)
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
 
+  TIM_OCInitTypeDef timerPWM;
   TIM_OCStructInit (&timerPWM);
   timerPWM.TIM_Pulse = 900;
   timerPWM.TIM_OCMode = TIM_OCMode_PWM1;

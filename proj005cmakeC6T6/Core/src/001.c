@@ -728,11 +728,12 @@ void TIM2_init(void) {/*
 
    TIMER_InitStructure.TIM_Prescaler = 71;
    TIMER_InitStructure.TIM_Period = 19999;
+   TIMER_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
    TIM_TimeBaseInit(TIM2, &TIMER_InitStructure);
-
 
    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
    //SERVOinit();
+    TIM_Cmd(TIM2, ENABLE);
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA , ENABLE);
 
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -751,19 +752,19 @@ TIM_OCInitTypeDef timerPWM;
   timerPWM.TIM_OCPolarity = TIM_OCPolarity_High;
   TIM_OC2Init(TIM2, &timerPWM);
   TIM_OC4Init(TIM2, &timerPWM);
-   TIM_Cmd(TIM2, ENABLE);
+
    NVIC_EnableIRQ(TIM2_IRQn);
 }
 void TIM2_IRQHandler(void) {
   if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)   {
       millisec2++;
-      //millisec003delay_ms = millisec003delay_ms + 20;
+      millisec003delay_ms = millisec003delay_ms + 20;
       if (millisec2 >= 50) {
           globalsecs = GETglobalsecs();
           globalsecs++;
           SETglobalsecs(globalsecs);
           millisec2 = 0;
-        TIM_SetCounter(TIM2, 0);
+        //TIM_SetCounter(TIM2, 0);
       }
       TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
   }
@@ -776,13 +777,14 @@ void delay_us(uint32_t n_usec) {
 }
 void delay_ms(uint32_t n_msec) {
   millisec003delay_ms = 0;
-  //for (millisec003delay_ms = n_msec + 1; millisec003delay_ms !=0; millisec003delay_ms--) {
+
+  //for (millisec003delay_ms = 1000000; millisec003delay_ms !=0; millisec003delay_ms--) {
   //delay_us(1000);
 
   //}
   //TIM2->CNT = 0;
   //while (TIM2->CNT < (2 * n_msec)){}
-  while (millisec003delay_ms < n_msec);
+  while (millisec003delay_ms <= n_msec);
 }
 
 void TIM4_init(void) {
@@ -808,7 +810,7 @@ void TIM4_init(void) {
 
   TIM_OCInitTypeDef timerPWM;
   TIM_OCStructInit (&timerPWM);
-  timerPWM.TIM_Pulse = 900;
+  timerPWM.TIM_Pulse = 1000;
   timerPWM.TIM_OCMode = TIM_OCMode_PWM1;
   timerPWM.TIM_OutputState = TIM_OutputState_Enable;
   timerPWM.TIM_OCPolarity = TIM_OCPolarity_High;
@@ -833,7 +835,7 @@ void TIM4_IRQHandler(void) {
     {
       TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
       //TimeSec++;
-      millisec003delay_ms = millisec003delay_ms + 20;
+      //millisec003delay_ms = millisec003delay_ms + 20;
     }
 }
 
@@ -863,6 +865,7 @@ void TIM3_init(void) {
   //TIM_SelectOnePulseMode(TIM3, TIM_OPMode_Single);
 }
 void TIM3_IRQHandler(void) {
+  millisec003delay_ms++;
   if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)   {
       TIM_ClearITPendingBit(TIM3, TIM_IT_Update);//очищаем прерывания
       //если наш таймер больше уставки задержки и есть символы то есть gap -перерыв в посылке

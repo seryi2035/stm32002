@@ -75,34 +75,35 @@ void iwdg_init(void);
 
 static uint16_t millisec2;
 static uint32_t globalsecs;
-static uint16_t millisec003delay_ms;
+static uint32_t millisec003delay_ms;
 void SETglobalsecs(uint32_t count);
 uint32_t GETglobalsecs(void);
 
 
 void TIM2_init(void);
+void TIM2_IRQHandler(void);
 void delay_us(uint32_t n_usec);
 void delay_ms(uint32_t n_msec);
 void TIM4_init(void);
 void TIM4_IRQHandler(void);
 void TIM3_init(void);
-//void TIM3_IRQHandler(void);
+void TIM3_IRQHandler(void);
 
 void GPIO_ToggleBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin);
 
-static uint16_t servo001max;
-static uint16_t servo001min;
+//static uint16_t servo001max;
+//static uint16_t servo001min;
 static uint16_t servo001use;
-static uint16_t servo002max;
-static uint16_t servo002min;
+//static uint16_t servo002max;
+//static uint16_t servo002min;
 static uint16_t servo002use;
-static uint16_t servo003max;
-static uint16_t servo003min;
+//static uint16_t servo003max;
+//static uint16_t servo003min;
 static uint16_t servo003use;
-static uint16_t servo004max;
-static uint16_t servo004min;
+//static uint16_t servo004max;
+//static uint16_t servo004min;
 static uint16_t servo004use;
-static uint16_t servo005max;
-static uint16_t servo005min;
+//static uint16_t servo005max;
+//static uint16_t servo005min;
 static uint16_t servo005use;
 //void SERVOinit(void);

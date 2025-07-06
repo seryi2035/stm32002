@@ -41,17 +41,25 @@ int main(void) {
   //dev001.pin = GPIO_Pin_12;
   //dev001.humidity = 0;
   //dev001.temparature = 0;
+  //for(millisec003delay_ms=0; millisec003delay_ms<= 7200000; millisec003delay_ms++);
   //dev001.pointtemparature = 0;
   //DHT11_init(&dev001, dev001.port, dev001.pin);
-  GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
+  //GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
+  GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
+  //GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
   uart1.delay=150; //modbus gap 9600
   uart1.rxtimer = 0;
   delay_ms(1000);
-  GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
+  //GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
+  //GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
+  GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
   atSTART();
   //oprosite();
-
-
+  for (n=0; n <= 30; n++) {
+    GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
+    delay_ms(1000);
+  }
+  n=0;
   iwdg_init();
   //SERVOinit();
 

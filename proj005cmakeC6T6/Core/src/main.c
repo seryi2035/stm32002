@@ -42,7 +42,7 @@ static volatile float fResult;
 static volatile int TimeSec;
 static volatile uint8_t TimeState;
 static volatile uint8_t FLAG_ECHO;
-static uint16_t ds18b20Value;
+//static uint16_t ds18b20Value;
 // (UnixTime = 00:00:00 01.01.1970 = JD0 = 2440588)
 #define JULIAN_DATE_BASE    2440588
 
@@ -166,7 +166,7 @@ union FloatU8  {
     uint16_t tmp_val_u16[2];
     int16_t tmp_val_i16[2];
     int32_t tmp_val_i32;
-} static f001;
+} f001;
 //typedef union FloatU8 ;
 void coilTOback(void);
 void coilFROMback(void);
@@ -239,11 +239,7 @@ int main(void) {
   //GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
   atSTART();
   //oprosite();
-  for (n=0; n <= 6; n++) {
-    GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
-    delay_ms(1000);
-  }
-  n=0;
+
   iwdg_init();
   //SERVOinit();
 
@@ -254,7 +250,7 @@ int main(void) {
 
 
       if ( ((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01) >= 4) {
-          GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
+          //GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
           RTC_Counter01 = RTC_Counter02;
           if ( (RTC_Counter02 - RTC_Counter03) >= 60) {
               n++;
@@ -504,6 +500,7 @@ void USART1_IRQHandler(void) {
       USART_SendData(USART1,(u16) RXc);
     }*/
   //Receive Data register not empty interrupt
+  GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
   if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)  {
       USART_ClearITPendingBit(USART1, USART_IT_RXNE); //очистка признака прерывания
       uart1.rxtimer = 0;
@@ -1068,7 +1065,8 @@ void SETglobalsecs(uint32_t count) {
 uint32_t GETglobalsecs(void) {
     return (((uint32_t) BKP_ReadBackupRegister(BKP_DR3) << 16) + ((uint32_t) BKP_ReadBackupRegister(BKP_DR4)));
 }
-void TIM2_init(void) {/*
+void TIM2_init(void) {
+/*
   TIM_TimeBaseInitTypeDef TIMER_InitStructure;
   NVIC_InitTypeDef  NVIC_InitStructure;
 
@@ -1088,7 +1086,8 @@ void TIM2_init(void) {/*
   NVIC_Init(&NVIC_InitStructure);
   // ñ÷èòàåì îäèí ðàç
   TIM_SelectOnePulseMode(TIM2, TIM_OPMode_Single);
-  NVIC_EnableIRQ(TIM2_IRQn);*/
+  NVIC_EnableIRQ(TIM2_IRQn);
+*/
    TIM_TimeBaseInitTypeDef TIMER_InitStructure;
    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
    TIM_TimeBaseStructInit(&TIMER_InitStructure);
@@ -1131,6 +1130,7 @@ void TIM2_IRQHandler(void) {
           globalsecs++;
           SETglobalsecs(globalsecs);
           millisec2 = 0;
+          //GPIO_ResetBits(USART1PPport, USART1PPpin); //try fix 21.50 06.07.2025
         //TIM_SetCounter(TIM2, 0);
       }
       TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
@@ -1294,11 +1294,11 @@ void GPIO_ToggleBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
 }*/
 
 
-#include "001.h"
-#include "onewire.h"
+//#include "001.h"
+//#include "onewire.h"
 //#include "tim2_delay.h"
 //#include "libmodbus.h"
-#include "modbus.h"
+//#include "modbus.h"
 
 
 uint16_t crc16(uint8_t *buffer, uint16_t buffer_length);

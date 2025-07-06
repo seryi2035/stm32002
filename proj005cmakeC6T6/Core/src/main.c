@@ -1384,14 +1384,15 @@ void net_tx1(UART_DATA *uart) {
       USART_ITConfig(USART1, USART_IT_TC, ENABLE); //включаем на окочание передачи
       //включаем rs485 на передачу
       GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_SET);
-      /*for (uart->txcnt=0; uart->txcnt < uart->txlen; uart->txcnt++) {
+      for (uart->txcnt=0; uart->txcnt < uart->txlen; uart->txcnt++) {
           USART_SendData(USART1,(u16) uart->buffer[uart->txcnt]);
           while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
             {
             }
-        }*/
+        }
+      GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_RESET);
       //USART01Send(uart1.buffer);
-      USART_SendData(USART1,(u16) uart->buffer[uart->txcnt]);
+      //USART_SendData(USART1,(u16) uart->buffer[uart->txcnt]);
     }
 }
 

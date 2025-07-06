@@ -69,6 +69,7 @@ int main(void) {
       }
 
       if ( ((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01) >= 4) {
+          GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
           RTC_Counter01 = RTC_Counter02;
           if ( (RTC_Counter02 - RTC_Counter03) >= 60) {
               n++;

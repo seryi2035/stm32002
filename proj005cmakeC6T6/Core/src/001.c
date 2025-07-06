@@ -118,6 +118,7 @@ void usart1_init(void) { //USART 1 and GPIO A (9/10/11) ON A11pp
   //GDN on A11
   //GPIO_SetBits(USART1PPport, USART1PPpin);
   GPIO_ResetBits(USART1PPport, USART1PPpin);
+  NVIC_EnableIRQ(USART1_IRQn);
 }
 void USART1_IRQHandler(void) {
   /*if ((USART1->SR & USART_FLAG_RXNE) != (u16)RESET) {
@@ -199,9 +200,9 @@ void USART1Send(char *pucBuffer) {
 void USART1Send485(char *pucBuffer) {
   GPIO_SetBits(USART1PPport, USART1PPpin);
   //GPIO_ResetBits(USART1PPport, USART1PPpin);
-  delay_ms(2);
+  delay_us(2000);
   USART1Send(pucBuffer);
-  delay_ms(2);
+  delay_us(2000);
   //GPIO_SetBits(USART1PPport, USART1PPpin);
   GPIO_ResetBits(USART1PPport, USART1PPpin);
 }
@@ -756,7 +757,7 @@ TIM_OCInitTypeDef timerPWM;
 void TIM2_IRQHandler(void) {
   if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)   {
       millisec2++;
-      millisec003delay_ms = millisec003delay_ms + 20;
+      //millisec003delay_ms = millisec003delay_ms + 20;
       if (millisec2 >= 50) {
           globalsecs = GETglobalsecs();
           globalsecs++;
@@ -781,7 +782,7 @@ void delay_ms(uint32_t n_msec) {
   //}
   //TIM2->CNT = 0;
   //while (TIM2->CNT < (2 * n_msec)){}
-  while (millisec003delay_ms <= n_msec);
+  while (millisec003delay_ms < n_msec);
 }
 
 void TIM4_init(void) {
@@ -824,6 +825,7 @@ void TIM4_init(void) {
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
+  NVIC_EnableIRQ(TIM4_IRQn);
   //и так есть основной void TIM2_init(void);
 }
 void TIM4_IRQHandler(void) {
@@ -831,6 +833,7 @@ void TIM4_IRQHandler(void) {
     {
       TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
       //TimeSec++;
+      millisec003delay_ms = millisec003delay_ms + 20;
     }
 }
 
@@ -855,6 +858,7 @@ void TIM3_init(void) {
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 
+  NVIC_EnableIRQ(TIM3_IRQn);
   // ñ÷èòàåì îäèí ðàç
   //TIM_SelectOnePulseMode(TIM3, TIM_OPMode_Single);
 }

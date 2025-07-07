@@ -477,8 +477,8 @@ void usart1_init(void) { //USART 1 and GPIO A (9/10/11) ON A11pp
   USART_Cmd(USART1, ENABLE);
   USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
   //GDN on A11
-  //GPIO_SetBits(USART1PPport, USART1PPpin);
-  GPIO_ResetBits(USART1PPport, USART1PPpin);
+  GPIO_SetBits(USART1PPport, USART1PPpin);
+  //GPIO_ResetBits(USART1PPport, USART1PPpin);
   NVIC_EnableIRQ(USART1_IRQn);
 
 
@@ -500,7 +500,7 @@ void USART1_IRQHandler(void) {
       USART_SendData(USART1,(u16) RXc);
     }*/
   //Receive Data register not empty interrupt
-  GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
+  //GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
   if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)  {
       USART_ClearITPendingBit(USART1, USART_IT_RXNE); //очистка признака прерывания
       uart1.rxtimer = 0;
@@ -1383,13 +1383,15 @@ void net_tx1(UART_DATA *uart) {
       USART_ITConfig(USART1, USART_IT_RXNE, DISABLE); //выкл прерывание на прием
       USART_ITConfig(USART1, USART_IT_TC, ENABLE); //включаем на окочание передачи
       //включаем rs485 на передачу
-      GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_SET);
+      //GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_SET);
+      //delay_ms(2);
       for (uart->txcnt=0; uart->txcnt < uart->txlen; uart->txcnt++) {
           USART_SendData(USART1,(u16) uart->buffer[uart->txcnt]);
           while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
             {
             }
         }
+      //delay_ms(2);
       GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_RESET);
       //USART01Send(uart1.buffer);
       //USART_SendData(USART1,(u16) uart->buffer[uart->txcnt]);

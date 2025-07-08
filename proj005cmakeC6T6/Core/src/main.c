@@ -247,7 +247,14 @@ int main(void) {
       if (Coils_RW[8] == 0) {
           IWDG_ReloadCounter();
         }
+      if(uart1.rxgap==1) {
 
+          GPIO_SetBits(USART1PPport, USART1PPpin);
+          MODBUS_SLAVE(&uart1);
+          net_tx1(&uart1);
+
+          GPIO_ResetBits(USART1PPport, USART1PPpin);
+      }
 
       if ( ((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01) >= 4) {
           //GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
@@ -303,11 +310,14 @@ int main(void) {
 void atSTART(void) {
   coilFROMback(); //######################################## coilFROMback();coilFROMback();coilFROMback(); BKP_DR2 BKP_DR1
   Coils_RW[8] = 0;
+
   //setCOILS(Coils_RW);
-  /*for(u8 i = 0; i < OBJ_SZ; i++) {
-      input_reg.tmp_u32[i] = 0;
-      hold_reg.tmp_u32[i] = 0;
-    }*/
+  //for(u8 i = 0; i < OBJ_SZ; i++) {
+  //    input_reg.tmp_u32[i] = 0;
+  //    hold_reg.tmp_u32[i] = 0;
+  //  }
+
+
   hold_reg.tmp_u16[28] = BKP_ReadBackupRegister(BKP_DR9);
   hold_reg.tmp_u16[29] = BKP_ReadBackupRegister(BKP_DR10);
   hold_reg.tmp_u16[30] = BKP_ReadBackupRegister(BKP_DR11);
@@ -477,8 +487,8 @@ void usart1_init(void) { //USART 1 and GPIO A (9/10/11) ON A11pp
   USART_Cmd(USART1, ENABLE);
   USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
   //GDN on A11
-  GPIO_SetBits(USART1PPport, USART1PPpin);
-  //GPIO_ResetBits(USART1PPport, USART1PPpin);
+  //GPIO_SetBits(USART1PPport, USART1PPpin);
+  GPIO_ResetBits(USART1PPport, USART1PPpin);
   NVIC_EnableIRQ(USART1_IRQn);
 
 
@@ -514,8 +524,8 @@ void USART1_IRQHandler(void) {
       USART_ClearITPendingBit(USART1, USART_IT_TC);//очистка признака прерывания
 
       if(uart1.txcnt < uart1.txlen)  {
-          GPIO_SetBits(USART1PPport, USART1PPpin);  // +++++++++++++++++ключаем 485
-          USART_SendData(USART1,uart1.buffer[uart1.txcnt++]);//Передаем
+          //GPIO_SetBits(USART1PPport, USART1PPpin);  // +++++++++++++++++ключаем 485
+          USART_SendData(USART1,((uint16_t) uart1.buffer[uart1.txcnt++]));//Передаем
         }
       else {
           //посылка закончилась и мы снимаем высокий уровень сRS485 TXE
@@ -767,6 +777,7 @@ u8 convT_DS18B20(u8 LSB, u8 MSB)
   MSB = (u8) (MSB * 16); // убираем лишние знаки
   return(MSB | LSB); // объединяем 2 байта -> возврат
 }
+
 /*void schitatTemp(char* imya) {
   //-----------------------------------------------------------------------------
   // процедура общения с шиной 1-wire
@@ -840,8 +851,8 @@ void sendaddrow (void) {
       //USARTSend("\n\rTHIS IS 8\n\r");
     }
 }
-/*
-u16 schitatTemp(char* imya) {
+
+/*u16 schitatTemp(char* imya) {
   //-----------------------------------------------------------------------------
   // процедура общения с шиной 1-wire
   // sendReset - посылать RESET в начале общения.
@@ -880,8 +891,8 @@ imya[3],(u8) imya[4],(u8) imya[5],(u8) imya[6],(u8) imya[7],(u8)'\xbe',(u8) '\xf
   //sprintf(cifry, ".%d\r\n", (int) (0.0625*1000)*(buf[0] % 16));
   //USARTSend(cifry);
   retern  ;
-}
-*/
+}*/
+
 /*float schitatfTemp(char* imya) {
   uint8_t buf[2];
   u8 command01[12] = { 0x55,(u8) imya[0],(u8) imya[1],(u8) imya[2],(u8) imya[3],(u8) imya[4],
@@ -901,6 +912,7 @@ imya[3],(u8) imya[4],(u8) imya[5],(u8) imya[6],(u8) imya[7],(u8)'\xbe',(u8) '\xf
   //delay_ms(10);
   return ((uint16_t) ((buf[1]<<8) + (buf[0])));
 }*/
+
 /*void oprosite(void) {
   u8 comm[2];
   comm[0] = 0xcc;
@@ -1066,7 +1078,8 @@ uint32_t GETglobalsecs(void) {
     return (((uint32_t) BKP_ReadBackupRegister(BKP_DR3) << 16) + ((uint32_t) BKP_ReadBackupRegister(BKP_DR4)));
 }
 void TIM2_init(void) {
-/*
+
+  /*
   TIM_TimeBaseInitTypeDef TIMER_InitStructure;
   NVIC_InitTypeDef  NVIC_InitStructure;
 
@@ -1087,7 +1100,8 @@ void TIM2_init(void) {
   // ñ÷èòàåì îäèí ðàç
   TIM_SelectOnePulseMode(TIM2, TIM_OPMode_Single);
   NVIC_EnableIRQ(TIM2_IRQn);
-*/
+  */
+
    TIM_TimeBaseInitTypeDef TIMER_InitStructure;
    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
    TIM_TimeBaseStructInit(&TIMER_InitStructure);
@@ -1246,14 +1260,7 @@ void TIM3_IRQHandler(void) {
           uart1.rxgap=0;
         }
     }
-      if(uart1.rxgap==1) {
 
-          GPIO_SetBits(USART1PPport, USART1PPpin);
-          MODBUS_SLAVE(&uart1);
-          net_tx1(&uart1);
-
-          GPIO_ResetBits(USART1PPport, USART1PPpin);
-      }
 }
 
 void GPIO_ToggleBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
@@ -1378,21 +1385,23 @@ uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
 
 void net_tx1(UART_DATA *uart) {
 
-  //GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_SET);
+  GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_SET);
   if((uart->txlen>0) && (uart->txcnt==0)) {
+      //включаем rs485 на передачу
+      GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_SET);
+      delay_ms(2);
       USART_ITConfig(USART1, USART_IT_RXNE, DISABLE); //выкл прерывание на прием
       USART_ITConfig(USART1, USART_IT_TC, ENABLE); //включаем на окочание передачи
-      //включаем rs485 на передачу
-      //GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_SET);
-      //delay_ms(2);
-      for (uart->txcnt=0; uart->txcnt < uart->txlen; uart->txcnt++) {
+
+
+      /*for (uart->txcnt=0; uart->txcnt < uart->txlen; uart->txcnt++) {
           USART_SendData(USART1,(u16) uart->buffer[uart->txcnt]);
           while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
             {
             }
-        }
+        }*/
       //delay_ms(2);
-      GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_RESET);
+      //GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_RESET);
       //USART01Send(uart1.buffer);
       //USART_SendData(USART1,(u16) uart->buffer[uart->txcnt]);
     }

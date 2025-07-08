@@ -183,8 +183,8 @@ static REGISTRS001 hold_reg;
 static REGISTRS001 input_reg;
 //hold_reg, input_reg;
 
-
-
+void rs485GPIOon (void);
+void rs485GPIOoff (void);
 
 
 
@@ -249,15 +249,16 @@ int main(void) {
         }
       if(uart1.rxgap==1) {
 
-          GPIO_SetBits(USART1PPport, USART1PPpin);
+          //GPIO_SetBits(USART1PPport, USART1PPpin);
           MODBUS_SLAVE(&uart1);
           net_tx1(&uart1);
 
-          GPIO_ResetBits(USART1PPport, USART1PPpin);
+          //GPIO_ResetBits(USART1PPport, USART1PPpin);
       }
 
-      if ( ((RTC_Counter02 = GETglobalsecs())  - RTC_Counter01) >= 4) {
+      if ( ((RTC_Counter02 = globalsecs)  - RTC_Counter01) >= 4) {
           //GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
+          //USART1Send485("test\r\n");
           RTC_Counter01 = RTC_Counter02;
           if ( (RTC_Counter02 - RTC_Counter03) >= 60) {
               n++;
@@ -473,6 +474,11 @@ void usart1_init(void) { //USART 1 and GPIO A (9/10/11) ON A11pp
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(USART1PPport, &GPIO_InitStructure);
+
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
   //  USART 1
   USART_InitTypeDef USART_InitStructure;
 
@@ -489,6 +495,7 @@ void usart1_init(void) { //USART 1 and GPIO A (9/10/11) ON A11pp
   //GDN on A11
   //GPIO_SetBits(USART1PPport, USART1PPpin);
   GPIO_ResetBits(USART1PPport, USART1PPpin);
+  GPIO_SetBits(GPIOA,GPIO_Pin_8);
   NVIC_EnableIRQ(USART1_IRQn);
 
 
@@ -520,7 +527,7 @@ void USART1_IRQHandler(void) {
       uart1.buffer[uart1.rxcnt++]=USART_ReceiveData (USART1);
     }
   //Transmission complete interrupt
-  if(USART_GetITStatus(USART1, USART_IT_TC) != RESET)  {
+  /*if(USART_GetITStatus(USART1, USART_IT_TC) != RESET)  {
       USART_ClearITPendingBit(USART1, USART_IT_TC);//очистка признака прерывания
 
       if(uart1.txcnt < uart1.txlen)  {
@@ -572,13 +579,15 @@ void USART1Send(char *pucBuffer) {
     }
 }
 void USART1Send485(char *pucBuffer) {
-  GPIO_SetBits(USART1PPport, USART1PPpin);
+  //GPIO_SetBits(USART1PPport, USART1PPpin);
   //GPIO_ResetBits(USART1PPport, USART1PPpin);
+  rs485GPIOon();
   delay_ms(2);
   USART1Send(pucBuffer);
   delay_ms(2);
+  rs485GPIOoff();
   //GPIO_SetBits(USART1PPport, USART1PPpin);
-  GPIO_ResetBits(USART1PPport, USART1PPpin);
+  //GPIO_ResetBits(USART1PPport, USART1PPpin);
 }
 unsigned char RTC_Init(void) {
   // Включить тактирование модулей управления питанием и управлением резервной областью
@@ -1385,22 +1394,24 @@ uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
 
 void net_tx1(UART_DATA *uart) {
 
-  GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_SET);
+  //GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_SET);
   if((uart->txlen>0) && (uart->txcnt==0)) {
       //включаем rs485 на передачу
-      GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_SET);
+      //GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_SET);
+      rs485GPIOon();
       delay_ms(2);
-      USART_ITConfig(USART1, USART_IT_RXNE, DISABLE); //выкл прерывание на прием
-      USART_ITConfig(USART1, USART_IT_TC, ENABLE); //включаем на окочание передачи
+      //USART_ITConfig(USART1, USART_IT_RXNE, DISABLE); //выкл прерывание на прием
+      //USART_ITConfig(USART1, USART_IT_TC, ENABLE); //включаем на окочание передачи
 
 
-      /*for (uart->txcnt=0; uart->txcnt < uart->txlen; uart->txcnt++) {
+      for (uart->txcnt=0; uart->txcnt < uart->txlen; uart->txcnt++) {
           USART_SendData(USART1,(u16) uart->buffer[uart->txcnt]);
           while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
             {
             }
-        }*/
-      //delay_ms(2);
+        }
+      delay_ms(2);
+      rs485GPIOoff();
       //GPIO_WriteBit(USART1PPport,USART1PPpin,Bit_RESET);
       //USART01Send(uart1.buffer);
       //USART_SendData(USART1,(u16) uart->buffer[uart->txcnt]);
@@ -1863,4 +1874,12 @@ void TX_16(UART_DATA *MODBUS) {
       TX_EXCEPTION(MODBUS,0x02) ;
     }
 
+}
+void rs485GPIOon (void) {
+  GPIO_SetBits(GPIOA,GPIO_Pin_11);
+  GPIO_ResetBits(GPIOA,GPIO_Pin_8);
+}
+void rs485GPIOoff (void) {
+  GPIO_ResetBits(GPIOA,GPIO_Pin_11);
+  GPIO_SetBits(GPIOA,GPIO_Pin_8);
 }

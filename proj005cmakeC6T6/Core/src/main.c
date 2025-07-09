@@ -1172,7 +1172,6 @@ void TIM2_IRQHandler(void) {
   if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)   {
       millisec2 = millisec2 + 20;
       watercounter();
-      //millisec003delay_ms = millisec003delay_ms + 20;
       if (millisec2 >= 1000) {
           globalsecs = GETglobalsecs();
           globalsecs++;

@@ -1178,7 +1178,6 @@ void TIM2_IRQHandler(void) {
           globalsecs++;
           SETglobalsecs(globalsecs);
           millisec2 = 0;
-          //GPIO_ResetBits(USART1PPport, USART1PPpin); //try fix 21.50 06.07.2025
         //TIM_SetCounter(TIM2, 0);
       }
       TIM_ClearITPendingBit(TIM2, TIM_IT_Update);

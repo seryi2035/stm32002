@@ -191,6 +191,7 @@ void rs485GPIOoff (void);
 uint8_t waterplus;
 uint8_t waterpluscount;
 uint8_t waterplusSET;
+uint16_t milisecondsfromSTART;
 void watercounter (void);//hold reg8-9 hold.u32 Nomer5      bcp27-28
 
 
@@ -210,6 +211,7 @@ int main(void) {
   uint32_t RTC_Counter02 = 0;
   uint32_t RTC_Counter03 = 0;
   uint32_t n = 0;
+  milisecondsfromSTART = 0;
   // Включить тактирование модулей управления питанием и управлением резервной областью
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
   // Разрешить доступ к области резервных данных
@@ -338,8 +340,8 @@ void atSTART(void) {
   hold_reg.tmp_u16[30] = BKP_ReadBackupRegister(BKP_DR11);
   hold_reg.tmp_u16[31] = BKP_ReadBackupRegister(BKP_DR12);
 
-  hold_reg.tmp_u16[10] = BKP_ReadBackupRegister(BKP_DR13);
-  hold_reg.tmp_u16[11] = BKP_ReadBackupRegister(BKP_DR14);
+  hold_reg.tmp_u16[10] = BKP_ReadBackupRegister(BKP_DR13); //servo001minq hold.u6[11] BKP_DR14
+  hold_reg.tmp_u16[11] = BKP_ReadBackupRegister(BKP_DR14); //servo001max hold.u6[11] BKP_DR14
   //servo001max = hold_reg.tmp_u16[11];
   //servo001use = 900;
   //servo001min = hold_reg.tmp_u16[10];
@@ -369,9 +371,7 @@ void atSTART(void) {
   setCOILS(Coils_RW);
 
 waterplus=0;
-//waterminus=0;
 waterpluscount=0;
-//waterminuscount=0;
 waterplusSET=1;
 }
 
@@ -1171,7 +1171,11 @@ TIM_OCInitTypeDef timerPWM;
 void TIM2_IRQHandler(void) {
   if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)   {
       millisec2 = millisec2 + 20;
-      watercounter();
+      if (milisecondsfromSTART >= 2500 ) {
+        watercounter();
+      } else {
+      milisecondsfromSTART = milisecondsfromSTART + 20;
+      }
       if (millisec2 >= 1000) {
           globalsecs = GETglobalsecs();
           globalsecs++;

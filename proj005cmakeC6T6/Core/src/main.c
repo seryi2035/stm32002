@@ -1914,14 +1914,14 @@ void rs485GPIOoff (void) {
 void watercounter (void) {
   if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_5)   == (uint8_t)Bit_SET) {
 
-    if (waterplus = 1 ) {
+    if (waterplus == 1 ) {
       if (waterpluscount <= 9) {
         waterpluscount++;
           if (waterpluscount == 9) {
           waterplusSET =0;
           }
         } else {
-        if (waterplusSET = 0 ) {
+        if (waterplusSET == 0 ) {
           hold_reg.tmp_u32[5] = hold_reg.tmp_u32[5] +5;
           BKP_WriteBackupRegister(BKP_DR27, hold_reg.tmp_u16[8]);
           BKP_WriteBackupRegister(BKP_DR28, hold_reg.tmp_u16[9]);
@@ -1933,14 +1933,14 @@ void watercounter (void) {
     waterpluscount =0;
     }
   }else{
-    if (waterplus = 0 ) {
+    if (waterplus == 0 ) {
       if (waterpluscount <= 9) {
         waterpluscount++;
           if (waterpluscount == 9) {
           waterplusSET =0;
           }
         } else {
-        if (waterplusSET = 0 ) {
+        if (waterplusSET == 0 ) {
           hold_reg.tmp_u32[5] = hold_reg.tmp_u32[5] +5;
           BKP_WriteBackupRegister(BKP_DR27, hold_reg.tmp_u16[8]);
           BKP_WriteBackupRegister(BKP_DR28, hold_reg.tmp_u16[9]);

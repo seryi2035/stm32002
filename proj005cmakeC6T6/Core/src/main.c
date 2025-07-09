@@ -1303,36 +1303,6 @@ void GPIO_ToggleBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
 
   GPIOx->ODR ^= GPIO_Pin;
 }
-
-/*void SERVOinit(void)
-{
-  //Включем порт А
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB , ENABLE);
-  //Включаем Таймер 2
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4,ENABLE);
-  GPIO_InitTypeDef GPIO_InitStructure;
-  // Настроим ногу (Pb6)B7 B8 B9 к которой подключен сервопривод
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 |GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
-  //Будем использовать альтернативный режим а не обычный GPIO
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
-  // A2
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
-  // A3
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-
-
-}*/
-
-
 //#include "001.h"
 //#include "onewire.h"
 //#include "tim2_delay.h"
@@ -1646,7 +1616,8 @@ void setCOILS(uint8_t *Coils_RW) {
 
   coilTOback();
 }
-void read_Discrete_Inputs_RO(void) {
+void read_Discrete_Inputs_RO(void)
+{
 
   if(GPIO_ReadOutputDataBit(GPIOC, GPIO_Pin_13) != (uint8_t)Bit_SET) { Discrete_Inputs_RO[0] = 1; }else{ Discrete_Inputs_RO[0] = 0;}
   //GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_11) == (uint8_t)Bit_SET ? Discrete_Inputs_RO[1] = 1 : Discrete_Inputs_RO[1] = 0;
@@ -1671,6 +1642,7 @@ void read_Discrete_Inputs_RO(void) {
       Discrete_Inputs_RO[i] = Discrete_Inputs_RO[i-16];
     }
 }
+
 /*void startCOILS(uint8_t *Coils_RW) {
   for(u8 i = 0; i < 32; i++) {
       Coils_RW[i] = 0;
@@ -1844,6 +1816,7 @@ void coilFROMback(void) {
         }
     }
 }
+
 /*void TX_16(UART_DATA *MODBUS) {
   uint16_t tmp, tmp1;
   uint16_t m=0,n=0;
@@ -1909,7 +1882,9 @@ void rs485GPIOoff (void) {
   GPIO_ResetBits(GPIOA,GPIO_Pin_11);
   GPIO_SetBits(GPIOA,GPIO_Pin_8);
 }
-void watercounter (void) {
+
+void watercounter (void)
+{
   if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_5)   == (uint8_t)Bit_SET) {
 
     if (waterplus == 1 ) {
@@ -1920,7 +1895,7 @@ void watercounter (void) {
           }
         } else {
         if (waterplusSET == 0 ) {
-          hold_reg.tmp_u32[5] = hold_reg.tmp_u32[5] +5;
+          hold_reg.tmp_u32[4] = hold_reg.tmp_u32[4] +5;
           BKP_WriteBackupRegister(BKP_DR27, hold_reg.tmp_u16[8]);
           BKP_WriteBackupRegister(BKP_DR28, hold_reg.tmp_u16[9]);
           waterplusSET =1;
@@ -1939,7 +1914,7 @@ void watercounter (void) {
           }
         } else {
         if (waterplusSET == 0 ) {
-          hold_reg.tmp_u32[5] = hold_reg.tmp_u32[5] +5;
+          hold_reg.tmp_u32[4] = hold_reg.tmp_u32[4] +5;
           BKP_WriteBackupRegister(BKP_DR27, hold_reg.tmp_u16[8]);
           BKP_WriteBackupRegister(BKP_DR28, hold_reg.tmp_u16[9]);
           waterplusSET =1;

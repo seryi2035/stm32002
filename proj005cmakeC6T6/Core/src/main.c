@@ -187,8 +187,11 @@ void rs485GPIOon (void);
 void rs485GPIOoff (void);
 
 
-
-
+//счетчик воды
+uint8_t waterplus;
+uint8_t waterpluscount;
+uint8_t waterplusSET;
+void watercounter (void);//hold reg8-9 hold.u32 Nomer5      bcp27-28
 
 
 
@@ -215,11 +218,11 @@ int main(void) {
   //uint16_t res003;
   SET_PAR[0] = 30; //адрес этого устройства 20 (modbus) 1-247
 
-  GETonGPIO();
-  TIM2_init(); // мkс 0-19999 TIM2->CNT
+  GETonGPIO(); //B11-B1 PP B4 B4 IPU A7 IPU A6 IPD A5 IPU
+  TIM2_init(); // мkс 0-19999 TIM2->CNT servo A1 A3
   TIM3_init();
-  TIM4_init(); // мкс 0-19999 TIM4->CNT
-  usart1_init(); //A9 PP RXD A10 TXD жёлый //RS232 A11 ResetBits //485     //USART 1 and GPIO A (9/10/11) ON A11pp
+  TIM4_init(); // мкс 0-19999 TIM4->CNT servo B6 B7 B9
+  usart1_init(); //A9 PP RXD A10 TXD жёлый //RS232 A11 ResetBits //485     //USART 1 and GPIO A (9/10/11) ON A11pp A8invertA11
   //OW_Init(); //usart2 А2 А3
   //dev001.port = GPIOA;
   //dev001.pin = GPIO_Pin_12;
@@ -241,7 +244,7 @@ int main(void) {
   //oprosite();
 
   iwdg_init();
-  //SERVOinit();
+
 
   while (1) {
       if (Coils_RW[8] == 0) {
@@ -265,7 +268,7 @@ int main(void) {
               if (n > 6) {
                   if ((hold_reg.tmp_u16[24] - hold_reg.tmp_u16[25]) > 10) {
                       Coils_RW[8] = 1;
-                    }
+                  }
                 }else if (n > 100) {
                   n = 0;
                 }
@@ -275,11 +278,22 @@ int main(void) {
               input_reg.tmp_u16[1] = (RTC_Counter02 / 60) % 60;     //Number STM20minute   "minute [:%d]"            (gmod20_INreg)     {modbus="<[slave20_4:1]"}
               input_reg.tmp_u16[0] = RTC_Counter02 % 60;            //Number STM20second  "seconds [:%d]"            (gmod20_INreg)     {modbus="<[slave20_4:0]"}
               input_reg.tmp_u16[3] = (RTC_Counter02 / (3600 * 24)); //Number STM20date  "date [%d]"                  (gmod20_INreg)     {modbus="<[slave20_4:3]"}
-              COILtimerMINUTES(Coils_RW[1], input_reg.tmp_u16[12], BKP_DR5, hold_reg.tmp_u16[28], BKP_DR9);   //B11     slave20_403:4       slave20_302:4
-              COILtimerMINUTES(Coils_RW[2], input_reg.tmp_u16[13], BKP_DR6, hold_reg.tmp_u16[29], BKP_DR10);  //B10     slave20_403:5       slave20_302:5
-              COILtimerMINUTES(Coils_RW[3], input_reg.tmp_u16[14], BKP_DR7, hold_reg.tmp_u16[30], BKP_DR11);  //B1      slave20_403:6       slave20_302:6
-              COILtimerMINUTES(Coils_RW[4], input_reg.tmp_u16[15], BKP_DR8, hold_reg.tmp_u16[31], BKP_DR12);  //B0      slave20_403:7       slave20_302:7
-            }
+              COILtimerMINUTES(1, input_reg.tmp_u16[12], BKP_DR5, hold_reg.tmp_u16[28], BKP_DR9);   //B11     slave20_403:4       slave20_302:4
+              COILtimerMINUTES(2, input_reg.tmp_u16[13], BKP_DR6, hold_reg.tmp_u16[29], BKP_DR10);  //B10     slave20_403:5       slave20_302:5
+              COILtimerMINUTES(3, input_reg.tmp_u16[14], BKP_DR7, hold_reg.tmp_u16[30], BKP_DR11);  //B1      slave20_403:6       slave20_302:6
+              COILtimerMINUTES(4, input_reg.tmp_u16[15], BKP_DR8, hold_reg.tmp_u16[31], BKP_DR12);  //B0      slave20_403:7       slave20_302:7
+
+              BKP_WriteBackupRegister(BKP_DR13, hold_reg.tmp_u16[10]);
+              BKP_WriteBackupRegister(BKP_DR14, hold_reg.tmp_u16[11]);
+              BKP_WriteBackupRegister(BKP_DR15, hold_reg.tmp_u16[12]);
+              BKP_WriteBackupRegister(BKP_DR16, hold_reg.tmp_u16[13]);
+              BKP_WriteBackupRegister(BKP_DR17, hold_reg.tmp_u16[14]);
+              BKP_WriteBackupRegister(BKP_DR18, hold_reg.tmp_u16[15]);
+              BKP_WriteBackupRegister(BKP_DR19, hold_reg.tmp_u16[16]);
+              BKP_WriteBackupRegister(BKP_DR20, hold_reg.tmp_u16[17]);
+              BKP_WriteBackupRegister(BKP_DR21, hold_reg.tmp_u16[18]);
+              BKP_WriteBackupRegister(BKP_DR22, hold_reg.tmp_u16[19]);
+          }
           //ds18b20Value = schitatU16Temp("\x28\xee\xe8\x19\x17\x16\x02\xa1");
           //input_reg.tmp_float[9] = (float) (ds18b20Value / 16.0);   //Number STM20DS03f "DS01 floatTemp [%.2f °C]"   (gmod20_INreg)     {modbus="<[slave20_402:1]"}
           //input_reg.tmp_u16[4] = DHT11_read(&dev001);               //Number STM20DHTres "DHTstatus [%d]"            (gmod20_INreg)     {modbus="<[slave20_4:4]"}
@@ -296,16 +310,16 @@ int main(void) {
           if (Coils_RW[9] != 0) {
               if (input_reg.tmp_i16[11] > 0) {
                   RTC_Counter02 = RTC_Counter02 + ((uint32_t)input_reg.tmp_i16[7]);
-                } else {
+              } else {
                   input_reg.tmp_i16[11] = input_reg.tmp_i16[11] * (-1);
                   RTC_Counter02 = RTC_Counter02 + ((uint32_t)input_reg.tmp_i16[7]);
-                }
+              }
               SETglobalsecs(RTC_Counter02);
               //res_ftable[5] = 0;
               Coils_RW[9] = 0;
           }
-        }
-    }
+      }
+  }
 }
 
 void atSTART(void) {
@@ -349,19 +363,28 @@ void atSTART(void) {
   //servo005max = hold_reg.tmp_u16[19];
   //servo005use = 1000;
   //servo005min = hold_reg.tmp_u16[18];
+  //WATER COUNT
+  hold_reg.tmp_u16[8] = BKP_ReadBackupRegister(BKP_DR27);
+  hold_reg.tmp_u16[9] = BKP_ReadBackupRegister(BKP_DR28);
   setCOILS(Coils_RW);
+
+waterplus=0;
+//waterminus=0;
+waterpluscount=0;
+//waterminuscount=0;
+waterplusSET=1;
 }
 
 void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount,uint16_t inREGbkp, uint16_t holdREGtimer ,uint16_t holdREGbkp) {
   inREGcount = BKP_ReadBackupRegister(inREGbkp);
 
-  if ( coilSETED != 0) {
+  if ( Coils_RW[coilSETED] != 0) {
       inREGcount--;
     } else {
       inREGcount = holdREGtimer;
     }
   if (inREGcount < 1) {
-      coilSETED = 0;
+      Coils_RW[coilSETED] = 0;
     }
   BKP_WriteBackupRegister(inREGbkp, inREGcount);
   BKP_WriteBackupRegister(holdREGbkp, holdREGtimer);
@@ -389,11 +412,7 @@ void GETonGPIO() { //PP B(11/10/1/0) C13 A(7/6) | IPU B4 | IPD B8 FLOAT B9
   GPIO_Init(GPIOC, &GPIO_InitStructure);
 
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-  // A7 PP
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
   //A6 PP
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -433,20 +452,24 @@ void GETonGPIO() { //PP B(11/10/1/0) C13 A(7/6) | IPU B4 | IPD B8 FLOAT B9
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
-  //KNOPKA B4 IPU
-  //RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-/*
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+  // A7 IPU
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  // A6 IPU
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
-  //IPD B9 float
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  // A5 IPU
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);*/
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  //KNOPKA B4 IPU
+  //RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+
 }
 void usart1_init(void) { //USART 1 and GPIO A (9/10/11) ON A11pp
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA, ENABLE);
@@ -934,6 +957,7 @@ imya[3],(u8) imya[4],(u8) imya[5],(u8) imya[6],(u8) imya[7],(u8)'\xbe',(u8) '\xf
   //USARTSend("oprosheno\n\r");
 }*/
 // ////////////////////////////////////////////////////////DHT11
+
 /*int DHT11_init(struct DHT11_Dev* dev, GPIO_TypeDef* port, uint16_t pin) {
   GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -1146,9 +1170,10 @@ TIM_OCInitTypeDef timerPWM;
 }
 void TIM2_IRQHandler(void) {
   if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)   {
-      millisec2++;
+      millisec2 = millisec2 + 20;
+      watercounter();
       //millisec003delay_ms = millisec003delay_ms + 20;
-      if (millisec2 >= 50) {
+      if (millisec2 >= 1000) {
           globalsecs = GETglobalsecs();
           globalsecs++;
           SETglobalsecs(globalsecs);
@@ -1191,7 +1216,7 @@ void TIM4_init(void) {
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB , ENABLE);
 
   GPIO_InitTypeDef GPIO_InitStructure;
-  // Настроим ногу (Pb6)B7 B8 B9 к которой подключен сервопривод
+  // Настроим ногу (Pb6)B7 B9 к которой подключен сервопривод
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 |GPIO_Pin_7 | GPIO_Pin_9;
   //Будем использовать альтернативный режим а не обычный GPIO
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -1616,10 +1641,10 @@ void setCOILS(uint8_t *Coils_RW) {
   if (Coils_RW[14])  { servo004use=hold_reg.tmp_u16[17];   } else { servo004use=hold_reg.tmp_u16[16];   }
   if (Coils_RW[15])  { servo005use=hold_reg.tmp_u16[19];   } else { servo005use=hold_reg.tmp_u16[18];   }
   TIM2->CCR2 = servo001use;
-  TIM2->CCR4 = servo002use;
+  TIM4->CCR4 = servo002use;
   TIM4->CCR1 = servo003use;
   TIM4->CCR2 = servo004use;
-  TIM4->CCR4 = servo005use;
+  TIM2->CCR4 = servo005use;
 
   coilTOback();
 }
@@ -1637,8 +1662,11 @@ void read_Discrete_Inputs_RO(void) {
   //Discrete_Inputs_RO[6] = 1;
   //GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_5) == (uint8_t)Bit_SET ? Discrete_Inputs_RO[7] = 1; : Discrete_Inputs_RO[7] = 0;
   //if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_9)   == (uint8_t)Bit_SET) { Discrete_Inputs_RO[7] = 1; }else{ Discrete_Inputs_RO[7] = 0;}
+  if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_7)   == (uint8_t)Bit_SET) { Discrete_Inputs_RO[8] = 1; }else{ Discrete_Inputs_RO[8] = 0;}
+  if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6)   == (uint8_t)Bit_SET) { Discrete_Inputs_RO[9] = 1; }else{ Discrete_Inputs_RO[9] = 0;}
+  if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_5)   == (uint8_t)Bit_SET) { Discrete_Inputs_RO[10] = 1; }else{ Discrete_Inputs_RO[10] = 0;}
   Discrete_Inputs_RO[7] = 0;
-  for(u8 i = 8; i < 16; i++) {
+  for(u8 i = 11; i < 16; i++) {
       Discrete_Inputs_RO[i] = 0;
     }
   for(u8 i = 16; i < 32; i++) {
@@ -1882,4 +1910,47 @@ void rs485GPIOon (void) {
 void rs485GPIOoff (void) {
   GPIO_ResetBits(GPIOA,GPIO_Pin_11);
   GPIO_SetBits(GPIOA,GPIO_Pin_8);
+}
+void watercounter (void) {
+  if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_5)   == (uint8_t)Bit_SET) {
+
+    if (waterplus = 1 ) {
+      if (waterpluscount <= 9) {
+        waterpluscount++;
+          if (waterpluscount == 9) {
+          waterplusSET =0;
+          }
+        } else {
+        if (waterplusSET = 0 ) {
+          hold_reg.tmp_u32[5] = hold_reg.tmp_u32[5] +5;
+          BKP_WriteBackupRegister(BKP_DR27, hold_reg.tmp_u16[8]);
+          BKP_WriteBackupRegister(BKP_DR28, hold_reg.tmp_u16[9]);
+          waterplusSET =1;
+          }
+        }
+    } else {
+    waterplus =1;
+    waterpluscount =0;
+    }
+  }else{
+    if (waterplus = 0 ) {
+      if (waterpluscount <= 9) {
+        waterpluscount++;
+          if (waterpluscount == 9) {
+          waterplusSET =0;
+          }
+        } else {
+        if (waterplusSET = 0 ) {
+          hold_reg.tmp_u32[5] = hold_reg.tmp_u32[5] +5;
+          BKP_WriteBackupRegister(BKP_DR27, hold_reg.tmp_u16[8]);
+          BKP_WriteBackupRegister(BKP_DR28, hold_reg.tmp_u16[9]);
+          waterplusSET =1;
+          }
+        }
+    } else {
+    waterplus =0;
+    waterpluscount =0;
+    }
+
+  }
 }

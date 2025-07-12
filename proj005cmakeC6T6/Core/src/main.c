@@ -285,8 +285,8 @@ int main(void) {
               COILtimerMINUTES(3, input_reg.tmp_u16[14], BKP_DR7, hold_reg.tmp_u16[30], BKP_DR11);  //B1      slave20_403:6       slave20_302:6
               COILtimerMINUTES(4, input_reg.tmp_u16[15], BKP_DR8, hold_reg.tmp_u16[31], BKP_DR12);  //B0      slave20_403:7       slave20_302:7
 
-              BKP_WriteBackupRegister(BKP_DR13, hold_reg.tmp_u16[10]);
-              BKP_WriteBackupRegister(BKP_DR14, hold_reg.tmp_u16[11]);
+              BKP_WriteBackupRegister(BKP_DR13, hold_reg.tmp_u16[10]); //servo001min hold.u6[11] BKP_DR13
+              BKP_WriteBackupRegister(BKP_DR14, hold_reg.tmp_u16[11]); //servo001max hold.u6[11] BKP_DR14
               BKP_WriteBackupRegister(BKP_DR15, hold_reg.tmp_u16[12]);
               BKP_WriteBackupRegister(BKP_DR16, hold_reg.tmp_u16[13]);
               BKP_WriteBackupRegister(BKP_DR17, hold_reg.tmp_u16[14]);
@@ -340,7 +340,7 @@ void atSTART(void) {
   hold_reg.tmp_u16[30] = BKP_ReadBackupRegister(BKP_DR11);
   hold_reg.tmp_u16[31] = BKP_ReadBackupRegister(BKP_DR12);
 
-  hold_reg.tmp_u16[10] = BKP_ReadBackupRegister(BKP_DR13); //servo001minq hold.u6[11] BKP_DR14
+  hold_reg.tmp_u16[10] = BKP_ReadBackupRegister(BKP_DR13); //servo001min hold.u6[10] BKP_DR13
   hold_reg.tmp_u16[11] = BKP_ReadBackupRegister(BKP_DR14); //servo001max hold.u6[11] BKP_DR14
   //servo001max = hold_reg.tmp_u16[11];
   //servo001use = 900;

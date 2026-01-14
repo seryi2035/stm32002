@@ -4,7 +4,7 @@
  *  Version 1.0.3
  */
 
-#include "onewire.h"
+/*#include "onewire.h"
 
 #ifdef OW_USART1
 
@@ -280,3 +280,4 @@ uint8_t OW_Send(uint8_t sendReset, uint8_t *command, uint8_t cLen,
   return OW_OK;
 }
 
+*/

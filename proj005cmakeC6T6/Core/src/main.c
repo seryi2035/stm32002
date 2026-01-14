@@ -205,6 +205,10 @@ void watercounter (void);//hold reg8-9 hold.u32 Nomer5      bcp27-28
 uint8_t OW_Init();
 uint8_t OW_Send(uint8_t sendReset, uint8_t *command, uint8_t cLen, uint8_t *data, uint8_t dLen, uint8_t readStart);
 uint8_t OW_Scan(uint8_t *buf, uint8_t num);
+uint8_t OW_Reset(void);
+void OW_SendBits(uint8_t num_bits);
+void OW_toBits(uint8_t ow_byte, uint8_t *ow_bits);
+uint8_t OW_toByte(uint8_t *ow_bits);
 // первый параметр функции OW_Send
 #define OW_SEND_RESET		1
 #define OW_NO_RESET		2
@@ -217,7 +221,12 @@ uint8_t OW_Scan(uint8_t *buf, uint8_t num);
 #define OW_NO_READ		0xff
 
 #define OW_READ_SLOT	0xff
+// Буфер для приема/передачи по 1-wire
+uint8_t ow_buf[8];
 
+#define OW_0	0x00
+#define OW_1	0xff
+#define OW_R_1	0xff
 
 
 
@@ -267,19 +276,15 @@ int main(void) {
 
 
   while (1) {
-      if (Coils_RW[8] == 0) {
+    if (Coils_RW[8] == 0) {
           IWDG_ReloadCounter();
-        }
-      if(uart1.rxgap==1) {
-
-          //GPIO_SetBits(USART1PPport, USART1PPpin);
+    }
+    if(uart1.rxgap==1) {
           MODBUS_SLAVE(&uart1);
           net_tx1(&uart1);
+    }
 
-          //GPIO_ResetBits(USART1PPport, USART1PPpin);
-      }
-
-      if ( ((RTC_Counter02 = globalsecs)  - RTC_Counter01) >= 4) {
+    if ( ((RTC_Counter02 = globalsecs)  - RTC_Counter01) >= 4) {
           //GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
           //USART1Send485("test\r\n");
           RTC_Counter01 = RTC_Counter02;
@@ -325,8 +330,6 @@ int main(void) {
           input_reg.tmp_u16[11] = hold_reg.tmp_u16[27];             //Number STM20countPPRO  "ROcountPP [%d]"        (gmod20_INreg)     {modbus="<[slave20_4:11]"}
           hold_reg.tmp_u16[26] = hold_reg.tmp_u16[25];              //prov2
           input_reg.tmp_float[11] = (float) RTC_Counter01;          //Number STM20count "count [%.1f ]"              (gmod20_INreg)     {modbus="<[slave20_402:3]"}
-
-          //oprosite(); //OW opros
           if (Coils_RW[9] != 0) {
               if (input_reg.tmp_i16[11] > 0) {
                   RTC_Counter02 = RTC_Counter02 + ((uint32_t)input_reg.tmp_i16[7]);
@@ -339,6 +342,14 @@ int main(void) {
               Coils_RW[9] = 0;
           }
       }
+    if ( (RTC_Counter02 % 60) == 4) {
+      //oprosite(); //OW opros
+              for(int i = 0;i < RX_BUF_SIZE - 1; i++) RX_BUF08[i] = (u8) RX_BUF[i];
+              OW_Scan(RX_BUF08, 1);
+              for(int i = 0;i < RX_BUF_SIZE - 1; i++) RX_BUF[i] = (char) RX_BUF08[i];
+              //char cifry[10];
+              sendaddrow();
+    }
   }
 }
 
@@ -407,16 +418,6 @@ void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount,uint16_t inREGbkp,
   BKP_WriteBackupRegister(inREGbkp, inREGcount);
   BKP_WriteBackupRegister(holdREGbkp, holdREGtimer);
 }
-
-
-
-/*#include "001.h"
-//#include "onewire.h"
-#include "tim2_delay.h"
-#include "string.h"
-#include "stdio.h"
-//#include "libmodbus.h"
-#include "modbus.h"*/
 
 
 void GETonGPIO() { //PP B(11/10/1/0) C13 A(7/6) | IPU B4 | IPD B8 FLOAT B9
@@ -542,23 +543,7 @@ void usart1_init(void) { //USART 1 and GPIO A (9/10/11) ON A11pp
 
 }
 void USART1_IRQHandler(void) {
-  /*if ((USART1->SR & USART_FLAG_RXNE) != (u16)RESET) {
-      RXc =(char) USART_ReceiveData(USART1);
-      RX_BUF[RXi] = RXc;
-      RXi++;
-      RX_FLAG_END_LINE = 0;
-      if (RXc != 13) {
-          if (RXi > RX_BUF_SIZE - 1) {
-              clear_RXBuffer();
-            }
-        } else {
-          RX_FLAG_END_LINE = 1;
-        }
-      //Echo
-      USART_SendData(USART1,(u16) RXc);
-    }*/
-  //Receive Data register not empty interrupt
-  //GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
+
   if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)  {
       USART_ClearITPendingBit(USART1, USART_IT_RXNE); //очистка признака прерывания
       uart1.rxtimer = 0;
@@ -567,36 +552,7 @@ void USART1_IRQHandler(void) {
         }
       uart1.buffer[uart1.rxcnt++]=USART_ReceiveData (USART1);
     }
-  //Transmission complete interrupt
-  /*if(USART_GetITStatus(USART1, USART_IT_TC) != RESET)  {
-      USART_ClearITPendingBit(USART1, USART_IT_TC);//очистка признака прерывания
 
-      if(uart1.txcnt < uart1.txlen)  {
-          //GPIO_SetBits(USART1PPport, USART1PPpin);  // +++++++++++++++++ключаем 485
-          USART_SendData(USART1,((uint16_t) uart1.buffer[uart1.txcnt++]));//Передаем
-        }
-      else {
-          //посылка закончилась и мы снимаем высокий уровень сRS485 TXE
-          //uart1.buffer[255] = uart1.txlen;
-          uart1.txlen=0;
-          GPIO_WriteBit(USART1PPport, USART1PPpin,Bit_RESET);
-          USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
-          USART_ITConfig(USART1, USART_IT_TC, DISABLE);
-          //TIM_ITConfig(TIM3,TIM_IT_Update,ENABLE);
-        }
-    }
-  /*if ((USART1->SR & USART_FLAG_RXNE) != (u16)RESET) {
-      RXu = (u8) USART_ReceiveData (USART1);
-      uart1.buffer[uart1.rxcnt]= RXu;
-      uart1.rxcnt++;
-      uart1.rxtimer = 0;
-      //uart1.rxgap = 0;
-      if(uart1.rxcnt > (BUF_SZ-2)) {
-          uart1.rxcnt=0;
-        }
-      //Echo
-      USART_SendData(USART1,(u16) uart1.buffer[uart1.rxcnt]);
-    }*/
 }
 void clear_RXBuffer(void) {
   for (RXi = 0; RXi < RX_BUF_SIZE; RXi++)
@@ -1322,12 +1278,6 @@ void GPIO_ToggleBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
 
   GPIOx->ODR ^= GPIO_Pin;
 }
-//#include "001.h"
-//#include "onewire.h"
-//#include "tim2_delay.h"
-//#include "libmodbus.h"
-//#include "modbus.h"
-
 
 uint16_t crc16(uint8_t *buffer, uint16_t buffer_length);
 // Table of CRC values for high-order byte
@@ -2145,7 +2095,7 @@ uint8_t OW_Scan(uint8_t *buf, uint8_t num) {
   return found;
 
 }
-uint8_t OW_Reset() {
+uint8_t OW_Reset(void) {
 
 //-----------------------------------------------------------------------------
 // осуществляет сброс и проверку на наличие устройств на шине
@@ -2239,5 +2189,41 @@ void OW_SendBits(uint8_t num_bits) {
   DMA_Cmd(OW_DMA_CH_TX, DISABLE);
   DMA_Cmd(OW_DMA_CH_RX, DISABLE);
   USART_DMACmd(OW_USART, USART_DMAReq_Tx | USART_DMAReq_Rx, DISABLE);
+}
+void OW_toBits(uint8_t ow_byte, uint8_t *ow_bits) {
 
+//-----------------------------------------------------------------------------
+// функция преобразует один байт в восемь, для передачи через USART
+// ow_byte - байт, который надо преобразовать
+// ow_bits - ссылка на буфер, размером не менее 8 байт
+//-----------------------------------------------------------------------------
+        uint8_t i;
+        for (i = 0; i < 8; i++) {
+                if (ow_byte & 0x01) {
+                        *ow_bits = OW_1;
+                } else {
+                        *ow_bits = OW_0;
+                }
+                ow_bits++;
+                ow_byte = ow_byte >> 1;
+        }
+}
+uint8_t OW_toByte(uint8_t *ow_bits) {
+
+
+//-----------------------------------------------------------------------------
+// обратное преобразование - из того, что получено через USART опять собирается байт
+// ow_bits - ссылка на буфер, размером не менее 8 байт
+//-----------------------------------------------------------------------------
+        uint8_t ow_byte, i;
+        ow_byte = 0;
+        for (i = 0; i < 8; i++) {
+                ow_byte = ow_byte >> 1;
+                if (*ow_bits == OW_R_1) {
+                        ow_byte |= 0x80;
+                }
+                ow_bits++;
+        }
+
+        return ow_byte;
 }

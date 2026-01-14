@@ -187,6 +187,10 @@ void rs485GPIOon (void);
 void rs485GPIOoff (void);
 
 
+void atSTART(void);
+
+void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount, uint16_t inREGbkp, uint16_t holdREGtimer, uint16_t holdREGbkp);
+
 //счетчик воды
 uint8_t waterplus;
 uint8_t waterpluscount;
@@ -194,15 +198,29 @@ uint8_t waterplusSET;
 uint16_t milisecondsfromSTART;
 void watercounter (void);//hold reg8-9 hold.u32 Nomer5      bcp27-28
 
+#define OW_USART 		USART2
+#define OW_DMA_CH_RX 	DMA1_Channel6
+#define OW_DMA_CH_TX 	DMA1_Channel7
+#define OW_DMA_FLAG		DMA1_FLAG_TC6
+uint8_t OW_Init();
+uint8_t OW_Send(uint8_t sendReset, uint8_t *command, uint8_t cLen, uint8_t *data, uint8_t dLen, uint8_t readStart);
+uint8_t OW_Scan(uint8_t *buf, uint8_t num);
+// первый параметр функции OW_Send
+#define OW_SEND_RESET		1
+#define OW_NO_RESET		2
+
+// статус возврата функций
+#define OW_OK			1
+#define OW_ERROR		2
+#define OW_NO_DEVICE	3
+
+#define OW_NO_READ		0xff
+
+#define OW_READ_SLOT	0xff
 
 
 
 
-
-
-void atSTART(void);
-
-void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount, uint16_t inREGbkp, uint16_t holdREGtimer, uint16_t holdREGbkp);
 
 
 int main(void) {
@@ -218,14 +236,14 @@ int main(void) {
   PWR_BackupAccessCmd(ENABLE);
 
   //uint16_t res003;
-  SET_PAR[0] = 30; //адрес этого устройства 20 (modbus) 1-247
+  SET_PAR[0] = 40; //адрес этого устройства 40 (modbus) 1-247
 
   GETonGPIO(); //B11-B1 PP B4 B4 IPU A7 IPU A6 IPD A5 IPU
   TIM2_init(); // мkс 0-19999 TIM2->CNT servo A1 A3
   TIM3_init();
   TIM4_init(); // мкс 0-19999 TIM4->CNT servo B6 B7 B9
   usart1_init(); //A9 PP RXD A10 TXD жёлый //RS232 A11 ResetBits //485     //USART 1 and GPIO A (9/10/11) ON A11pp A8invertA11
-  //OW_Init(); //usart2 А2 А3
+  OW_Init(); //usart2 А2 А3
   //dev001.port = GPIOA;
   //dev001.pin = GPIO_Pin_12;
   //dev001.humidity = 0;
@@ -934,28 +952,25 @@ imya[3],(u8) imya[4],(u8) imya[5],(u8) imya[6],(u8) imya[7],(u8)'\xbe',(u8) '\xf
   ftemp = (float) ( (float) ((buf[1] << 8) | buf[0]) / 16.0);
   return ftemp;
 }*/
-/*uint16_t schitatU16Temp(char* imya) {
+uint16_t schitatU16Temp(char* imya) {
   uint8_t buf[2];
   u8 command01[12] = { 0x55,(u8) imya[0],(u8) imya[1],(u8) imya[2],(u8) imya[3],
                        (u8) imya[4],(u8) imya[5],(u8) imya[6],(u8) imya[7], 0xbe, 0xff, 0xff};
   OW_Send(OW_SEND_RESET, command01, 12, buf, 2, 10);
-  //int itemp;
-  //itemp = ((buf[1] << 8) | buf[0]) *1000 / 16;
-  //delay_ms(10);
-  return ((uint16_t) ((buf[1]<<8) + (buf[0])));
-}*/
 
-/*void oprosite(void) {
+  return ((uint16_t) ((buf[1]<<8) + (buf[0])));
+}
+
+void oprosite(void) {
   u8 comm[2];
   comm[0] = 0xcc;
   comm[1] = 0x44;
   OW_Send(OW_SEND_RESET, comm, 2, NULL, 0, OW_NO_READ);
-  delay_ms(100);
-  comm[1] = 0x4e;
-  OW_Send(OW_SEND_RESET, comm, 2, NULL, 0, OW_NO_READ);
   //delay_ms(100);
-  //USARTSend("oprosheno\n\r");
-}*/
+  //comm[1] = 0x4e;
+  //OW_Send(OW_SEND_RESET, comm, 2, NULL, 0, OW_NO_READ);
+
+}
 // ////////////////////////////////////////////////////////DHT11
 
 /*int DHT11_init(struct DHT11_Dev* dev, GPIO_TypeDef* port, uint16_t pin) {
@@ -1930,4 +1945,299 @@ void watercounter (void)
     }
 
   }
+}
+
+
+uint8_t OW_Init() {              //инициализирует USART и DMA
+  GPIO_InitTypeDef GPIO_InitStruct;
+  USART_InitTypeDef USART_InitStructure;
+
+  if (OW_USART == USART1) {
+      RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO,
+                             ENABLE);
+
+      // USART TX
+      GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9;
+      GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
+      GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+
+      GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+      // USART RX
+      GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
+      GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+      GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+
+      GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+      RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+
+      RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+    }
+
+  if (OW_USART == USART2) {
+      RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO,
+                             ENABLE);
+
+      GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2;
+      GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
+      GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+
+      GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+      GPIO_InitStruct.GPIO_Pin = GPIO_Pin_3;
+      GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+      GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+
+      GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+      RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+
+      RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+    }
+
+  USART_InitStructure.USART_BaudRate = 115200;
+  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_No;
+  USART_InitStructure.USART_HardwareFlowControl =
+      USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
+
+  USART_Init(OW_USART, &USART_InitStructure);
+  USART_Cmd(OW_USART, ENABLE);
+  return OW_OK;
+}
+uint8_t OW_Send(uint8_t sendReset, uint8_t *command, uint8_t cLen,
+                uint8_t *data, uint8_t dLen, uint8_t readStart) {
+//-----------------------------------------------------------------------------
+// процедура общения с шиной 1-wire
+// sendReset - посылать RESET в начале общения.
+// 		OW_SEND_RESET или OW_NO_RESET
+// command - массив байт, отсылаемых в шину. Если нужно чтение - отправляем OW_READ_SLOT
+// cLen - длина буфера команд, столько байт отошлется в шину
+// data - если требуется чтение, то ссылка на буфер для чтения
+// dLen - длина буфера для чтения. Прочитается не более этой длины
+// readStart - с какого символа передачи начинать чтение (нумеруются с 0)
+//		можно указать OW_NO_READ, тогда можно не задавать data и dLen
+//-----------------------------------------------------------------------------
+
+
+  // если требуется сброс - сбрасываем и проверяем на наличие устройств
+  if (sendReset == OW_SEND_RESET) {
+      if (OW_Reset() == OW_NO_DEVICE) {
+          return OW_NO_DEVICE;
+        }
+    }
+
+  while (cLen > 0) {
+
+      OW_toBits(*command, ow_buf);
+      command++;
+      cLen--;
+
+      OW_SendBits(8);
+
+      // если прочитанные данные кому-то нужны - выкинем их в буфер
+      if (readStart == 0 && dLen > 0) {
+          *data = OW_toByte(ow_buf);
+          data++;
+          dLen--;
+        } else {
+          if (readStart != OW_NO_READ) {
+              readStart--;
+            }
+        }
+    }
+
+  return OW_OK;
+}
+uint8_t OW_Scan(uint8_t *buf, uint8_t num) {
+
+
+//-----------------------------------------------------------------------------
+// Данная функция осуществляет сканирование сети 1-wire и записывает найденные
+//   ID устройств в массив buf, по 8 байт на каждое устройство.
+// переменная num ограничивает количество находимых устройств, чтобы не переполнить
+// буфер.
+//-----------------------------------------------------------------------------
+  uint8_t found = 0;
+  uint8_t *lastDevice;
+  uint8_t *curDevice = buf;
+  uint8_t numBit, lastCollision, currentCollision, currentSelection;
+
+  lastCollision = 0;
+  while (found < num) {
+      numBit = 1;
+      currentCollision = 0;
+
+      // посылаем команду на поиск устройств
+      OW_Send(OW_SEND_RESET, (uint8_t*)"\xf0", 1, 0, 0, OW_NO_READ);
+
+      for (numBit = 1; numBit <= 64; numBit++) {
+          // читаем два бита. Основной и комплементарный
+          OW_toBits(OW_READ_SLOT, ow_buf);
+          OW_SendBits(2);
+
+          if (ow_buf[0] == OW_R_1) {
+              if (ow_buf[1] == OW_R_1) {
+                  // две единицы, где-то провтыкали и заканчиваем поиск
+                  return found;
+                } else {
+                  // 10 - на данном этапе только 1
+                  currentSelection = 1;
+                }
+            } else {
+              if (ow_buf[1] == OW_R_1) {
+                  // 01 - на данном этапе только 0
+                  currentSelection = 0;
+                } else {
+                  // 00 - коллизия
+                  if (numBit < lastCollision) {
+                      // идем по дереву, не дошли до развилки
+                      if (lastDevice[(numBit - 1) >> 3]
+                          & 1 << ((numBit - 1) & 0x07)) {
+                          // (numBit-1)>>3 - номер байта
+                          // (numBit-1)&0x07 - номер бита в байте
+                          currentSelection = 1;
+
+                          // если пошли по правой ветке, запоминаем номер бита
+                          if (currentCollision < numBit) {
+                              currentCollision = numBit;
+                            }
+                        } else {
+                          currentSelection = 0;
+                        }
+                    } else {
+                      if (numBit == lastCollision) {
+                          currentSelection = 0;
+                        } else {
+                          // идем по правой ветке
+                          currentSelection = 1;
+
+                          // если пошли по правой ветке, запоминаем номер бита
+                          if (currentCollision < numBit) {
+                              currentCollision = numBit;
+                            }
+                        }
+                    }
+                }
+            }
+
+          if (currentSelection == 1) {
+              curDevice[(numBit - 1) >> 3] |= 1 << ((numBit - 1) & 0x07);
+              OW_toBits(0x01, ow_buf);
+            } else {
+              curDevice[(numBit - 1) >> 3] &= ~(1 << ((numBit - 1) & 0x07));
+              OW_toBits(0x00, ow_buf);
+            }
+          OW_SendBits(1);
+        }
+      found++;
+      lastDevice = curDevice;
+      curDevice += 8;
+      if (currentCollision == 0)
+        return found;
+
+      lastCollision = currentCollision;
+    }
+
+  return found;
+
+}
+uint8_t OW_Reset() {
+
+//-----------------------------------------------------------------------------
+// осуществляет сброс и проверку на наличие устройств на шине
+//-----------------------------------------------------------------------------
+  uint8_t ow_presence;
+  USART_InitTypeDef USART_InitStructure;
+
+  USART_InitStructure.USART_BaudRate = 9600;
+  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_No;
+  USART_InitStructure.USART_HardwareFlowControl =
+      USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
+  USART_Init(OW_USART, &USART_InitStructure);
+
+  // отправляем 0xf0 на скорости 9600
+  USART_ClearFlag(OW_USART, USART_FLAG_TC);
+  USART_SendData(OW_USART, 0xf0);
+  while (USART_GetFlagStatus(OW_USART, USART_FLAG_TC) == RESET) {
+#ifdef OW_GIVE_TICK_RTOS
+      taskYIELD();
+#endif
+    }
+
+  ow_presence = USART_ReceiveData(OW_USART);
+
+  USART_InitStructure.USART_BaudRate = 115200;
+  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_No;
+  USART_InitStructure.USART_HardwareFlowControl =
+      USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
+  USART_Init(OW_USART, &USART_InitStructure);
+
+  if (ow_presence != 0xf0) {
+      return OW_OK;
+    }
+
+  return OW_NO_DEVICE;
+}
+void OW_SendBits(uint8_t num_bits) {
+  DMA_InitTypeDef DMA_InitStructure;
+
+// внутренняя процедура. Записывает указанное число бит
+  // DMA на чтение
+  DMA_DeInit(OW_DMA_CH_RX);
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t) &(USART2->DR);
+  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t) ow_buf;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+  DMA_InitStructure.DMA_BufferSize = num_bits;
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
+  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+  DMA_Init(OW_DMA_CH_RX, &DMA_InitStructure);
+
+  // DMA на запись
+  DMA_DeInit(OW_DMA_CH_TX);
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t) &(USART2->DR);
+  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t) ow_buf;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
+  DMA_InitStructure.DMA_BufferSize = num_bits;
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
+  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+  DMA_Init(OW_DMA_CH_TX, &DMA_InitStructure);
+
+  // старт цикла отправки
+  USART_ClearFlag(OW_USART, USART_FLAG_RXNE | USART_FLAG_TC | USART_FLAG_TXE);
+  USART_DMACmd(OW_USART, USART_DMAReq_Tx | USART_DMAReq_Rx, ENABLE);
+  DMA_Cmd(OW_DMA_CH_RX, ENABLE);
+  DMA_Cmd(OW_DMA_CH_TX, ENABLE);
+
+  // Ждем, пока не примем 8 байт
+  while (DMA_GetFlagStatus(OW_DMA_FLAG) == RESET) {
+#ifdef OW_GIVE_TICK_RTOS
+      taskYIELD();
+#endif
+    }
+
+  // отключаем DMA
+  DMA_Cmd(OW_DMA_CH_TX, DISABLE);
+  DMA_Cmd(OW_DMA_CH_RX, DISABLE);
+  USART_DMACmd(OW_USART, USART_DMAReq_Tx | USART_DMAReq_Rx, DISABLE);
+
 }

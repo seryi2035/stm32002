@@ -237,6 +237,7 @@ int main(void) {
   uint32_t RTC_Counter01 = 0;
   uint32_t RTC_Counter02 = 0;
   uint32_t RTC_Counter03 = 0;
+  uint32_t RTC_Counter04 = 0;
   uint32_t n = 0;
   milisecondsfromSTART = 0;
   // Включить тактирование модулей управления питанием и управлением резервной областью
@@ -341,15 +342,19 @@ int main(void) {
               //res_ftable[5] = 0;
               Coils_RW[9] = 0;
           }
-      }
-    if ( (RTC_Counter02 % 60) == 4) {
-      //oprosite(); //OW opros
+      if ( (RTC_Counter02 % 60) == 4 /*&& (RTC_Counter04 != RTC_Counter02)*/) {
+        RTC_Counter04 = RTC_Counter02;
+        //oprosite(); //OW opros
               for(int i = 0;i < RX_BUF_SIZE - 1; i++) RX_BUF08[i] = (u8) RX_BUF[i];
               OW_Scan(RX_BUF08, 1);
               for(int i = 0;i < RX_BUF_SIZE - 1; i++) RX_BUF[i] = (char) RX_BUF08[i];
               //char cifry[10];
               sendaddrow();
+              //28eecda91916010c 001
+              //28ee09031a160167 002 30cm провода(зелёный, пара синих)   28ee09031a160167
+      }
     }
+
   }
 }
 

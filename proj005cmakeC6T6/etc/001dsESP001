@@ -1,0 +1,159 @@
+11:24:45.623 -> No more addresses.
+11:24:45.657 -> 
+11:24:45.890 -> ROM = 28 EE CD A9 19 16 1 C
+11:24:45.923 ->   Chip = DS18B20
+11:24:46.892 ->   Data = 1 A4 1 4B 46 7F FF C 10 DA  CRC=DA
+11:24:46.959 ->   Temperature = 26.25 Celsius, 79.25 Fahrenheit
+11:24:46.992 -> ROM = 28 13 4D 94 0 0 0 F6
+11:24:47.025 ->   Chip = DS18B20
+11:24:47.954 ->   Data = 1 A8 1 7F 80 7F FF 8 10 51  CRC=51
+11:24:47.987 ->   Temperature = 26.50 Celsius, 79.70 Fahrenheit
+11:24:48.053 -> No more addresses.
+11:24:48.053 -> 
+11:24:48.219 -> ROM = 28 EE CD A9 19 16 1 C
+11:24:48.252 ->   Chip = DS18B20
+11:24:49.216 ->   Data = 1 A3 1 4B 46 7F FF C 10 A  CRC=A
+11:24:49.282 ->   Temperature = 26.19 Celsius, 79.14 Fahrenheit
+11:24:49.316 -> ROM = 28 13 4D 94 0 0 0 F6
+11:24:49.349 ->   Chip = DS18B20
+11:24:50.247 ->   Data = 1 A7 1 7F 80 7F FF 9 10 6F  CRC=6F
+11:24:50.313 ->   Temperature = 26.44 Celsius, 79.59 Fahrenheit
+11:24:50.346 -> No more addresses.
+11:24:50.379 -> 
+11:24:50.545 -> ROM = 28 EE CD A9 19 16 1 C
+11:24:50.545 ->   Chip = DS18B20
+11:24:51.543 ->   Data = 1 A2 1 4B 46 7F FF C 10 49  CRC=49
+11:24:51.576 ->   Temperature = 26.12 Celsius, 79.03 Fahrenheit
+11:24:51.642 -> ROM = 28 13 4D 94 0 0 0 F6
+11:24:51.675 ->   Chip = DS18B20
+11:24:52.571 ->   Data = 1 A5 1 7F 80 7F FF B 10 78  CRC=78
+11:24:52.638 ->   Temperature = 26.31 Celsius, 79.36 Fahrenheit
+11:24:52.671 -> No more addresses.
+11:24:52.704 -> 
+11:24:52.836 -> ROM = 28 EE CD A9 19 16 1 C
+11:24:52.870 ->   Chip = DS18B20
+11:24:53.865 ->   Data = 1 A1 1 4B 46 7F FF C 10 8C  CRC=8C
+11:24:53.899 ->   Temperature = 26.06 Celsius, 78.91 Fahrenheit
+11:24:53.965 -> ROM = 28 13 4D 94 0 0 0 F6
+11:24:53.998 ->   Chip = DS18B20
+11:24:54.896 ->   Data = 1 A4 1 7F 80 7F FF C 10 55  CRC=55
+11:24:54.931 ->   Temperature = 26.25 Celsius, 79.25 Fahrenheit
+11:24:54.998 -> No more addresses.
+11:24:55.031 -> 
+11:24:55.164 -> ROM = 28 EE CD A9 19 16 1 C
+11:24:55.197 ->   Chip = DS18B20
+11:24:56.195 ->   Data = 1 A0 1 4B 46 7F FF C 10 CF  CRC=CF
+11:24:56.230 ->   Temperature = 26.00 Celsius, 78.80 Fahrenheit
+11:24:56.265 -> ROM = 28 13 4D 94 0 0 0 F6
+11:24:56.299 ->   Chip = DS18B20
+11:24:57.203 ->   Data = 1 A2 1 7F 80 7F FF E 10 57  CRC=57
+11:24:57.270 ->   Temperature = 26.12 Celsius, 79.03 Fahrenheit
+11:24:57.303 -> No more addresses.
+11:24:57.337 -> 
+11:24:57.503 -> ROM = 28 EE CD A9 19 16 1 C
+11:24:57.503 ->   Chip = DS18B20
+
+
+
+
+
+11:38:09.257 -> ROM = 28 C2 5C 88 0 0 0 9E
+11:38:09.290 ->   Chip = DS18B20
+11:38:10.286 ->   Data = 1 8B 1 7F 80 7F FF 5 10 B5  CRC=B5
+11:38:10.319 ->   Temperature = 24.69 Celsius, 76.44 Fahrenheit
+11:38:10.386 -> ROM = 28 D6 3 97 0 0 0 41
+11:38:10.419 ->   Chip = DS18B20
+11:38:11.315 ->   Data = 1 8B 1 7F 80 7F FF 5 10 B5  CRC=B5
+11:38:11.348 ->   Temperature = 24.69 Celsius, 76.44 Fahrenheit
+11:38:11.414 -> No more addresses.
+11:38:11.414 -> 
+
+
+
+11:54:24.586 -> ROM = 28 56 7E 94 0 0 0 A2
+11:54:24.619 ->   Chip = DS18B20
+11:54:25.596 ->   Data = 1 76 1 7F 80 7F FF A 10 F6  CRC=F6
+11:54:25.629 ->   Temperature = 23.37 Celsius, 74.07 Fahrenheit
+11:54:25.696 -> ROM = 28 DF 78 88 0 0 0 68
+11:54:25.728 ->   Chip = DS18B20
+11:54:26.625 ->   Data = 1 78 1 7F 80 7F FF 8 10 DE  CRC=DE
+11:54:26.659 ->   Temperature = 23.50 Celsius, 74.30 Fahrenheit
+11:54:26.726 -> No more addresses.
+11:54:26.726 -> 
+
+
+11:57:04.118 -> ROM = 28 C1 CC 97 0 0 0 D2
+11:57:04.152 ->   Chip = DS18B20
+11:57:05.156 ->   Data = 1 8B 1 7F 80 7F FF 5 10 B5  CRC=B5
+11:57:05.189 ->   Temperature = 24.69 Celsius, 76.44 Fahrenheit
+11:57:05.255 -> ROM = 28 29 39 97 0 0 0 2E
+11:57:05.288 ->   Chip = DS18B20
+11:57:06.184 ->   Data = 1 8C 1 7F 80 7F FF 4 10 A1  CRC=A1
+11:57:06.217 ->   Temperature = 24.75 Celsius, 76.55 Fahrenheit
+11:57:06.284 -> No more addresses.
+
+
+11:59:21.061 -> 
+11:59:21.227 -> ROM = 28 3E 52 88 0 0 0 33
+11:59:21.260 ->   Chip = DS18B20
+11:59:22.224 ->   Data = 1 9C 1 7F 80 7F FF 4 10 F5  CRC=F5
+11:59:22.291 ->   Temperature = 25.75 Celsius, 78.35 Fahrenheit
+11:59:22.324 -> ROM = 28 CF 99 94 0 0 0 E
+11:59:22.357 ->   Chip = DS18B20
+11:59:23.252 ->   Data = 1 93 1 7F 80 7F FF D 10 BD  CRC=BD
+11:59:23.318 ->   Temperature = 25.19 Celsius, 77.34 Fahrenheit
+11:59:23.352 -> No more addresses.
+
+
+
+12:01:20.455 -> 
+12:01:20.587 -> ROM = 28 22 88 94 0 0 0 DC
+12:01:20.620 ->   Chip = DS18B20
+12:01:21.616 ->   Data = 1 9F 1 7F 80 7F FF 1 10 CF  CRC=CF
+12:01:21.649 ->   Temperature = 25.94 Celsius, 78.69 Fahrenheit
+12:01:21.716 -> No more addresses.
+
+
+
+
+14:01:43.492 -> WiFi connected
+14:01:43.526 -> IP address: 
+14:01:43.526 -> 192.168.0.22
+14:01:43.559 -> sketch039OW
+14:01:43.559 -> HTTP server started
+14:01:43.592 -> ROM = 28 C2 5C 88 0 0 0 9E
+14:01:43.625 ->   Chip = DS18B20
+14:01:44.521 ->   Data = 1 49 1 7F 80 7F FF 7 10 79  CRC=79
+14:01:44.588 ->   Temperature = 20.56 Celsius, 69.01 Fahrenheit
+14:01:44.621 -> ROM = 28 D6 3 97 0 0 0 41
+14:01:44.654 ->   Chip = DS18B20
+14:01:45.550 ->   Data = 1 45 1 7F 80 7F FF B 10 B  CRC=B
+14:01:45.616 ->   Temperature = 20.31 Celsius, 68.56 Fahrenheit
+14:01:45.649 -> ROM = 28 EE CD A9 19 16 1 C
+14:01:45.682 ->   Chip = DS18B20
+14:01:46.612 ->   Data = 1 3F 1 4B 46 7F FF C 10 F3  CRC=F3
+14:01:46.645 ->   Temperature = 19.94 Celsius, 67.89 Fahrenheit
+14:01:46.712 -> ROM = 28 13 4D 94 0 0 0 F6
+14:01:46.712 ->   Chip = DS18B20
+14:01:47.641 ->   Data = 1 43 1 7F 80 7F FF D 10 32  CRC=32
+14:01:47.674 ->   Temperature = 20.19 Celsius, 68.34 Fahrenheit
+14:01:47.741 -> No more addresses.
+14:01:47.741 -> 
+14:01:47.908 -> ROM = 28 C2 5C 88 0 0 0 9E
+14:01:47.942 ->   Chip = DS18B20
+14:01:48.903 ->   Data = 1 49 1 7F 80 7F FF 7 10 79  CRC=79
+14:01:48.970 ->   Temperature = 20.56 Celsius, 69.01 Fahrenheit
+14:01:49.003 -> ROM = 28 D6 3 97 0 0 0 41
+14:01:49.036 ->   Chip = DS18B20
+14:01:49.965 ->   Data = 1 45 1 7F 80 7F FF B 10 B  CRC=B
+14:01:49.998 ->   Temperature = 20.31 Celsius, 68.56 Fahrenheit
+14:01:50.065 -> ROM = 28 EE CD A9 19 16 1 C
+14:01:50.065 ->   Chip = DS18B20
+14:01:50.994 ->   Data = 1 3F 1 4B 46 7F FF C 10 F3  CRC=F3
+14:01:51.028 ->   Temperature = 19.94 Celsius, 67.89 Fahrenheit
+14:01:51.094 -> ROM = 28 13 4D 94 0 0 0 F6
+14:01:51.127 ->   Chip = DS18B20
+14:01:52.025 ->   Data = 1 44 1 7F 80 7F FF C 10 26  CRC=26
+14:01:52.056 ->   Temperature = 20.25 Celsius, 68.45 Fahrenheit
+14:01:52.123 -> No more addresses.
+

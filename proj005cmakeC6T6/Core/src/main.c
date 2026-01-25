@@ -4,7 +4,7 @@
 #include "stm32f10x_pwr.h"
 #include "stm32f10x_usart.h"
 #include "stm32f10x_bkp.h"
-//#include "stdio.h"
+//#include "stdio.h"  //для теста
 //#include "misc.h"
 //#include "001.h"
 #include "tim2_delay.h"
@@ -66,6 +66,7 @@ void sendaddrow (void);
 
 //float schitatfTemp(char* imya);
 uint16_t schitatU16Temp(char* imya);
+uint16_t schitatU16Temp05(char* imya);
 void oprosite (void);
 
 #define DHT11_SUCCESS         1
@@ -227,8 +228,8 @@ uint8_t ow_buf[8];
 #define OW_0	0x00
 #define OW_1	0xff
 #define OW_R_1	0xff
-
-
+char cifry[10]; //для теста
+uint16_t ds18b20Value;
 
 
 
@@ -344,15 +345,60 @@ int main(void) {
           }
       if ( (RTC_Counter02 % 60) == 4 /*&& (RTC_Counter04 != RTC_Counter02)*/) {
         RTC_Counter04 = RTC_Counter02;
-        //oprosite(); //OW opros
-              for(int i = 0;i < RX_BUF_SIZE - 1; i++) RX_BUF08[i] = (u8) RX_BUF[i];
+        oprosite(); //OW opros
+        USARTSend("oprosheno\n\r");
+              /*for(int i = 0;i < RX_BUF_SIZE - 1; i++) RX_BUF08[i] = (u8) RX_BUF[i];
               OW_Scan(RX_BUF08, 1);
               for(int i = 0;i < RX_BUF_SIZE - 1; i++) RX_BUF[i] = (char) RX_BUF08[i];
-              //char cifry[10];
-              sendaddrow();
-              //28eecda91916010c 001
-              //28ee09031a160167 002 30cm провода(зелёный, пара синих)   28ee09031a160167
-              //28ee30101a1601a0 003 два кусочка провода
+              //char cifry[10];*/
+              //28eecda91916010c 001 \x28\xee\xcd\xa9\x19\x16\x01\x0c
+              //28ee09031a160167 002 \x28\xee\x09\x03\x1a\x16\x01\x67 30cm провода(зелёный, пара синих)   28ee09031a160167
+              //28ee30101a1601a0 003 \x28\xee\x30\x10\x1a\x16\x01\xa0 два кусочка провода
+              //28228894dc 004 \x28\x22\x88\x94\x0\x0\x0\xdc
+              //283e528833 005 \x28\x3e\x52\x88\x0\x0\x0\x33
+              //28cf99940e 006 \x28\xcf\x99\x94\x0\x0\x0\xe
+              //28c1cc97d2 007 \x28\xc1\xcc\x97\x0\x0\x0\xd2
+              //282939972e 008 \x28\x29\x39\x97\x0\x0\x0\x2e
+              //28567e94a2 009 \x28\x56\x7e\x94\x0\x0\x0\xa2
+              //28df788868 010 \x28\xdf\x78\x88\x0\x0\x0\x68
+              //28c25c889e 011 \x28\xc2\x5c\x88\x0\x0\x0\x9e
+              //28d6039741 012 \x28\xd6\x3\x97\x0\x0\x0\x41
+              //28134d94f6 013 \x28\x13\x4d\x94\x0\x0\x0\xf6
+              //
+      }
+      if ( (RTC_Counter02 % 60) == 8 ) {
+        ds18b20Value = schitatU16Temp("\x28\xee\xcd\xa9\x19\x16\x01\x0c");
+        cifry[2] = get_ab_xFF(ds18b20Value % 16);
+        cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
+        cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
+        USARTSend(cifry);
+        USARTSend("oprosheno001\n\r");
+      }
+      if ( (RTC_Counter02 % 60) == 12 ) {
+        ds18b20Value = schitatU16Temp("\x28\x13\x4d\x94\x00\x00\x00\xf6");
+        cifry[2] = get_ab_xFF(ds18b20Value % 16);
+        cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
+        cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
+        USARTSend(cifry);
+        USARTSend("oprosheno013\n\r");
+      }
+      if ( (RTC_Counter02 % 60) == 16 ) {
+        ds18b20Value = schitatU16Temp("\x28\xd6\x03\x97\x00\x00\x00\x41");
+        cifry[2] = get_ab_xFF(ds18b20Value % 16);
+        cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
+        cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
+        USARTSend(cifry);
+        USARTSend("oprosheno012\n\r");
+
+      }
+      if ( (RTC_Counter02 % 60) == 20 ) {
+        ds18b20Value = schitatU16Temp("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
+        cifry[2] = get_ab_xFF(ds18b20Value % 16);
+        cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
+        cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
+        USARTSend(cifry);
+        USARTSend("oprosheno011\n\r");
+        USARTSend("\n\r");
       }
     }
 
@@ -841,7 +887,7 @@ void vvhex(char vv) {
   USARTSend(ff);
 }
 void sendaddrow (void) {
-  for(int i=0; i < RX_BUF_SIZE && i < 20;i++) {
+  for(int i=0; i < RX_BUF_SIZE && i < 40;i++) {
       if (RX_BUF[i] != 0) {
           int a, b;
           char ff[2];
@@ -922,7 +968,14 @@ uint16_t schitatU16Temp(char* imya) {
 
   return ((uint16_t) ((buf[1]<<8) + (buf[0])));
 }
+uint16_t schitatU16Temp05(char* imya) {
+  uint8_t buf[2];
+  u8 command02[9] = { 0x55,(u8) imya[0],(u8) imya[1],(u8) imya[2],(u8) imya[3],
+                       (u8) imya[4], 0xbe, 0xff, 0xff};
+  OW_Send(OW_SEND_RESET, command02, 9, buf, 2, 10);
 
+  return ((uint16_t) ((buf[1]<<8) + (buf[0])));
+}
 void oprosite(void) {
   u8 comm[2];
   comm[0] = 0xcc;

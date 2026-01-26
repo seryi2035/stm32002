@@ -228,9 +228,35 @@ uint8_t ow_buf[8];
 #define OW_0	0x00
 #define OW_1	0xff
 #define OW_R_1	0xff
-char cifry[10]; //для теста
+//char cifry[10]; //для теста
 uint16_t ds18b20Value;
 
+#define DS18B20_H_
+//--------------------------------------------------
+
+//--------------------------------------------------
+#define SKIP_ROM 0
+#define NO_SKIP_ROM 1
+//--------------------------------------------------
+#define RESOLUTION_9BIT 0x1F
+#define RESOLUTION_10BIT 0x3F
+#define RESOLUTION_11BIT 0x5F
+#define RESOLUTION_12BIT 0x7F
+//--------------------------------------------------
+void DelayMicro( uint32_t micros);
+void port_init(void);
+void port_initREAD(void);
+uint8_t ds18b20_init(uint8_t mode);
+void ds18b20_MeasureTemperCmd(uint8_t mode, uint8_t *commandID);
+void ds18b20_ReadStratcpad(uint8_t mode, uint8_t *Data, uint8_t *commandID);
+uint8_t ds18b20_GetSign(uint16_t dt);
+float ds18b20_Convert(uint16_t dt);
+uint8_t ds18b20_Reset(void);
+//--------------------------------------------------
+uint8_t LastDeviceFlag;
+uint8_t LastDiscrepancy;
+uint8_t LastFamilyDiscrepancy;
+uint8_t ROM_NO[8];
 
 
 int main(void) {
@@ -240,6 +266,7 @@ int main(void) {
   uint32_t RTC_Counter03 = 0;
   uint32_t RTC_Counter04 = 0;
   uint32_t n = 0;
+  uint8_t cifry[10]={0,0,0,0,0,0,0,0,0,0}; //для теста
   milisecondsfromSTART = 0;
   // Включить тактирование модулей управления питанием и управлением резервной областью
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
@@ -254,7 +281,12 @@ int main(void) {
   TIM3_init();
   TIM4_init(); // мкс 0-19999 TIM4->CNT servo B6 B7 B9
   usart1_init(); //A9 PP RXD A10 TXD жёлый //RS232 A11 ResetBits //485     //USART 1 and GPIO A (9/10/11) ON A11pp A8invertA11
-  OW_Init(); //usart2 А2 А3
+  port_init(); //B11 B10
+  if (ds18b20_Reset == 1) {
+    USARTSend("owOK\n\r");
+    GPIO_SetBits(GPIOC, GPIO_Pin_13);
+  }
+  //OW_Init(); //usart2 А2 А3
   //dev001.port = GPIOA;
   //dev001.pin = GPIO_Pin_12;
   //dev001.humidity = 0;
@@ -286,7 +318,7 @@ int main(void) {
           net_tx1(&uart1);
     }
 
-    if ( ((RTC_Counter02 = globalsecs)  - RTC_Counter01) >= 4) {
+    if ( ((RTC_Counter02 = globalsecs)  - RTC_Counter01) >= 1) {
           //GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
           //USART1Send485("test\r\n");
           RTC_Counter01 = RTC_Counter02;
@@ -345,7 +377,8 @@ int main(void) {
           }
       if ( (RTC_Counter02 % 60) == 4 /*&& (RTC_Counter04 != RTC_Counter02)*/) {
         RTC_Counter04 = RTC_Counter02;
-        oprosite(); //OW opros
+        //oprosite(); //OW opros
+        ds18b20_MeasureTemperCmd(SKIP_ROM, 0);
         USARTSend("oprosheno\n\r");
               /*for(int i = 0;i < RX_BUF_SIZE - 1; i++) RX_BUF08[i] = (u8) RX_BUF[i];
               OW_Scan(RX_BUF08, 1);
@@ -367,36 +400,44 @@ int main(void) {
               //
       }
       if ( (RTC_Counter02 % 60) == 8 ) {
-        ds18b20Value = schitatU16Temp("\x28\xee\xcd\xa9\x19\x16\x01\x0c");
+        //ds18b20Value = schitatU16Temp("\x28\xee\xcd\xa9\x19\x16\x01\x0c");
+        ds18b20_ReadStratcpad(NO_SKIP_ROM, RX_BUF, "\x28\xee\xcd\xa9\x19\x16\x01\x0c");
         cifry[2] = get_ab_xFF(ds18b20Value % 16);
         cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
         cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
-        USARTSend(cifry);
+        //USARTSend(ROM_NO);
+        sendaddrow();
         USARTSend("oprosheno001\n\r");
       }
       if ( (RTC_Counter02 % 60) == 12 ) {
-        ds18b20Value = schitatU16Temp("\x28\x13\x4d\x94\x00\x00\x00\xf6");
+        //ds18b20Value = schitatU16Temp("\x28\x13\x4d\x94\x00\x00\x00\xf6");
+        ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\x13\x4d\x94\x00\x00\x00\xf6");
         cifry[2] = get_ab_xFF(ds18b20Value % 16);
         cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
         cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
-        USARTSend(cifry);
+        //USARTSend(ROM_NO);
+        sendaddrow();
         USARTSend("oprosheno013\n\r");
       }
       if ( (RTC_Counter02 % 60) == 16 ) {
-        ds18b20Value = schitatU16Temp("\x28\xd6\x03\x97\x00\x00\x00\x41");
+        //ds18b20Value = schitatU16Temp("\x28\xd6\x03\x97\x00\x00\x00\x41");
+        ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xd6\x03\x97\x00\x00\x00\x41");
         cifry[2] = get_ab_xFF(ds18b20Value % 16);
         cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
         cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
-        USARTSend(cifry);
+        //USARTSend(ROM_NO);
+        sendaddrow();
         USARTSend("oprosheno012\n\r");
 
       }
       if ( (RTC_Counter02 % 60) == 20 ) {
-        ds18b20Value = schitatU16Temp("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
+        //ds18b20Value = schitatU16Temp("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
+        ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xc2\x5c\x88\x0\x0\x0\x9e");
         cifry[2] = get_ab_xFF(ds18b20Value % 16);
         cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
         cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
-        USARTSend(cifry);
+        //USARTSend(ROM_NO);
+        sendaddrow();
         USARTSend("oprosheno011\n\r");
         USARTSend("\n\r");
       }
@@ -492,7 +533,7 @@ void GETonGPIO() { //PP B(11/10/1/0) C13 A(7/6) | IPU B4 | IPD B8 FLOAT B9
   // ///////// 4 OUT B11 B10 B1 B0
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
   // B11 PP
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+  /*GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
@@ -500,7 +541,7 @@ void GETonGPIO() { //PP B(11/10/1/0) C13 A(7/6) | IPU B4 | IPD B8 FLOAT B9
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  GPIO_Init(GPIOB, &GPIO_InitStructure);*/
   // B1 PP
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -888,7 +929,7 @@ void vvhex(char vv) {
 }
 void sendaddrow (void) {
   for(int i=0; i < RX_BUF_SIZE && i < 40;i++) {
-      if (RX_BUF[i] != 0) {
+      if ( 1 /*RX_BUF[i] != 0*/) {
           int a, b;
           char ff[2];
           ff[1] =(char) '\0';
@@ -965,14 +1006,6 @@ uint16_t schitatU16Temp(char* imya) {
   u8 command01[12] = { 0x55,(u8) imya[0],(u8) imya[1],(u8) imya[2],(u8) imya[3],
                        (u8) imya[4],(u8) imya[5],(u8) imya[6],(u8) imya[7], 0xbe, 0xff, 0xff};
   OW_Send(OW_SEND_RESET, command01, 12, buf, 2, 10);
-
-  return ((uint16_t) ((buf[1]<<8) + (buf[0])));
-}
-uint16_t schitatU16Temp05(char* imya) {
-  uint8_t buf[2];
-  u8 command02[9] = { 0x55,(u8) imya[0],(u8) imya[1],(u8) imya[2],(u8) imya[3],
-                       (u8) imya[4], 0xbe, 0xff, 0xff};
-  OW_Send(OW_SEND_RESET, command02, 9, buf, 2, 10);
 
   return ((uint16_t) ((buf[1]<<8) + (buf[0])));
 }
@@ -1131,9 +1164,7 @@ void iwdg_init(void) {
 }
 
 void SETglobalsecs(uint32_t count) {
-    /*uint16_t a,b;
-    a = (uint16_t) count >> 16;
-    b = (uint16_t) count;*/
+
     BKP_WriteBackupRegister(BKP_DR3, ((uint16_t) (count >> 16)));
     BKP_WriteBackupRegister(BKP_DR4, ((uint16_t) count));
 }
@@ -1338,8 +1369,7 @@ void GPIO_ToggleBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
   GPIOx->ODR ^= GPIO_Pin;
 }
 
-uint16_t crc16(uint8_t *buffer, uint16_t buffer_length);
-// Table of CRC values for high-order byte
+uint16_t crc16(uint8_t *buffer, uint16_t buffer_length);   // Table of CRC values for high-order byte
 static const uint8_t table_crc_hi[] = {
   0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0,
   0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
@@ -1627,8 +1657,8 @@ void TX_02(UART_DATA *MODBUS) {
 void setCOILS(uint8_t *Coils_RW) {
   //coilTOback();
   if (!Coils_RW[0]) { GPIO_SetBits(GPIOC, GPIO_Pin_13);    } else { GPIO_ResetBits(GPIOC, GPIO_Pin_13); }
-  if (Coils_RW[1])  { GPIO_SetBits(GPIOB, GPIO_Pin_11);    } else { GPIO_ResetBits(GPIOB, GPIO_Pin_11);  }
-  if (Coils_RW[2])  { GPIO_SetBits(GPIOB, GPIO_Pin_10);    } else { GPIO_ResetBits(GPIOB, GPIO_Pin_10);  }
+  //if (Coils_RW[1])  { GPIO_SetBits(GPIOB, GPIO_Pin_11);    } else { GPIO_ResetBits(GPIOB, GPIO_Pin_11);  }
+  //if (Coils_RW[2])  { GPIO_SetBits(GPIOB, GPIO_Pin_10);    } else { GPIO_ResetBits(GPIOB, GPIO_Pin_10);  }
   if (Coils_RW[3])  { GPIO_SetBits(GPIOB, GPIO_Pin_1);     } else { GPIO_ResetBits(GPIOB, GPIO_Pin_1);   }
   if (Coils_RW[4])  { GPIO_SetBits(GPIOB, GPIO_Pin_0);     } else { GPIO_ResetBits(GPIOB, GPIO_Pin_0);   }
   if (Coils_RW[11])  { servo001use=hold_reg.tmp_u16[11];   } else { servo001use=hold_reg.tmp_u16[10];   }
@@ -1649,8 +1679,8 @@ void read_Discrete_Inputs_RO(void)
 
   if(GPIO_ReadOutputDataBit(GPIOC, GPIO_Pin_13) != (uint8_t)Bit_SET) { Discrete_Inputs_RO[0] = 1; }else{ Discrete_Inputs_RO[0] = 0;}
   //GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_11) == (uint8_t)Bit_SET ? Discrete_Inputs_RO[1] = 1 : Discrete_Inputs_RO[1] = 0;
-  if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_11) == (uint8_t)Bit_SET) { Discrete_Inputs_RO[1] = 1; }else{ Discrete_Inputs_RO[1] = 0;}
-  if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_10) == (uint8_t)Bit_SET) { Discrete_Inputs_RO[2] = 1; }else{ Discrete_Inputs_RO[2] = 0;}
+  //if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_11) == (uint8_t)Bit_SET) { Discrete_Inputs_RO[1] = 1; }else{ Discrete_Inputs_RO[1] = 0;}
+  //if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_10) == (uint8_t)Bit_SET) { Discrete_Inputs_RO[2] = 1; }else{ Discrete_Inputs_RO[2] = 0;}
   if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_1)  == (uint8_t)Bit_SET) { Discrete_Inputs_RO[3] = 1; }else{ Discrete_Inputs_RO[3] = 0;}
   if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_0)  == (uint8_t)Bit_SET) { Discrete_Inputs_RO[4] = 1; }else{ Discrete_Inputs_RO[4] = 0;}
   if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_8)   == (uint8_t)Bit_SET) { Discrete_Inputs_RO[5] = 1; }else{ Discrete_Inputs_RO[5] = 0;}
@@ -2155,99 +2185,13 @@ uint8_t OW_Scan(uint8_t *buf, uint8_t num) {
 
 }
 uint8_t OW_Reset(void) {
+  uint16_t status=0;
 
-//-----------------------------------------------------------------------------
-// осуществляет сброс и проверку на наличие устройств на шине
-//-----------------------------------------------------------------------------
-  uint8_t ow_presence;
-  USART_InitTypeDef USART_InitStructure;
-
-  USART_InitStructure.USART_BaudRate = 9600;
-  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-  USART_InitStructure.USART_StopBits = USART_StopBits_1;
-  USART_InitStructure.USART_Parity = USART_Parity_No;
-  USART_InitStructure.USART_HardwareFlowControl =
-      USART_HardwareFlowControl_None;
-  USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
-  USART_Init(OW_USART, &USART_InitStructure);
-
-  // отправляем 0xf0 на скорости 9600
-  USART_ClearFlag(OW_USART, USART_FLAG_TC);
-  USART_SendData(OW_USART, 0xf0);
-  while (USART_GetFlagStatus(OW_USART, USART_FLAG_TC) == RESET) {
-#ifdef OW_GIVE_TICK_RTOS
-      taskYIELD();
-#endif
-    }
-
-  ow_presence = USART_ReceiveData(OW_USART);
-
-  USART_InitStructure.USART_BaudRate = 115200;
-  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-  USART_InitStructure.USART_StopBits = USART_StopBits_1;
-  USART_InitStructure.USART_Parity = USART_Parity_No;
-  USART_InitStructure.USART_HardwareFlowControl =
-      USART_HardwareFlowControl_None;
-  USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
-  USART_Init(OW_USART, &USART_InitStructure);
-
-  if (ow_presence != 0xf0) {
-      return OW_OK;
-    }
-
-  return OW_NO_DEVICE;
+  //(на всякий случай подождём побольше, так как могут быть неточности в задержке)
+  return (status);//вернём результат
 }
 void OW_SendBits(uint8_t num_bits) {
-  DMA_InitTypeDef DMA_InitStructure;
 
-// внутренняя процедура. Записывает указанное число бит
-  // DMA на чтение
-  DMA_DeInit(OW_DMA_CH_RX);
-  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t) &(USART2->DR);
-  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t) ow_buf;
-  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-  DMA_InitStructure.DMA_BufferSize = num_bits;
-  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
-  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-  DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
-  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
-  DMA_Init(OW_DMA_CH_RX, &DMA_InitStructure);
-
-  // DMA на запись
-  DMA_DeInit(OW_DMA_CH_TX);
-  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t) &(USART2->DR);
-  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t) ow_buf;
-  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
-  DMA_InitStructure.DMA_BufferSize = num_bits;
-  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
-  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
-  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-  DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
-  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
-  DMA_Init(OW_DMA_CH_TX, &DMA_InitStructure);
-
-  // старт цикла отправки
-  USART_ClearFlag(OW_USART, USART_FLAG_RXNE | USART_FLAG_TC | USART_FLAG_TXE);
-  USART_DMACmd(OW_USART, USART_DMAReq_Tx | USART_DMAReq_Rx, ENABLE);
-  DMA_Cmd(OW_DMA_CH_RX, ENABLE);
-  DMA_Cmd(OW_DMA_CH_TX, ENABLE);
-
-  // Ждем, пока не примем 8 байт
-  while (DMA_GetFlagStatus(OW_DMA_FLAG) == RESET) {
-#ifdef OW_GIVE_TICK_RTOS
-      taskYIELD();
-#endif
-    }
-
-  // отключаем DMA
-  DMA_Cmd(OW_DMA_CH_TX, DISABLE);
-  DMA_Cmd(OW_DMA_CH_RX, DISABLE);
-  USART_DMACmd(OW_USART, USART_DMAReq_Tx | USART_DMAReq_Rx, DISABLE);
 }
 void OW_toBits(uint8_t ow_byte, uint8_t *ow_bits) {
 
@@ -2285,4 +2229,168 @@ uint8_t OW_toByte(uint8_t *ow_bits) {
         }
 
         return ow_byte;
+}
+
+
+
+void DelayMicro( uint32_t micros)
+{
+micros *= (SystemCoreClock / 1000000) / 9;
+/* Wait till done */
+while (micros--) ;
+}
+//--------------------------------------------------
+void port_init(void)
+{
+  //HAL_GPIO_DeInit(GPIOB, GPIO_PIN_11);
+  GPIO_InitTypeDef GPIO_InitStructure;
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+  // B11 PP
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /*GPIOB->CRH |= GPIO_CRH_MODE11;
+  GPIOB->CRH |= GPIO_CRH_CNF11_0;
+  GPIOB->CRH &= ~GPIO_CRH_CNF11_1;*/
+}
+void port_initREAD(void)
+{
+  //HAL_GPIO_DeInit(GPIOB, GPIO_PIN_11);
+  GPIO_InitTypeDef GPIO_InitStructure;
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+  // B11 PP
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /*GPIOB->CRH |= GPIO_CRH_MODE11;
+  GPIOB->CRH |= GPIO_CRH_CNF11_0;
+  GPIOB->CRH &= ~GPIO_CRH_CNF11_1;*/
+}
+//--------------------------------------------------
+uint8_t ds18b20_Reset(void)
+{
+  uint8_t status;
+  port_init;
+  //GPIOB->ODR &= ~GPIO_ODR_ODR11;//низкий уровень
+  GPIO_ResetBits(GPIOB, GPIO_Pin_11);
+  delay_us(485);//задержка как минимум на 480 микросекунд
+  //GPIOB->ODR |= GPIO_ODR_ODR11;//высокий уровень
+  GPIO_SetBits(GPIOB, GPIO_Pin_11);
+  delay_us(65);//задержка как минимум на 60 микросекунд
+  //status = GPIOB->IDR & GPIO_IDR_IDR11;//проверяем уровень
+
+  status = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10);
+  delay_us(500);//задержка как минимум на 480 микросекунд
+  //(на всякий случай подождём побольше, так как могут быть неточности в задержке)
+  return (status);//вернём результат
+}
+//----------------------------------------------------------
+uint8_t ds18b20_ReadBit(void)
+{
+  uint8_t bit = 0;
+  //GPIOB->ODR &= ~GPIO_ODR_ODR11;//низкий уровень
+  GPIO_SetBits(GPIOB, GPIO_Pin_11);
+  delay_us(2);
+        //GPIOB->ODR |= GPIO_ODR_ODR11;//высокий уровень
+        GPIO_ResetBits(GPIOB, GPIO_Pin_11);
+        delay_us(17);
+        bit = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10);//проверяем уровень
+        delay_us(45);
+  //while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10) == Bit_RESET) ;
+  return bit;
+}
+//-----------------------------------------------
+uint8_t ds18b20_ReadByte(void)
+{
+  uint8_t data = 0;
+  for (uint8_t i = 0; i <= 7; i++)
+  data += ds18b20_ReadBit() << i;
+  return data;
+}
+//-----------------------------------------------
+void ds18b20_WriteBit(uint8_t bit)
+{
+  GPIO_ResetBits(GPIOB, GPIO_Pin_11);
+  //GPIO_SetBits(GPIOB, GPIO_Pin_11);
+  delay_us(bit ? 3 : 75);
+  //GPIO_ResetBits(GPIOB, GPIO_Pin_11);
+  GPIO_SetBits(GPIOB, GPIO_Pin_11);
+  delay_us(bit ? 75 : 3);
+}
+//-----------------------------------------------
+void ds18b20_WriteByte(uint8_t dt)
+{
+  for (uint8_t i = 0; i < 8; i++)
+  {
+    ds18b20_WriteBit(dt >> i & 1);
+    //Delay Protection
+    delay_us(5);
+
+  }
+}
+//-----------------------------------------------
+uint8_t ds18b20_init(uint8_t mode)
+{
+        if(ds18b20_Reset()) return 1;
+
+  return 0;
+}
+//----------------------------------------------------------
+void ds18b20_MeasureTemperCmd(uint8_t mode, uint8_t *commandID)
+{
+  ds18b20_Reset();
+
+    //SKIP ROM
+  ds18b20_WriteByte(0xCC);
+
+  //CONVERT T
+  ds18b20_WriteByte(0x44);
+}
+//----------------------------------------------------------
+void ds18b20_ReadStratcpad(uint8_t mode, uint8_t *Data, uint8_t *commandID)
+{
+  uint8_t i;
+  ds18b20_Reset();
+  if(mode==SKIP_ROM)
+  {
+    //SKIP ROM
+    ds18b20_WriteByte(0xCC);
+  }
+        else
+        {
+                //Match Rom
+                ds18b20_WriteByte(0x55);
+                for(i=0;i<=7;i++)
+                {
+                        ds18b20_WriteByte(commandID[i]);
+                }
+        }
+  //READ SCRATCHPAD
+  ds18b20_WriteByte(0xBE);
+  for(i=0;i<8;i++)
+  {
+    Data[i] = ds18b20_ReadByte();
+  }
+}
+//----------------------------------------------------------
+uint8_t ds18b20_GetSign(uint16_t dt)
+{
+  //Проверим 11-й бит
+  if (dt&(1<<11)) return 1;
+  else return 0;
+}
+//----------------------------------------------------------
+float ds18b20_Convert(uint16_t dt)
+{
+  float t;
+  t = (float) ((dt&0x07FF)>>4); //отборосим знаковые и дробные биты
+  //Прибавим дробную часть
+  t += (float)(dt&0x000F) / 16.0f;
+  return t;
 }

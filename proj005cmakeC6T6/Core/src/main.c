@@ -34,8 +34,8 @@ static volatile char RX_FLAG_END_LINE;
 static volatile unsigned int RXi;
 static volatile char RXc;
 static char RX_BUF[RX_BUF_SIZE]; //= {"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"};
-static u8 RX_BUF08[RX_BUF_SIZE];
-static char buffer[80];// = {"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"};
+//static u8 RX_BUF08[RX_BUF_SIZE];
+//static char buffer[80];// = {"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"};
 static volatile int TimeResult;
 static volatile int iResult;
 static volatile float fResult;
@@ -197,6 +197,11 @@ uint8_t waterplus;
 uint8_t waterpluscount;
 uint8_t waterplusSET;
 uint16_t milisecondsfromSTART;
+uint8_t gasplus;
+uint8_t gaspluscount;
+uint8_t gasplusSET;
+uint32_t litrPERminutcountWATER;
+uint32_t litrPERminutcountGAS;
 void watercounter (void);//hold reg8-9 hold.u32 Nomer5      bcp27-28
 
 #define OW_USART 		USART2
@@ -246,8 +251,8 @@ uint16_t ds18b20Value;
 void OneWire_Init(void);
 void port_init(void);
 void port_initREAD(void);
-uint8_t ds18b20_init(uint8_t mode);
-void ds18b20_MeasureTemperCmd(uint8_t mode, uint8_t *commandID);
+uint8_t ds18b20_init(void);
+void ds18b20_MeasureTemperCmd(void);
 void ds18b20_ReadStratcpad(uint8_t mode, uint8_t *Data, uint8_t *commandID);
 uint16_t ds18b20_ReadStratcpad003(uint8_t *commandID);
 uint8_t ds18b20_GetSign(uint16_t dt);
@@ -265,9 +270,11 @@ int main(void) {
   uint32_t RTC_Counter01 = 0;
   uint32_t RTC_Counter02 = 0;
   uint32_t RTC_Counter03 = 0;
-  uint32_t RTC_Counter04 = 0;
   uint32_t n = 0;
-  uint8_t cifry[10]={0,0,0,0,0,0,0,0,0,0}; //для теста
+  //float ds18averageTERMO =0;
+  float ds18deliteldivisorTERMO =0;
+  //float ds18gisterezisTERMO =0;
+  //uint8_t cifry[10]={0,0,0,0,0,0,0,0,0,0}; //для теста
   milisecondsfromSTART = 0;
   // Включить тактирование модулей управления питанием и управлением резервной областью
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
@@ -277,7 +284,7 @@ int main(void) {
   //uint16_t res003;
   SET_PAR[0] = 40; //адрес этого устройства 40 (modbus) 1-247
 
-  GETonGPIO(); //B11-B1 PP B4 B4 IPU A7 IPU A6 IPD A5 IPU
+  GETonGPIO(); //B10-B1 PP B4 B4 IPU A7 IPU A6 IPU A5 IPU
   TIM2_init(); // мkс 0-19999 TIM2->CNT servo A1 A3
   TIM3_init();
   TIM4_init(); // мкс 0-19999 TIM4->CNT servo B6 B7 B9
@@ -285,10 +292,8 @@ int main(void) {
   GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
   OneWire_Init(); //B11
   delay_ms(500);
-  if (ds18b20_Reset() == 1) {
-    USARTSend("owOK\n\r");
-    GPIO_SetBits(GPIOC, GPIO_Pin_13);
-  }
+  ds18b20_Reset();
+
   //OW_Init(); //usart2 А2 А3
   //dev001.port = GPIOA;
   //dev001.pin = GPIO_Pin_12;
@@ -302,14 +307,8 @@ int main(void) {
   //GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
   uart1.delay=150; //modbus gap 9600
   uart1.rxtimer = 0;
-  USARTSend("000\n\r");
-  USARTSend("001\n\r");
-  delay_ms(1000);
-  USARTSend("000\n\r");
-  USARTSend("002\n\r");
-  for (RTC_Counter04=0; RTC_Counter04 < 1000; RTC_Counter04++) { delay_us(999); }
-  USARTSend("000\n\r");
-  USARTSend("003\n\r");
+   delay_ms(1000);
+
   GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
   //GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
   //GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
@@ -341,16 +340,16 @@ int main(void) {
                 }else if (n > 100) {
                   n = 0;
                 }
-              hold_reg.tmp_u16[24] = hold_reg.tmp_u16[24] + 1;
+              //hold_reg.tmp_u16[24] = hold_reg.tmp_u16[24] + 1;
               RTC_Counter03 = RTC_Counter02;
               input_reg.tmp_u16[2] = (RTC_Counter02 / 3600) % 24;   //Number STM20hour   "hour [%d]"                 (gmod20_INreg)     {modbus="<[slave20_4:2]"}
               input_reg.tmp_u16[1] = (RTC_Counter02 / 60) % 60;     //Number STM20minute   "minute [:%d]"            (gmod20_INreg)     {modbus="<[slave20_4:1]"}
               input_reg.tmp_u16[0] = RTC_Counter02 % 60;            //Number STM20second  "seconds [:%d]"            (gmod20_INreg)     {modbus="<[slave20_4:0]"}
               input_reg.tmp_u16[3] = (RTC_Counter02 / (3600 * 24)); //Number STM20date  "date [%d]"                  (gmod20_INreg)     {modbus="<[slave20_4:3]"}
-              COILtimerMINUTES(1, input_reg.tmp_u16[12], BKP_DR5, hold_reg.tmp_u16[28], BKP_DR9);   //B11     slave20_403:4       slave20_302:4
-              COILtimerMINUTES(2, input_reg.tmp_u16[13], BKP_DR6, hold_reg.tmp_u16[29], BKP_DR10);  //B10     slave20_403:5       slave20_302:5
-              COILtimerMINUTES(3, input_reg.tmp_u16[14], BKP_DR7, hold_reg.tmp_u16[30], BKP_DR11);  //B1      slave20_403:6       slave20_302:6
-              COILtimerMINUTES(4, input_reg.tmp_u16[15], BKP_DR8, hold_reg.tmp_u16[31], BKP_DR12);  //B0      slave20_403:7       slave20_302:7
+              COILtimerMINUTES(1, input_reg.tmp_u16[18], BKP_DR5, hold_reg.tmp_u16[28], BKP_DR9);   //B11     slave20_403:4       slave20_302:4
+              COILtimerMINUTES(2, input_reg.tmp_u16[19], BKP_DR6, hold_reg.tmp_u16[29], BKP_DR10);  //B10     slave20_403:5       slave20_302:5
+              COILtimerMINUTES(3, input_reg.tmp_u16[20], BKP_DR7, hold_reg.tmp_u16[30], BKP_DR11);  //B1      slave20_403:6       slave20_302:6
+              COILtimerMINUTES(4, input_reg.tmp_u16[21], BKP_DR8, hold_reg.tmp_u16[31], BKP_DR12);  //B0      slave20_403:7       slave20_302:7
 
               BKP_WriteBackupRegister(BKP_DR13, hold_reg.tmp_u16[10]); //servo001min hold.u6[11] BKP_DR13
               BKP_WriteBackupRegister(BKP_DR14, hold_reg.tmp_u16[11]); //servo001max hold.u6[11] BKP_DR14
@@ -371,25 +370,30 @@ int main(void) {
           //    input_reg.tmp_float[8] = ((float)dev001.temparature + (0.1 * dev001.pointtemparature) );
           //    //Number STM20DHTtemp "DHTtemp [%.1f °C]"  (gmod20_INreg)     {modbus="<[slave20_402:0]"}
           //  }
-          input_reg.tmp_u16[11] = hold_reg.tmp_u16[27];             //Number STM20countPPRO  "ROcountPP [%d]"        (gmod20_INreg)     {modbus="<[slave20_4:11]"}
-          hold_reg.tmp_u16[26] = hold_reg.tmp_u16[25];              //prov2
-          input_reg.tmp_float[11] = (float) RTC_Counter01;          //Number STM20count "count [%.1f ]"              (gmod20_INreg)     {modbus="<[slave20_402:3]"}
+          //input_reg.tmp_u16[4] = hold_reg.tmp_u16[27];             //Number STM20countPPRO  "ROcountPP [%d]"        (gmod20_INreg)     {modbus="<[slave20_4:11]"}
+          //hold_reg.tmp_u16[26] = hold_reg.tmp_u16[25];              //prov2
+          //input_reg.tmp_float[11] = (float) RTC_Counter01;          //Number STM20count "count [%.1f ]"              (gmod20_INreg)     {modbus="<[slave20_402:3]"}
           if (Coils_RW[9] != 0) {
-              if (input_reg.tmp_i16[11] > 0) {
-                  RTC_Counter02 = RTC_Counter02 + ((uint32_t)input_reg.tmp_i16[7]);
-              } else {
-                  input_reg.tmp_i16[11] = input_reg.tmp_i16[11] * (-1);
-                  RTC_Counter02 = RTC_Counter02 + ((uint32_t)input_reg.tmp_i16[7]);
-              }
+              RTC_Counter02 = (uint32_t) (RTC_Counter02 + hold_reg.tmp_float[0]);
               SETglobalsecs(RTC_Counter02);
               //res_ftable[5] = 0;
               Coils_RW[9] = 0;
           }
-      if ( (RTC_Counter02 % 60) == 4 /*&& (RTC_Counter04 != RTC_Counter02)*/) {
-        RTC_Counter04 = RTC_Counter02;
-        //oprosite(); //OW opros
-        ds18b20_MeasureTemperCmd(SKIP_ROM, 0);
-        USARTSend("oprosheno\n\r");
+          if (Coils_RW[10] != 0) {
+              input_reg.tmp_u32[11] = (uint32_t) (input_reg.tmp_u32[11] + hold_reg.tmp_float[0]);
+              BKP_WriteBackupRegister(BKP_DR27, input_reg.tmp_u16[22]);
+              BKP_WriteBackupRegister(BKP_DR28, input_reg.tmp_u16[23]);
+              Coils_RW[10] = 0;
+          }
+          if (Coils_RW[11] != 0) {
+          input_reg.tmp_u32[12] = (uint32_t) (input_reg.tmp_u32[12] + hold_reg.tmp_float[0]);
+          BKP_WriteBackupRegister(BKP_DR25, input_reg.tmp_u16[24]);
+          BKP_WriteBackupRegister(BKP_DR26, input_reg.tmp_u16[25]);
+              Coils_RW[11] = 0;
+          }
+      if ( (RTC_Counter02 % 60) == 4 ) {
+        ds18b20_MeasureTemperCmd();
+        //USARTSend("oprosheno\n\r");
               /*for(int i = 0;i < RX_BUF_SIZE - 1; i++) RX_BUF08[i] = (u8) RX_BUF[i];
               OW_Scan(RX_BUF08, 1);
               for(int i = 0;i < RX_BUF_SIZE - 1; i++) RX_BUF[i] = (char) RX_BUF08[i];
@@ -410,86 +414,102 @@ int main(void) {
               //
       }
       if ( (RTC_Counter02 % 60) == 8 ) {
-        //ds18b20Value = schitatU16Temp("\x28\xee\xcd\xa9\x19\x16\x01\x0c");
-        //ds18b20_ReadStratcpad(NO_SKIP_ROM, RX_BUF, "\x28\xee\xcd\xa9\x19\x16\x01\x0c");
         ds18b20Value = ds18b20_ReadStratcpad003("\x28\xee\x30\x10\x1a\x16\x01\xa0");
-        cifry[2] = get_ab_xFF(ds18b20Value % 16);
-        cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
-        cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
-        USARTSend(cifry);
-        //sendaddrow();
-        USARTSend("oprosheno003\n\r");
+        input_reg.tmp_float[2] = (float) (ds18b20Value / 16.0);
       }
       if ( (RTC_Counter02 % 60) == 12 ) {
-        //ds18b20Value = schitatU16Temp("\x28\x13\x4d\x94\x00\x00\x00\xf6");
-        //ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\x13\x4d\x94\x00\x00\x00\xf6");
         ds18b20Value = ds18b20_ReadStratcpad003("\x28\x13\x4d\x94\x00\x00\x00\xf6");
-        cifry[2] = get_ab_xFF(ds18b20Value % 16);
-        cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
-        cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
-        USARTSend(cifry);
-        //sendaddrow();
-        USARTSend("oprosheno013\n\r");
+        input_reg.tmp_float[3] = (float) (ds18b20Value / 16.0);
       }
       if ( (RTC_Counter02 % 60) == 16 ) {
-        //ds18b20Value = schitatU16Temp("\x28\xd6\x03\x97\x00\x00\x00\x41");
-        //ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xd6\x03\x97\x00\x00\x00\x41");
         ds18b20Value = ds18b20_ReadStratcpad003("\x28\xd6\x03\x97\x00\x00\x00\x41");
-        cifry[2] = get_ab_xFF(ds18b20Value % 16);
-        cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
-        cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
-        USARTSend(cifry);
-        //sendaddrow();
-        USARTSend("oprosheno012\n\r");
-
+        input_reg.tmp_float[4] = (float) (ds18b20Value / 16.0);
       }
       if ( (RTC_Counter02 % 60) == 20 ) {
-        //ds18b20Value = schitatU16Temp("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
-        //ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xc2\x5c\x88\x0\x0\x0\x9e");
         ds18b20Value = ds18b20_ReadStratcpad003("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
-        cifry[2] = get_ab_xFF(ds18b20Value % 16);
-        cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
-        cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
-        USARTSend(cifry);
-        //sendaddrow();
-        USARTSend("oprosheno011\n\r");
-        //USARTSend("\n\r");
+        input_reg.tmp_float[5] = (float) (ds18b20Value / 16.0);
       }
       if ( (RTC_Counter02 % 60) == 24 ) {
-        //ds18b20Value = schitatU16Temp("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
-        //ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xc2\x5c\x88\x0\x0\x0\x9e");
         ds18b20Value = ds18b20_ReadStratcpad003("\x28\xee\x09\x03\x1a\x16\x01\x67");
-        cifry[2] = get_ab_xFF(ds18b20Value % 16);
-        cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
-        cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
-        USARTSend(cifry);
-        //sendaddrow();
-        USARTSend("oprosheno002\n\r");
-        //USARTSend("\n\r");
+        input_reg.tmp_float[6] = (float) (ds18b20Value / 16.0);
       }
       if ( (RTC_Counter02 % 60) == 28 ) {
         //ds18b20Value = schitatU16Temp("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
         //ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xc2\x5c\x88\x0\x0\x0\x9e");
         ds18b20Value = ds18b20_ReadStratcpad003("\x28\xdf\x78\x88\x0\x0\x0\x68");
-        cifry[2] = get_ab_xFF(ds18b20Value % 16);
+        input_reg.tmp_float[7] = (float) (ds18b20Value / 16.0);
+        /*cifry[2] = get_ab_xFF(ds18b20Value % 16);
         cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
         cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
         USARTSend(cifry);
         //sendaddrow();
         USARTSend("oprosheno010\n\r");
-        USARTSend("\n\r");
+        USARTSend("\n\r");*/
       }
       if ( (RTC_Counter02 % 60) == 32 ) {
-        //ds18b20Value = schitatU16Temp("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
-        //ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xc2\x5c\x88\x0\x0\x0\x9e");
         ds18b20Value = ds18b20_ReadStratcpad003("\x28\xee\xcd\xa9\x19\x16\x01\x0c");
-        cifry[2] = get_ab_xFF(ds18b20Value % 16);
-        cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
-        cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
-        USARTSend(cifry);
-        //sendaddrow();
-        USARTSend("oprosheno001\n\r");
-        USARTSend("\n\r");
+        input_reg.tmp_float[8] = (float) (ds18b20Value / 16.0);
+      }
+      if ( (RTC_Counter02 % 60) == 36 ) {
+        if (Coils_RW[17] == 1) { // запуск термостата
+          input_reg.tmp_float[13] =0;
+          ds18deliteldivisorTERMO =0;
+          if (Coils_RW[18] == 1) {   //003
+            if ( input_reg.tmp_float[2] > 5 && input_reg.tmp_float[2] < 40 ) {
+              input_reg.tmp_float[13] = input_reg.tmp_float[13] + input_reg.tmp_float[2];
+              ds18deliteldivisorTERMO = ds18deliteldivisorTERMO + 1;
+            }
+          }
+          if (Coils_RW[19] == 1) {   //013
+            if ( input_reg.tmp_float[3] > 5 && input_reg.tmp_float[3] < 40 ) {
+              input_reg.tmp_float[13] = input_reg.tmp_float[13] + input_reg.tmp_float[3];
+              ds18deliteldivisorTERMO = ds18deliteldivisorTERMO + 1;
+            }
+          }
+          if (Coils_RW[20] == 1) {   //012
+            if ( input_reg.tmp_float[4] > 5 && input_reg.tmp_float[4] < 40 ) {
+              input_reg.tmp_float[13] = input_reg.tmp_float[13] + input_reg.tmp_float[4];
+              ds18deliteldivisorTERMO = ds18deliteldivisorTERMO + 1;
+            }
+          }
+          if (Coils_RW[21] == 1) {   //011
+            if ( input_reg.tmp_float[5] > 5 && input_reg.tmp_float[5] < 40 ) {
+              input_reg.tmp_float[13] = input_reg.tmp_float[13] + input_reg.tmp_float[5];
+              ds18deliteldivisorTERMO = ds18deliteldivisorTERMO + 1;
+            }
+          }
+          if (Coils_RW[22] == 1) {   //002
+            if ( input_reg.tmp_float[6] > 5 && input_reg.tmp_float[6] < 40 ) {
+              input_reg.tmp_float[13] = input_reg.tmp_float[13] + input_reg.tmp_float[6];
+              ds18deliteldivisorTERMO = ds18deliteldivisorTERMO + 1;
+            }
+          }
+          if (Coils_RW[23] == 1) {   //010
+            if ( input_reg.tmp_float[7] > 5 && input_reg.tmp_float[7] < 40 ) {
+              input_reg.tmp_float[13] = input_reg.tmp_float[13] + input_reg.tmp_float[7];
+              ds18deliteldivisorTERMO = ds18deliteldivisorTERMO + 1;
+            }
+          }
+          if (Coils_RW[24] == 1) {   //001
+            if ( input_reg.tmp_float[8] > 5 && input_reg.tmp_float[8] < 40 ) {
+              input_reg.tmp_float[13] = input_reg.tmp_float[13] + input_reg.tmp_float[8];
+              ds18deliteldivisorTERMO = ds18deliteldivisorTERMO + 1;
+            }
+          }
+          if ( ds18deliteldivisorTERMO > 0) {
+            input_reg.tmp_float[13] = input_reg.tmp_float[13] /ds18deliteldivisorTERMO;
+            if ( input_reg.tmp_float[13] > (hold_reg.tmp_float[1] + hold_reg.tmp_float[2])) {
+              Coils_RW[3] = 0;
+              setCOILS(Coils_RW);
+            }
+            if ( input_reg.tmp_float[13] < (hold_reg.tmp_float[1] - hold_reg.tmp_float[2])) {
+              Coils_RW[3] = 1;
+              setCOILS(Coils_RW);
+            }
+          } else {
+            Coils_RW[17] = 0;
+          }
+        }
       }
     }
 
@@ -505,7 +525,10 @@ void atSTART(void) {
   //    input_reg.tmp_u32[i] = 0;
   //    hold_reg.tmp_u32[i] = 0;
   //  }
-
+  hold_reg.tmp_u16[2] = BKP_ReadBackupRegister(BKP_DR3);
+  hold_reg.tmp_u16[3] = BKP_ReadBackupRegister(BKP_DR4);
+  hold_reg.tmp_u16[4] = BKP_ReadBackupRegister(BKP_DR23);
+  hold_reg.tmp_u16[5] = BKP_ReadBackupRegister(BKP_DR24);
 
   hold_reg.tmp_u16[28] = BKP_ReadBackupRegister(BKP_DR9);
   hold_reg.tmp_u16[29] = BKP_ReadBackupRegister(BKP_DR10);
@@ -538,13 +561,18 @@ void atSTART(void) {
   //servo005use = 1000;
   //servo005min = hold_reg.tmp_u16[18];
   //WATER COUNT
-  hold_reg.tmp_u16[8] = BKP_ReadBackupRegister(BKP_DR27);
-  hold_reg.tmp_u16[9] = BKP_ReadBackupRegister(BKP_DR28);
+  input_reg.tmp_u16[22] = BKP_ReadBackupRegister(BKP_DR27);
+  input_reg.tmp_u16[23] = BKP_ReadBackupRegister(BKP_DR28);
+  input_reg.tmp_u16[24] = BKP_ReadBackupRegister(BKP_DR25);
+  input_reg.tmp_u16[25] = BKP_ReadBackupRegister(BKP_DR26);
   setCOILS(Coils_RW);
 
 waterplus=0;
 waterpluscount=0;
 waterplusSET=1;
+gasplus=0;
+gaspluscount=0;
+gasplusSET=1;
 }
 
 void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount,uint16_t inREGbkp, uint16_t holdREGtimer ,uint16_t holdREGbkp) {
@@ -555,7 +583,7 @@ void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount,uint16_t inREGbkp,
     } else {
       inREGcount = holdREGtimer;
     }
-  if (inREGcount < 1) {
+  if (inREGcount <= 1) {
       Coils_RW[coilSETED] = 0;
     }
   BKP_WriteBackupRegister(inREGbkp, inREGcount);
@@ -563,7 +591,7 @@ void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount,uint16_t inREGbkp,
 }
 
 
-void GETonGPIO() { //PP B(11/10/1/0) C13 A(7/6) | IPU B4 | IPD B8 FLOAT B9
+void GETonGPIO() { //PP B(/10/1/0) C13 A(7/6) | IPU B4 | IPD B8 FLOAT B9
   GPIO_InitTypeDef GPIO_InitStructure;
   //LED C.13
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
@@ -586,12 +614,12 @@ void GETonGPIO() { //PP B(11/10/1/0) C13 A(7/6) | IPU B4 | IPD B8 FLOAT B9
   /*GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  GPIO_Init(GPIOB, &GPIO_InitStructure);*/
   //B 10 PP
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);*/
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
   // B1 PP
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -621,7 +649,7 @@ void GETonGPIO() { //PP B(11/10/1/0) C13 A(7/6) | IPU B4 | IPD B8 FLOAT B9
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   // A6 IPU
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   // A5 IPU
@@ -1709,10 +1737,10 @@ void setCOILS(uint8_t *Coils_RW) {
   //coilTOback();
   if (!Coils_RW[0]) { GPIO_SetBits(GPIOC, GPIO_Pin_13);    } else { GPIO_ResetBits(GPIOC, GPIO_Pin_13); }
   //if (Coils_RW[1])  { GPIO_SetBits(GPIOB, GPIO_Pin_11);    } else { GPIO_ResetBits(GPIOB, GPIO_Pin_11);  }
-  //if (Coils_RW[2])  { GPIO_SetBits(GPIOB, GPIO_Pin_10);    } else { GPIO_ResetBits(GPIOB, GPIO_Pin_10);  }
+  if (Coils_RW[2])  { GPIO_SetBits(GPIOB, GPIO_Pin_10);    } else { GPIO_ResetBits(GPIOB, GPIO_Pin_10);  }
   if (Coils_RW[3])  { GPIO_SetBits(GPIOB, GPIO_Pin_1);     } else { GPIO_ResetBits(GPIOB, GPIO_Pin_1);   }
   if (Coils_RW[4])  { GPIO_SetBits(GPIOB, GPIO_Pin_0);     } else { GPIO_ResetBits(GPIOB, GPIO_Pin_0);   }
-  if (Coils_RW[11])  { servo001use=hold_reg.tmp_u16[11];   } else { servo001use=hold_reg.tmp_u16[10];   }
+  if (Coils_RW[16])  { servo001use=hold_reg.tmp_u16[11];   } else { servo001use=hold_reg.tmp_u16[10];   }
   if (Coils_RW[12])  { servo002use=hold_reg.tmp_u16[13];   } else { servo002use=hold_reg.tmp_u16[12];   }
   if (Coils_RW[13])  { servo003use=hold_reg.tmp_u16[15];   } else { servo003use=hold_reg.tmp_u16[14];   }
   if (Coils_RW[14])  { servo004use=hold_reg.tmp_u16[17];   } else { servo004use=hold_reg.tmp_u16[16];   }
@@ -1731,7 +1759,7 @@ void read_Discrete_Inputs_RO(void)
   if(GPIO_ReadOutputDataBit(GPIOC, GPIO_Pin_13) != (uint8_t)Bit_SET) { Discrete_Inputs_RO[0] = 1; }else{ Discrete_Inputs_RO[0] = 0;}
   //GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_11) == (uint8_t)Bit_SET ? Discrete_Inputs_RO[1] = 1 : Discrete_Inputs_RO[1] = 0;
   //if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_11) == (uint8_t)Bit_SET) { Discrete_Inputs_RO[1] = 1; }else{ Discrete_Inputs_RO[1] = 0;}
-  //if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_10) == (uint8_t)Bit_SET) { Discrete_Inputs_RO[2] = 1; }else{ Discrete_Inputs_RO[2] = 0;}
+  if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_10) == (uint8_t)Bit_SET) { Discrete_Inputs_RO[2] = 1; }else{ Discrete_Inputs_RO[2] = 0;}
   if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_1)  == (uint8_t)Bit_SET) { Discrete_Inputs_RO[3] = 1; }else{ Discrete_Inputs_RO[3] = 0;}
   if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_0)  == (uint8_t)Bit_SET) { Discrete_Inputs_RO[4] = 1; }else{ Discrete_Inputs_RO[4] = 0;}
   if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_8)   == (uint8_t)Bit_SET) { Discrete_Inputs_RO[5] = 1; }else{ Discrete_Inputs_RO[5] = 0;}
@@ -1760,7 +1788,7 @@ void read_Discrete_Inputs_RO(void)
 void read_Coils_RW(void) {
   if(GPIO_ReadOutputDataBit(GPIOC, GPIO_Pin_13) != (uint8_t)Bit_SET) { Coils_RW[0] = 1; }else{ Coils_RW[0] = 0;}
   //GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_11) == (uint8_t)Bit_SET ? Coils_RW[1] = 1 : Coils_RW[1] = 0;
-  if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_11) == (uint8_t)Bit_SET) { Coils_RW[1] = 1; }else{ Coils_RW[1] = 0;}
+  //if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_11) == (uint8_t)Bit_SET) { Coils_RW[1] = 1; }else{ Coils_RW[1] = 0;}
   if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_10) == (uint8_t)Bit_SET) { Coils_RW[2] = 1; }else{ Coils_RW[2] = 0;}
   if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_1)  == (uint8_t)Bit_SET) { Coils_RW[3] = 1; }else{ Coils_RW[3] = 0;}
   if(GPIO_ReadOutputDataBit(GPIOB, GPIO_Pin_0)  == (uint8_t)Bit_SET) { Coils_RW[4] = 1; }else{ Coils_RW[4] = 0;}
@@ -1772,9 +1800,7 @@ void read_Coils_RW(void) {
   //if(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_9)   == (uint8_t)Bit_SET) { Coils_RW[7] = 1; }else{ Coils_RW[7] = 0;}
   Coils_RW[7] = 0;
 
-  for(u8 i = 16; i < 32; i++) {
-      Coils_RW[i] = Coils_RW[i-16];
-    }
+
   coilTOback();
   setCOILS(Coils_RW);
 }
@@ -1994,6 +2020,13 @@ void rs485GPIOoff (void) {
 
 void watercounter (void)
 {
+  if (Coils_RW[26] == 1) {
+    if (litrPERminutcountWATER < 180000000) {
+      litrPERminutcountWATER++;
+    } else {
+    input_reg.tmp_u16[28] = 0;
+    }
+  }
   if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_5)   == (uint8_t)Bit_SET) {
 
     if (waterplus == 1 ) {
@@ -2004,10 +2037,12 @@ void watercounter (void)
           }
         } else {
         if (waterplusSET == 0 ) {
-          hold_reg.tmp_u32[4] = hold_reg.tmp_u32[4] +5;
-          BKP_WriteBackupRegister(BKP_DR27, hold_reg.tmp_u16[8]);
-          BKP_WriteBackupRegister(BKP_DR28, hold_reg.tmp_u16[9]);
+          input_reg.tmp_u32[11] = input_reg.tmp_u32[11] + 5;
+          BKP_WriteBackupRegister(BKP_DR27, input_reg.tmp_u16[22]);
+          BKP_WriteBackupRegister(BKP_DR28, input_reg.tmp_u16[23]);
           waterplusSET =1;
+          input_reg.tmp_u16[28] = (uint16_t) (1800000000 / litrPERminutcountWATER);
+          litrPERminutcountWATER = 0;
           }
         }
     } else {
@@ -2018,20 +2053,70 @@ void watercounter (void)
     if (waterplus == 0 ) {
       if (waterpluscount <= 9) {
         waterpluscount++;
-          if (waterpluscount == 9) {
+        if (waterpluscount == 9) {
           waterplusSET =0;
-          }
-        } else {
-        if (waterplusSET == 0 ) {
-          hold_reg.tmp_u32[4] = hold_reg.tmp_u32[4] +5;
-          BKP_WriteBackupRegister(BKP_DR27, hold_reg.tmp_u16[8]);
-          BKP_WriteBackupRegister(BKP_DR28, hold_reg.tmp_u16[9]);
-          waterplusSET =1;
-          }
         }
+      } else {
+        if (waterplusSET == 0 ) {
+          input_reg.tmp_u32[11] = input_reg.tmp_u32[11] + 5;
+          BKP_WriteBackupRegister(BKP_DR27, input_reg.tmp_u16[22]);
+          BKP_WriteBackupRegister(BKP_DR28, input_reg.tmp_u16[23]);
+          waterplusSET =1;
+        }
+      }
     } else {
     waterplus =0;
     waterpluscount =0;
+    }
+
+  }
+  if (Coils_RW[25] == 1) {
+    if (litrPERminutcountGAS < 180000000) {
+      litrPERminutcountGAS++;
+    } else {
+    input_reg.tmp_u16[29] = 0;
+    }
+  }
+  if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6)   == (uint8_t)Bit_SET) {
+
+    if (gasplus == 1 ) {
+      if (gaspluscount <= 9) {
+        gaspluscount++;
+          if (gaspluscount == 9) {
+          gasplusSET =0;
+          }
+      } else {
+        if (gasplusSET == 0 ) {
+          input_reg.tmp_u32[12] = input_reg.tmp_u32[12] + 5;
+          BKP_WriteBackupRegister(BKP_DR25, input_reg.tmp_u16[24]);
+          BKP_WriteBackupRegister(BKP_DR26, input_reg.tmp_u16[25]);
+          gasplusSET =1;
+          input_reg.tmp_u16[29] = (uint16_t) (1800000000 / litrPERminutcountGAS);
+          litrPERminutcountGAS =0;
+        }
+      }
+    } else {
+    gasplus =1;
+    gaspluscount =0;
+    }
+  }else{
+    if (gasplus == 0 ) {
+      if (gaspluscount <= 9) {
+        gaspluscount++;
+          if (gaspluscount == 9) {
+          gasplusSET =0;
+          }
+        } else {
+        if (gasplusSET == 0 ) {
+          input_reg.tmp_u32[12] = input_reg.tmp_u32[12] + 5;
+          BKP_WriteBackupRegister(BKP_DR25, input_reg.tmp_u16[24]);
+          BKP_WriteBackupRegister(BKP_DR26, input_reg.tmp_u16[25]);
+          gasplusSET =1;
+          }
+        }
+    } else {
+    gasplus =0;
+    gaspluscount =0;
     }
 
   }
@@ -2408,14 +2493,14 @@ void ds18b20_WriteByte(uint8_t byte)
         } while(--i);
 }
 //-----------------------------------------------
-uint8_t ds18b20_init(uint8_t mode)
+uint8_t ds18b20_init(void)
 {
         if(ds18b20_Reset()) return 1;
 
   return 0;
 }
 //----------------------------------------------------------
-void ds18b20_MeasureTemperCmd(uint8_t mode, uint8_t *commandID)
+void ds18b20_MeasureTemperCmd( void)
 {
   ds18b20_Reset();
 

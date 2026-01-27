@@ -243,12 +243,13 @@ uint16_t ds18b20Value;
 #define RESOLUTION_11BIT 0x5F
 #define RESOLUTION_12BIT 0x7F
 //--------------------------------------------------
-void DelayMicro( uint32_t micros);
+void OneWire_Init(void);
 void port_init(void);
 void port_initREAD(void);
 uint8_t ds18b20_init(uint8_t mode);
 void ds18b20_MeasureTemperCmd(uint8_t mode, uint8_t *commandID);
 void ds18b20_ReadStratcpad(uint8_t mode, uint8_t *Data, uint8_t *commandID);
+uint16_t ds18b20_ReadStratcpad003(uint8_t *commandID);
 uint8_t ds18b20_GetSign(uint16_t dt);
 float ds18b20_Convert(uint16_t dt);
 uint8_t ds18b20_Reset(void);
@@ -281,8 +282,10 @@ int main(void) {
   TIM3_init();
   TIM4_init(); // мкс 0-19999 TIM4->CNT servo B6 B7 B9
   usart1_init(); //A9 PP RXD A10 TXD жёлый //RS232 A11 ResetBits //485     //USART 1 and GPIO A (9/10/11) ON A11pp A8invertA11
-  port_init(); //B11 B10
-  if (ds18b20_Reset == 1) {
+  GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
+  OneWire_Init(); //B11
+  delay_ms(500);
+  if (ds18b20_Reset() == 1) {
     USARTSend("owOK\n\r");
     GPIO_SetBits(GPIOC, GPIO_Pin_13);
   }
@@ -299,7 +302,14 @@ int main(void) {
   //GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
   uart1.delay=150; //modbus gap 9600
   uart1.rxtimer = 0;
+  USARTSend("000\n\r");
+  USARTSend("001\n\r");
   delay_ms(1000);
+  USARTSend("000\n\r");
+  USARTSend("002\n\r");
+  for (RTC_Counter04=0; RTC_Counter04 < 1000; RTC_Counter04++) { delay_us(999); }
+  USARTSend("000\n\r");
+  USARTSend("003\n\r");
   GPIO_ToggleBits(GPIOC,GPIO_Pin_13);
   //GPIO_ResetBits(GPIOC, GPIO_Pin_13);   // C13 -- 0 VCC
   //GPIO_SetBits(GPIOC, GPIO_Pin_13);     // C13 -- 1 GDN set!
@@ -401,44 +411,84 @@ int main(void) {
       }
       if ( (RTC_Counter02 % 60) == 8 ) {
         //ds18b20Value = schitatU16Temp("\x28\xee\xcd\xa9\x19\x16\x01\x0c");
-        ds18b20_ReadStratcpad(NO_SKIP_ROM, RX_BUF, "\x28\xee\xcd\xa9\x19\x16\x01\x0c");
+        //ds18b20_ReadStratcpad(NO_SKIP_ROM, RX_BUF, "\x28\xee\xcd\xa9\x19\x16\x01\x0c");
+        ds18b20Value = ds18b20_ReadStratcpad003("\x28\xee\x30\x10\x1a\x16\x01\xa0");
         cifry[2] = get_ab_xFF(ds18b20Value % 16);
         cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
         cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
-        //USARTSend(ROM_NO);
-        sendaddrow();
-        USARTSend("oprosheno001\n\r");
+        USARTSend(cifry);
+        //sendaddrow();
+        USARTSend("oprosheno003\n\r");
       }
       if ( (RTC_Counter02 % 60) == 12 ) {
         //ds18b20Value = schitatU16Temp("\x28\x13\x4d\x94\x00\x00\x00\xf6");
-        ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\x13\x4d\x94\x00\x00\x00\xf6");
+        //ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\x13\x4d\x94\x00\x00\x00\xf6");
+        ds18b20Value = ds18b20_ReadStratcpad003("\x28\x13\x4d\x94\x00\x00\x00\xf6");
         cifry[2] = get_ab_xFF(ds18b20Value % 16);
         cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
         cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
-        //USARTSend(ROM_NO);
-        sendaddrow();
+        USARTSend(cifry);
+        //sendaddrow();
         USARTSend("oprosheno013\n\r");
       }
       if ( (RTC_Counter02 % 60) == 16 ) {
         //ds18b20Value = schitatU16Temp("\x28\xd6\x03\x97\x00\x00\x00\x41");
-        ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xd6\x03\x97\x00\x00\x00\x41");
+        //ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xd6\x03\x97\x00\x00\x00\x41");
+        ds18b20Value = ds18b20_ReadStratcpad003("\x28\xd6\x03\x97\x00\x00\x00\x41");
         cifry[2] = get_ab_xFF(ds18b20Value % 16);
         cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
         cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
-        //USARTSend(ROM_NO);
-        sendaddrow();
+        USARTSend(cifry);
+        //sendaddrow();
         USARTSend("oprosheno012\n\r");
 
       }
       if ( (RTC_Counter02 % 60) == 20 ) {
         //ds18b20Value = schitatU16Temp("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
-        ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xc2\x5c\x88\x0\x0\x0\x9e");
+        //ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xc2\x5c\x88\x0\x0\x0\x9e");
+        ds18b20Value = ds18b20_ReadStratcpad003("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
         cifry[2] = get_ab_xFF(ds18b20Value % 16);
         cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
         cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
-        //USARTSend(ROM_NO);
-        sendaddrow();
+        USARTSend(cifry);
+        //sendaddrow();
         USARTSend("oprosheno011\n\r");
+        //USARTSend("\n\r");
+      }
+      if ( (RTC_Counter02 % 60) == 24 ) {
+        //ds18b20Value = schitatU16Temp("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
+        //ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xc2\x5c\x88\x0\x0\x0\x9e");
+        ds18b20Value = ds18b20_ReadStratcpad003("\x28\xee\x09\x03\x1a\x16\x01\x67");
+        cifry[2] = get_ab_xFF(ds18b20Value % 16);
+        cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
+        cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
+        USARTSend(cifry);
+        //sendaddrow();
+        USARTSend("oprosheno002\n\r");
+        //USARTSend("\n\r");
+      }
+      if ( (RTC_Counter02 % 60) == 28 ) {
+        //ds18b20Value = schitatU16Temp("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
+        //ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xc2\x5c\x88\x0\x0\x0\x9e");
+        ds18b20Value = ds18b20_ReadStratcpad003("\x28\xdf\x78\x88\x0\x0\x0\x68");
+        cifry[2] = get_ab_xFF(ds18b20Value % 16);
+        cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
+        cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
+        USARTSend(cifry);
+        //sendaddrow();
+        USARTSend("oprosheno010\n\r");
+        USARTSend("\n\r");
+      }
+      if ( (RTC_Counter02 % 60) == 32 ) {
+        //ds18b20Value = schitatU16Temp("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
+        //ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xc2\x5c\x88\x0\x0\x0\x9e");
+        ds18b20Value = ds18b20_ReadStratcpad003("\x28\xee\xcd\xa9\x19\x16\x01\x0c");
+        cifry[2] = get_ab_xFF(ds18b20Value % 16);
+        cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
+        cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
+        USARTSend(cifry);
+        //sendaddrow();
+        USARTSend("oprosheno001\n\r");
         USARTSend("\n\r");
       }
     }
@@ -1262,6 +1312,7 @@ void delay_ms(uint32_t n_msec) {
   //}
   //TIM2->CNT = 0;
   //while (TIM2->CNT < (2 * n_msec)){}
+  //n_msec = n_msec * 2;
   while (millisec003delay_ms <= n_msec);
 }
 
@@ -1325,7 +1376,7 @@ void TIM3_init(void) {
   //TIM_TimeBaseStructInit(&TIMER_InitStructure);
 
   TIMER_InitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIMER_InitStructure.TIM_Prescaler = 72;
+  TIMER_InitStructure.TIM_Prescaler = 71;
   TIMER_InitStructure.TIM_Period = 1000;
   TIMER_InitStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseInit(TIM3, &TIMER_InitStructure);
@@ -2191,7 +2242,7 @@ uint8_t OW_Reset(void) {
   return (status);//вернём результат
 }
 void OW_SendBits(uint8_t num_bits) {
-
+  num_bits=0; //удалил код
 }
 void OW_toBits(uint8_t ow_byte, uint8_t *ow_bits) {
 
@@ -2233,11 +2284,14 @@ uint8_t OW_toByte(uint8_t *ow_bits) {
 
 
 
-void DelayMicro( uint32_t micros)
-{
-micros *= (SystemCoreClock / 1000000) / 9;
-/* Wait till done */
-while (micros--) ;
+void OneWire_Init(void) {
+  void port_init(void);
+  GPIO_SetBits(GPIOB, GPIO_Pin_11);
+  delay_us(100);
+  GPIO_ResetBits(GPIOB, GPIO_Pin_11);
+  delay_us(100);
+  GPIO_SetBits(GPIOB, GPIO_Pin_11);
+  delay_us(200);
 }
 //--------------------------------------------------
 void port_init(void)
@@ -2250,10 +2304,7 @@ void port_init(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
+
   /*GPIOB->CRH |= GPIO_CRH_MODE11;
   GPIOB->CRH |= GPIO_CRH_CNF11_0;
   GPIOB->CRH &= ~GPIO_CRH_CNF11_1;*/
@@ -2265,28 +2316,38 @@ void port_initREAD(void)
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
   // B11 PP
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
   /*GPIOB->CRH |= GPIO_CRH_MODE11;
   GPIOB->CRH |= GPIO_CRH_CNF11_0;
   GPIOB->CRH &= ~GPIO_CRH_CNF11_1;*/
 }
+void port_initIPU(void) {
+  GPIO_InitTypeDef GPIO_InitStructure;
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+  // B11 PP
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+}
+
 //--------------------------------------------------
 uint8_t ds18b20_Reset(void)
 {
   uint8_t status;
-  port_init;
-  //GPIOB->ODR &= ~GPIO_ODR_ODR11;//низкий уровень
+  port_init();
+
   GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-  delay_us(485);//задержка как минимум на 480 микросекунд
+  delay_us(480);//задержка как минимум на 480 микросекунд
   //GPIOB->ODR |= GPIO_ODR_ODR11;//высокий уровень
   GPIO_SetBits(GPIOB, GPIO_Pin_11);
-  delay_us(65);//задержка как минимум на 60 микросекунд
+  delay_us(70);//задержка как минимум на 60 микросекунд
   //status = GPIOB->IDR & GPIO_IDR_IDR11;//проверяем уровень
-
-  status = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10);
-  delay_us(500);//задержка как минимум на 480 микросекунд
+  port_initREAD();
+  status = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11);
+  delay_us(410);//задержка как минимум на 480 микросекунд
   //(на всякий случай подождём побольше, так как могут быть неточности в задержке)
   return (status);//вернём результат
 }
@@ -2294,45 +2355,57 @@ uint8_t ds18b20_Reset(void)
 uint8_t ds18b20_ReadBit(void)
 {
   uint8_t bit = 0;
-  //GPIOB->ODR &= ~GPIO_ODR_ODR11;//низкий уровень
-  GPIO_SetBits(GPIOB, GPIO_Pin_11);
+  port_init();
+
+  GPIO_ResetBits(GPIOB, GPIO_Pin_11);
   delay_us(2);
-        //GPIOB->ODR |= GPIO_ODR_ODR11;//высокий уровень
-        GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-        delay_us(17);
-        bit = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10);//проверяем уровень
-        delay_us(45);
-  //while (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10) == Bit_RESET) ;
+
+  port_initREAD();
+  delay_us(10);
+  if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11)) {
+    bit = 1;
+  }
+
+  delay_us(50);
   return bit;
 }
 //-----------------------------------------------
 uint8_t ds18b20_ReadByte(void)
 {
   uint8_t data = 0;
-  for (uint8_t i = 0; i <= 7; i++)
-  data += ds18b20_ReadBit() << i;
+  for (uint8_t i = 0; i <= 7; i++) {
+    data += ds18b20_ReadBit() << i;
+  }
   return data;
 }
 //-----------------------------------------------
-void ds18b20_WriteBit(uint8_t bit)
-{
-  GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-  //GPIO_SetBits(GPIOB, GPIO_Pin_11);
-  delay_us(bit ? 3 : 75);
-  //GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-  GPIO_SetBits(GPIOB, GPIO_Pin_11);
-  delay_us(bit ? 75 : 3);
+void ds18b20_WriteBit(uint8_t bit){
+  if (bit)      { // Send '1'
+    port_init();
+    GPIO_ResetBits(GPIOB, GPIO_Pin_11);
+    delay_us(6);
+
+    port_initIPU();  // Release bus - bit high by pullup
+    delay_us(64);
+  } else { // Send '0'
+    port_init();
+    GPIO_ResetBits(GPIOB, GPIO_Pin_11);
+    delay_us(60);
+
+    port_initIPU();  // Release bus - bit high by pullup
+    delay_us(10);
+  }
 }
 //-----------------------------------------------
-void ds18b20_WriteByte(uint8_t dt)
+void ds18b20_WriteByte(uint8_t byte)
 {
-  for (uint8_t i = 0; i < 8; i++)
-  {
-    ds18b20_WriteBit(dt >> i & 1);
-    //Delay Protection
-    delay_us(5);
+        uint8_t i = 8;
 
-  }
+        do
+        {
+                ds18b20_WriteBit(byte & 1); // LSB first
+                byte >>= 1;
+        } while(--i);
 }
 //-----------------------------------------------
 uint8_t ds18b20_init(uint8_t mode)
@@ -2377,6 +2450,27 @@ void ds18b20_ReadStratcpad(uint8_t mode, uint8_t *Data, uint8_t *commandID)
   {
     Data[i] = ds18b20_ReadByte();
   }
+}
+uint16_t ds18b20_ReadStratcpad003(uint8_t *commandID)
+{
+  uint8_t i;
+  uint8_t buf[2];
+
+  ds18b20_Reset();
+
+                //Match Rom
+                ds18b20_WriteByte(0x55);
+                for(i=0;i<=7;i++)
+                {
+                        ds18b20_WriteByte(commandID[i]);
+                }
+  //READ SCRATCHPAD
+  ds18b20_WriteByte(0xBE);
+  for(i=0;i<2;i++)
+  {
+    buf[i] = ds18b20_ReadByte();
+  }
+  return ((uint16_t) ((buf[1]<<8) + (buf[0])));
 }
 //----------------------------------------------------------
 uint8_t ds18b20_GetSign(uint16_t dt)

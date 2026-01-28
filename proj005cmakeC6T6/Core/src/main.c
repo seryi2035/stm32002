@@ -270,7 +270,7 @@ int main(void) {
   uint32_t RTC_Counter01 = 0;
   uint32_t RTC_Counter02 = 0;
   uint32_t RTC_Counter03 = 0;
-  uint32_t n = 0;
+  //uint32_t n = 0;
   //float ds18averageTERMO =0;
   float ds18deliteldivisorTERMO =0;
   //float ds18gisterezisTERMO =0;
@@ -332,14 +332,11 @@ int main(void) {
           //USART1Send485("test\r\n");
           RTC_Counter01 = RTC_Counter02;
           if ( (RTC_Counter02 - RTC_Counter03) >= 60) {
-              n++;
-              if (n > 6) {
-                  if ((hold_reg.tmp_u16[24] - hold_reg.tmp_u16[25]) > 10) {
+
+                  if ((input_reg.tmp_u16[30] - hold_reg.tmp_u16[27]) > 10) {
                       Coils_RW[8] = 1;
                   }
-                }else if (n > 100) {
-                  n = 0;
-                }
+              input_reg.tmp_u16[30] = input_reg.tmp_u16[30] + 1;
               //hold_reg.tmp_u16[24] = hold_reg.tmp_u16[24] + 1;
               RTC_Counter03 = RTC_Counter02;
               input_reg.tmp_u16[2] = (RTC_Counter02 / 3600) % 24;   //Number STM20hour   "hour [%d]"                 (gmod20_INreg)     {modbus="<[slave20_4:2]"}
@@ -1085,7 +1082,7 @@ uint16_t schitatU16Temp(char* imya) {
                        (u8) imya[4],(u8) imya[5],(u8) imya[6],(u8) imya[7], 0xbe, 0xff, 0xff};
   OW_Send(OW_SEND_RESET, command01, 12, buf, 2, 10);
 
-  return ((uint16_t) ((buf[1]<<8) + (buf[0])));
+  return ((uint16_t) ((((uint16_t)buf[1])<<8) + (buf[0])));
 }
 void oprosite(void) {
   u8 comm[2];
@@ -2021,7 +2018,7 @@ void rs485GPIOoff (void) {
 void watercounter (void)
 {
   if (Coils_RW[26] == 1) {
-    if (litrPERminutcountWATER < 180000000) {
+    if (litrPERminutcountWATER < 180000) {
       litrPERminutcountWATER++;
     } else {
     input_reg.tmp_u16[28] = 0;
@@ -2033,18 +2030,20 @@ void watercounter (void)
       if (waterpluscount <= 9) {
         waterpluscount++;
           if (waterpluscount == 9) {
-          waterplusSET =0;
+            waterplusSET =0;
           }
-        } else {
+      } else {
         if (waterplusSET == 0 ) {
           input_reg.tmp_u32[11] = input_reg.tmp_u32[11] + 5;
           BKP_WriteBackupRegister(BKP_DR27, input_reg.tmp_u16[22]);
           BKP_WriteBackupRegister(BKP_DR28, input_reg.tmp_u16[23]);
           waterplusSET =1;
-          input_reg.tmp_u16[28] = (uint16_t) (1800000000 / litrPERminutcountWATER);
-          litrPERminutcountWATER = 0;
+          if ( (Coils_RW[26] == 1) && (litrPERminutcountWATER > 10)) {
+            input_reg.tmp_u16[28] = (uint16_t) (1800000 / litrPERminutcountWATER);
+            litrPERminutcountWATER = 0;
           }
         }
+      }
     } else {
     waterplus =1;
     waterpluscount =0;
@@ -2071,7 +2070,7 @@ void watercounter (void)
 
   }
   if (Coils_RW[25] == 1) {
-    if (litrPERminutcountGAS < 180000000) {
+    if (litrPERminutcountGAS < 180000) {
       litrPERminutcountGAS++;
     } else {
     input_reg.tmp_u16[29] = 0;
@@ -2091,8 +2090,10 @@ void watercounter (void)
           BKP_WriteBackupRegister(BKP_DR25, input_reg.tmp_u16[24]);
           BKP_WriteBackupRegister(BKP_DR26, input_reg.tmp_u16[25]);
           gasplusSET =1;
-          input_reg.tmp_u16[29] = (uint16_t) (1800000000 / litrPERminutcountGAS);
-          litrPERminutcountGAS =0;
+          if ((Coils_RW[25] == 1) && (litrPERminutcountGAS > 10) ) {
+            input_reg.tmp_u16[29] = (uint16_t) (1800000 / litrPERminutcountGAS);
+            litrPERminutcountGAS =0;
+          }
         }
       }
     } else {
@@ -2327,7 +2328,56 @@ uint8_t OW_Reset(void) {
   return (status);//вернём результат
 }
 void OW_SendBits(uint8_t num_bits) {
-  num_bits=0; //удалил код
+DMA_InitTypeDef DMA_InitStructure;
+
+// внутренняя процедура. Записывает указанное число бит
+  // DMA на чтение
+  DMA_DeInit(OW_DMA_CH_RX);
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t) &(USART2->DR);
+  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t) ow_buf;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+  DMA_InitStructure.DMA_BufferSize = num_bits;
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
+  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+  DMA_Init(OW_DMA_CH_RX, &DMA_InitStructure);
+
+  // DMA на запись
+  DMA_DeInit(OW_DMA_CH_TX);
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t) &(USART2->DR);
+  DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t) ow_buf;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
+  DMA_InitStructure.DMA_BufferSize = num_bits;
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
+  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+  DMA_Init(OW_DMA_CH_TX, &DMA_InitStructure);
+
+  // старт цикла отправки
+  USART_ClearFlag(OW_USART, USART_FLAG_RXNE | USART_FLAG_TC | USART_FLAG_TXE);
+  USART_DMACmd(OW_USART, USART_DMAReq_Tx | USART_DMAReq_Rx, ENABLE);
+  DMA_Cmd(OW_DMA_CH_RX, ENABLE);
+  DMA_Cmd(OW_DMA_CH_TX, ENABLE);
+
+  // Ждем, пока не примем 8 байт
+  while (DMA_GetFlagStatus(OW_DMA_FLAG) == RESET) {
+#ifdef OW_GIVE_TICK_RTOS
+      taskYIELD();
+#endif
+    }
+
+  // отключаем DMA
+  DMA_Cmd(OW_DMA_CH_TX, DISABLE);
+  DMA_Cmd(OW_DMA_CH_RX, DISABLE);
+  USART_DMACmd(OW_USART, USART_DMAReq_Tx | USART_DMAReq_Rx, DISABLE);
 }
 void OW_toBits(uint8_t ow_byte, uint8_t *ow_bits) {
 

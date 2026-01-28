@@ -11,3 +11,161 @@
 28 C2 5C 88 0 0 0 9E
 28 D6 3 97 0 0 0 41
 28 13 4D 94 0 0 0 F6
+
+
+COILS    BKP_DR1 BKP_DR2
+00 C13
+01
+02 B10
+03 B1
+04 B0
+05 B8
+06 B4
+07 =0
+
+08 RESET
+09+Time-
+10 water+-
+11  gas+-        //servo001
+012 servo002
+013 servo003
+014 servo004
+015 servo005
+
+16 servo001
+17 TERMOSTAT
+18 003
+19 013
+20 012
+21 011
+22 002
+23 010
+24 001
+25 gaslitPERminut
+26 waterlitrPER minut
+
+HOLDREG
+00
+01 float +-
+02
+03 GOALtermo
+04
+05 GISTEREZIStermo
+
+
+08 water01
+09 water02
+10 gas01 serv01
+11 gas01 serv01
+
+12
+13
+14
+15
+16
+17
+18
+19 servo
+
+//24 prov
+//25 prov
+//26
+27 prov2
+28 t
+29 t
+30 t
+31 t
+
+INPUT_REG
+
+00 second
+01 minutes
+02 hours
+03 days
+
+04
+05 ds18b20 003
+06
+07 ds18b20 013
+08
+09 ds18b20 012
+10
+11 ds18b20 011
+12
+13 ds18b20 002
+14
+15 ds18b20 010
+16
+17 ds18b20 001
+
+//04 STM20countPPRO = holdREG027  
+
+18 COILtimerMINUTES
+19 COILtimerMINUTES
+20 COILtimerMINUTES
+21 COILtimerMINUTES                              
+
+22
+23 WATER
+24
+25 GAS
+
+26
+27 ds18averageTERMO
+
+28 litrPERminutcountWATER
+29 litrPERminutcountGAS
+
+
+
+read_Discrete_Inputs_RO
+
+00 C13
+01
+02 B10
+03 B1
+04 B0
+05 B8
+06 B4
+07
+
+08 A7 IPU
+09 A6 IPU
+10 A5 IPU water
+
+
+BKP_Register
+01 cols
+02 coils
+
+03
+04 holdFLOAT 1 goalTEMP
+
+05 t
+06 t
+07 t
+08 t
+09 hold28 t
+10 hold29 t
+11 hold30 t
+12 hold31 t
+
+13 hold10 serv
+14 hold11
+15 hold12
+16 hold13
+17 hold14
+18 hold15
+19 hold16
+20 hold17
+21 hold18
+22 hold19 serv
+
+23
+24 holdFLOAT 2 gisterezisTEMP
+
+25 input24
+26 input25 GAS
+
+27 input22
+28 intut23 WATER

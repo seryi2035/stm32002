@@ -535,16 +535,6 @@ void atSTART(void) {
   coilFROMback(); //######################################## coilFROMback();coilFROMback();coilFROMback(); BKP_DR2 BKP_DR1
   Coils_RW[8] = 0;
 
-  //setCOILS(Coils_RW);
-  //for(u8 i = 0; i < OBJ_SZ; i++) {
-  //    input_reg.tmp_u32[i] = 0;
-  //    hold_reg.tmp_u32[i] = 0;
-  //  }
-  /*hold_reg.tmp_u16[2] = BKP_ReadBackupRegister(BKP_DR29);
-  hold_reg.tmp_u16[3] = BKP_ReadBackupRegister(BKP_DR30);
-  hold_reg.tmp_u16[4] = BKP_ReadBackupRegister(BKP_DR23);
-  hold_reg.tmp_u16[5] = BKP_ReadBackupRegister(BKP_DR24);*/
-
   hold_reg.tmp_u16[28] = BKP_ReadBackupRegister(BKP_DR9);   //timer01
   hold_reg.tmp_u16[29] = BKP_ReadBackupRegister(BKP_DR10);
   hold_reg.tmp_u16[30] = BKP_ReadBackupRegister(BKP_DR11);

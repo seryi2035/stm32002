@@ -116,6 +116,7 @@ INPUT_REG
 28 litrPERminutcountWATER
 29 litrPERminutcountGAS
 
+30 PROV
 
 
 read_Discrete_Inputs_RO

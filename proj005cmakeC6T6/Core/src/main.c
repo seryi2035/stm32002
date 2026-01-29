@@ -343,10 +343,14 @@ int main(void) {
               input_reg.tmp_u16[1] = (RTC_Counter02 / 60) % 60;     //Number STM20minute   "minute [:%d]"            (gmod20_INreg)     {modbus="<[slave20_4:1]"}
               input_reg.tmp_u16[0] = RTC_Counter02 % 60;            //Number STM20second  "seconds [:%d]"            (gmod20_INreg)     {modbus="<[slave20_4:0]"}
               input_reg.tmp_u16[3] = (RTC_Counter02 / (3600 * 24)); //Number STM20date  "date [%d]"                  (gmod20_INreg)     {modbus="<[slave20_4:3]"}
-              COILtimerMINUTES(1, input_reg.tmp_u16[18], BKP_DR5, hold_reg.tmp_u16[28], BKP_DR9);   //B11     slave20_403:4       slave20_302:4
+              /*COILtimerMINUTES(1, input_reg.tmp_u16[18], BKP_DR5, hold_reg.tmp_u16[28], BKP_DR9);   //B11     slave20_403:4       slave20_302:4
               COILtimerMINUTES(2, input_reg.tmp_u16[19], BKP_DR6, hold_reg.tmp_u16[29], BKP_DR10);  //B10     slave20_403:5       slave20_302:5
               COILtimerMINUTES(3, input_reg.tmp_u16[20], BKP_DR7, hold_reg.tmp_u16[30], BKP_DR11);  //B1      slave20_403:6       slave20_302:6
-              COILtimerMINUTES(4, input_reg.tmp_u16[21], BKP_DR8, hold_reg.tmp_u16[31], BKP_DR12);  //B0      slave20_403:7       slave20_302:7
+              COILtimerMINUTES(4, input_reg.tmp_u16[21], BKP_DR8, hold_reg.tmp_u16[31], BKP_DR12);  //B0      slave20_403:7       slave20_302:7*/
+              COILtimerMINUTES(1, 18, BKP_DR5, 28, BKP_DR9);   //B11     slave20_403:4       slave20_302:4
+              COILtimerMINUTES(2, 19, BKP_DR6, 29, BKP_DR10);  //B10     slave20_403:5       slave20_302:5
+              COILtimerMINUTES(3, 20, BKP_DR7, 30, BKP_DR11);  //B1      slave20_403:6       slave20_302:6
+              COILtimerMINUTES(4, 21, BKP_DR8, 31, BKP_DR12);  //B0      slave20_403:7       slave20_302:7
 
               BKP_WriteBackupRegister(BKP_DR13, hold_reg.tmp_u16[10]); //servo001min hold.u6[11] BKP_DR13
               BKP_WriteBackupRegister(BKP_DR14, hold_reg.tmp_u16[11]); //servo001max hold.u6[11] BKP_DR14
@@ -358,18 +362,18 @@ int main(void) {
               BKP_WriteBackupRegister(BKP_DR20, hold_reg.tmp_u16[17]);
               BKP_WriteBackupRegister(BKP_DR21, hold_reg.tmp_u16[18]);
               BKP_WriteBackupRegister(BKP_DR22, hold_reg.tmp_u16[19]);
+
+              /*BKP_WriteBackupRegister(BKP_DR29, hold_reg.tmp_u16[2]);
+              BKP_WriteBackupRegister(BKP_DR30, hold_reg.tmp_u16[3]);
+              BKP_WriteBackupRegister(BKP_DR23, hold_reg.tmp_u16[4]);
+              BKP_WriteBackupRegister(BKP_DR24, hold_reg.tmp_u16[5]);*/
+
+              BKP_WriteBackupRegister(BKP_DR23, hold_reg.tmp_u16[20]);
+              BKP_WriteBackupRegister(BKP_DR24, hold_reg.tmp_u16[21]);
+              hold_reg.tmp_float[1] = (float) ((float) hold_reg.tmp_u16[20] /100.0);
+              hold_reg.tmp_float[2] = (float) ((float) hold_reg.tmp_u16[21] /100.0);
           }
-          //ds18b20Value = schitatU16Temp("\x28\xee\xe8\x19\x17\x16\x02\xa1");
-          //input_reg.tmp_float[9] = (float) (ds18b20Value / 16.0);   //Number STM20DS03f "DS01 floatTemp [%.2f °C]"   (gmod20_INreg)     {modbus="<[slave20_402:1]"}
-          //input_reg.tmp_u16[4] = DHT11_read(&dev001);               //Number STM20DHTres "DHTstatus [%d]"            (gmod20_INreg)     {modbus="<[slave20_4:4]"}
-          //if (input_reg.tmp_u16[4] == DHT11_SUCCESS) {
-          //    input_reg.tmp_u16[5] = dev001.humidity;               //Number STM20DHThum "humidity [%d %%]"          (gmod20_INreg)     {modbus="<[slave20_4:5]"}
-          //    input_reg.tmp_float[8] = ((float)dev001.temparature + (0.1 * dev001.pointtemparature) );
-          //    //Number STM20DHTtemp "DHTtemp [%.1f °C]"  (gmod20_INreg)     {modbus="<[slave20_402:0]"}
-          //  }
-          //input_reg.tmp_u16[4] = hold_reg.tmp_u16[27];             //Number STM20countPPRO  "ROcountPP [%d]"        (gmod20_INreg)     {modbus="<[slave20_4:11]"}
-          //hold_reg.tmp_u16[26] = hold_reg.tmp_u16[25];              //prov2
-          //input_reg.tmp_float[11] = (float) RTC_Counter01;          //Number STM20count "count [%.1f ]"              (gmod20_INreg)     {modbus="<[slave20_402:3]"}
+
           if (Coils_RW[9] != 0) {
               RTC_Counter02 = (uint32_t) (RTC_Counter02 + hold_reg.tmp_float[0]);
               SETglobalsecs(RTC_Counter02);
@@ -377,16 +381,30 @@ int main(void) {
               Coils_RW[9] = 0;
           }
           if (Coils_RW[10] != 0) {
-              input_reg.tmp_u32[11] = (uint32_t) (input_reg.tmp_u32[11] + hold_reg.tmp_float[0]);
+            if (Coils_RW[27] == 0) {
+              input_reg.tmp_u32[11] = (uint32_t) (input_reg.tmp_u32[11] + (hold_reg.tmp_u16[0] + hold_reg.tmp_u16[1] *1000));
               BKP_WriteBackupRegister(BKP_DR27, input_reg.tmp_u16[22]);
               BKP_WriteBackupRegister(BKP_DR28, input_reg.tmp_u16[23]);
               Coils_RW[10] = 0;
+            } else {
+              input_reg.tmp_u32[11] = (uint32_t) (input_reg.tmp_u32[11] - (hold_reg.tmp_u16[0] + hold_reg.tmp_u16[1] *1000));
+              BKP_WriteBackupRegister(BKP_DR27, input_reg.tmp_u16[22]);
+              BKP_WriteBackupRegister(BKP_DR28, input_reg.tmp_u16[23]);
+              Coils_RW[10] = 0;
+            }
           }
           if (Coils_RW[11] != 0) {
-          input_reg.tmp_u32[12] = (uint32_t) (input_reg.tmp_u32[12] + hold_reg.tmp_float[0]);
-          BKP_WriteBackupRegister(BKP_DR25, input_reg.tmp_u16[24]);
-          BKP_WriteBackupRegister(BKP_DR26, input_reg.tmp_u16[25]);
+            if (Coils_RW[27] == 0) {
+              input_reg.tmp_u32[12] = (uint32_t) (input_reg.tmp_u32[12] + (hold_reg.tmp_u16[0] + hold_reg.tmp_u16[1] *1000));
+              BKP_WriteBackupRegister(BKP_DR25, input_reg.tmp_u16[24]);
+              BKP_WriteBackupRegister(BKP_DR26, input_reg.tmp_u16[25]);
               Coils_RW[11] = 0;
+            } else {
+              input_reg.tmp_u32[12] = (uint32_t) (input_reg.tmp_u32[12] + (hold_reg.tmp_u16[0] + hold_reg.tmp_u16[1] *1000));
+              BKP_WriteBackupRegister(BKP_DR25, input_reg.tmp_u16[24]);
+              BKP_WriteBackupRegister(BKP_DR26, input_reg.tmp_u16[25]);
+              Coils_RW[11] = 0;
+            }
           }
       if ( (RTC_Counter02 % 60) == 4 ) {
         ds18b20_MeasureTemperCmd();
@@ -522,12 +540,12 @@ void atSTART(void) {
   //    input_reg.tmp_u32[i] = 0;
   //    hold_reg.tmp_u32[i] = 0;
   //  }
-  hold_reg.tmp_u16[2] = BKP_ReadBackupRegister(BKP_DR3);
-  hold_reg.tmp_u16[3] = BKP_ReadBackupRegister(BKP_DR4);
+  /*hold_reg.tmp_u16[2] = BKP_ReadBackupRegister(BKP_DR29);
+  hold_reg.tmp_u16[3] = BKP_ReadBackupRegister(BKP_DR30);
   hold_reg.tmp_u16[4] = BKP_ReadBackupRegister(BKP_DR23);
-  hold_reg.tmp_u16[5] = BKP_ReadBackupRegister(BKP_DR24);
+  hold_reg.tmp_u16[5] = BKP_ReadBackupRegister(BKP_DR24);*/
 
-  hold_reg.tmp_u16[28] = BKP_ReadBackupRegister(BKP_DR9);
+  hold_reg.tmp_u16[28] = BKP_ReadBackupRegister(BKP_DR9);   //timer01
   hold_reg.tmp_u16[29] = BKP_ReadBackupRegister(BKP_DR10);
   hold_reg.tmp_u16[30] = BKP_ReadBackupRegister(BKP_DR11);
   hold_reg.tmp_u16[31] = BKP_ReadBackupRegister(BKP_DR12);
@@ -554,6 +572,11 @@ void atSTART(void) {
   //servo004min = hold_reg.tmp_u16[16];
   hold_reg.tmp_u16[18] = BKP_ReadBackupRegister(BKP_DR21);
   hold_reg.tmp_u16[19] = BKP_ReadBackupRegister(BKP_DR22);
+
+  hold_reg.tmp_u16[20] = BKP_ReadBackupRegister(BKP_DR23); //goal100
+  hold_reg.tmp_u16[21] = BKP_ReadBackupRegister(BKP_DR24); // gisterezis100
+  hold_reg.tmp_float[1] = (float) ((float) hold_reg.tmp_u16[20] /100.0);
+  hold_reg.tmp_float[2] = (float) ((float) hold_reg.tmp_u16[21] /100.0);
   //servo005max = hold_reg.tmp_u16[19];
   //servo005use = 1000;
   //servo005min = hold_reg.tmp_u16[18];
@@ -573,18 +596,18 @@ gasplusSET=1;
 }
 
 void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount,uint16_t inREGbkp, uint16_t holdREGtimer ,uint16_t holdREGbkp) {
-  inREGcount = BKP_ReadBackupRegister(inREGbkp);
+  input_reg.tmp_u16[inREGcount] = BKP_ReadBackupRegister(inREGbkp);
 
   if ( Coils_RW[coilSETED] != 0) {
-      inREGcount--;
+      input_reg.tmp_u16[inREGcount]--;
     } else {
-      inREGcount = holdREGtimer;
+      input_reg.tmp_u16[inREGcount] = hold_reg.tmp_u16[holdREGtimer];
     }
-  if (inREGcount <= 1) {
+  if (input_reg.tmp_u16[inREGcount] <= 1) {
       Coils_RW[coilSETED] = 0;
     }
-  BKP_WriteBackupRegister(inREGbkp, inREGcount);
-  BKP_WriteBackupRegister(holdREGbkp, holdREGtimer);
+  BKP_WriteBackupRegister(inREGbkp, input_reg.tmp_u16[inREGcount]);
+  BKP_WriteBackupRegister(holdREGbkp, hold_reg.tmp_u16[holdREGtimer]);
 }
 
 

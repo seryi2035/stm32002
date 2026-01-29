@@ -587,12 +587,21 @@ void atSTART(void) {
   input_reg.tmp_u16[25] = BKP_ReadBackupRegister(BKP_DR26);
   setCOILS(Coils_RW);
 
-waterplus=0;
-waterpluscount=0;
-waterplusSET=1;
-gasplus=0;
-gaspluscount=0;
-gasplusSET=1;
+
+  if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_5)   == (uint8_t)Bit_SET) {
+    waterplus=1;
+  } else {
+    waterplus=0;
+  }
+  waterpluscount=20;
+  waterplusSET=1;
+  if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6)   == (uint8_t)Bit_SET) {
+    gasplus=1;
+  } else {
+    gasplus=0;
+  }
+  gaspluscount=20;
+  gasplusSET=1;
 }
 
 void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount,uint16_t inREGbkp, uint16_t holdREGtimer ,uint16_t holdREGbkp) {
@@ -608,6 +617,7 @@ void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount,uint16_t inREGbkp,
     }
   BKP_WriteBackupRegister(inREGbkp, input_reg.tmp_u16[inREGcount]);
   BKP_WriteBackupRegister(holdREGbkp, hold_reg.tmp_u16[holdREGtimer]);
+  setCOILS(Coils_RW);
 }
 
 
@@ -1049,56 +1059,7 @@ void sendaddrow (void) {
     }
 }
 
-/*u16 schitatTemp(char* imya) {
-  //-----------------------------------------------------------------------------
-  // процедура общения с шиной 1-wire
-  // sendReset - посылать RESET в начале общения.
-  // 		OW_SEND_RESET или OW_NO_RESET
-  // command - массив байт, отсылаемых в шину. Если нужно чтение - отправляем OW_READ_SLOT
-  // cLen - длина буфера команд, столько байт отошлется в шину
-  // data - если требуется чтение, то ссылка на буфер для чтения
-  // dLen - длина буфера для чтения. Прочитается не более этой длины
-  // readStart - с какого символа передачи начинать чтение (нумеруются с 0)
-  //		можно указать OW_NO_READ, тогда можно не задавать data и dLen
-  //-----------------------------------------------------------------------------
-  //OW_Send(uint8_t sendReset, uint8_t *command, uint8_t cLen, uint8_t *data, uint8_t dLen, uint8_t readStart)
-  //OW_Send(OW_SEND_RESET, "\x28\xEE\x09\x03\x1A\x16\x01\x67\x88\xbe\xff\xff", 12, RX_BUF, 2, 10);
-  uint8_t buf[2];
-  //OW_Send(OW_SEND_RESET, "\xcc\xbe\xff\xff", 4, buf,2, 2);
-  //char command01[12] = {'\x55', imya[0], imya[1], imya[2], imya[3], imya[4],
-    imya[5], imya[6], imya[7],'\xbe', '\xff', '\xff'};
-  u8 command01[12] = {(u8)'\x55',(u8) imya[0],(u8) imya[1],(u8) imya[2],(u8)
-imya[3],(u8) imya[4],(u8) imya[5],(u8) imya[6],(u8) imya[7],(u8)'\xbe',(u8) '\xff',(u8) '\xff'};
-  OW_Send(OW_SEND_RESET, command01, 12, buf, 2, 10);
-  //USARTSend("\n\rTHIS IS 000\n\r");
-  //USARTSend(buf);
-  //USARTSend("\n\r");
-  //int temp = ((buf[1] * 256) + buf[0]) * 16;
-  char cifry[20];
-  vvhex(buf[1]);
-  vvhex(buf[0]);
-  USARTSend("\n\r");
-  //USARTSend(imya);
-  for(int i = 0; i <= 7; i++)
-    vvhex(imya[i]);
-  USARTSend("\n\r");
-  int temp = convT_DS18B20(buf[0], buf[1]);
-  sprintf(cifry, "termperature :%d.%d\r\n", temp, (int) (0.0625*1000)*(buf[0] % 16));
-  USARTSend(cifry);
-  //sprintf(cifry, ".%d\r\n", (int) (0.0625*1000)*(buf[0] % 16));
-  //USARTSend(cifry);
-  retern  ;
-}*/
 
-/*float schitatfTemp(char* imya) {
-  uint8_t buf[2];
-  u8 command01[12] = { 0x55,(u8) imya[0],(u8) imya[1],(u8) imya[2],(u8) imya[3],(u8) imya[4],
-                       (u8) imya[5],(u8) imya[6],(u8) imya[7], 0xbe, 0xff, 0xff};
-  OW_Send(OW_SEND_RESET, command01, 12, buf, 2, 10);
-  float ftemp;
-  ftemp = (float) ( (float) ((buf[1] << 8) | buf[0]) / 16.0);
-  return ftemp;
-}*/
 uint16_t schitatU16Temp(char* imya) {
   uint8_t buf[2];
   u8 command01[12] = { 0x55,(u8) imya[0],(u8) imya[1],(u8) imya[2],(u8) imya[3],
@@ -2071,7 +2032,7 @@ void watercounter (void)
     waterplus =1;
     waterpluscount =0;
     }
-  }else{
+  }else{  //A5-
     if (waterplus == 0 ) {
       if (waterpluscount <= 9) {
         waterpluscount++;

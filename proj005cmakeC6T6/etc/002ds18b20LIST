@@ -43,6 +43,7 @@ COILS    BKP_DR1 BKP_DR2
 24 001
 25 gaslitPERminut
 26 waterlitrPER minut
+27 ZNAK+-MINUS
 
 HOLDREG
 00
@@ -67,6 +68,8 @@ HOLDREG
 18
 19 servo
 
+20 GOALtermo100
+21 GISTERZIStermo100
 //24 prov
 //25 prov
 //26
@@ -139,8 +142,8 @@ BKP_Register
 01 cols
 02 coils
 
-03
-04 holdFLOAT 1 goalTEMP
+03 GLOBALSEC
+04 globalsec
 
 05 t
 06 t
@@ -170,3 +173,5 @@ BKP_Register
 
 27 input22
 28 intut23 WATER
+
+

@@ -185,3 +185,19 @@
 13:23:50.119 -> 0000000000000000
 13:23:50.317 -> oprosheno011
 13:23:50.351 -> 
+
+
+
+
+rule "test 1min per hour"
+when
+        Time cron "41 * * * * ?"
+then
+	
+	if(stm40_Rw03.state == OFF) {
+		sendCommand(stm40_Rw03, ON)
+		
+	} else {
+		 sendCommand(stm40_Rw03, OFF)
+	}
+end

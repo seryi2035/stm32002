@@ -608,12 +608,13 @@ void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount,uint16_t inREGbkp,
   input_reg.tmp_u16[inREGcount] = BKP_ReadBackupRegister(inREGbkp);
 
   if ( Coils_RW[coilSETED] != 0) {
-      input_reg.tmp_u16[inREGcount]--;
+      input_reg.tmp_u16[inREGcount]= input_reg.tmp_u16[inREGcount] - 1;
     } else {
       input_reg.tmp_u16[inREGcount] = hold_reg.tmp_u16[holdREGtimer];
     }
   if (input_reg.tmp_u16[inREGcount] <= 1) {
       Coils_RW[coilSETED] = 0;
+      input_reg.tmp_u16[inREGcount] = hold_reg.tmp_u16[holdREGtimer];
     }
   BKP_WriteBackupRegister(inREGbkp, input_reg.tmp_u16[inREGcount]);
   BKP_WriteBackupRegister(holdREGbkp, hold_reg.tmp_u16[holdREGtimer]);

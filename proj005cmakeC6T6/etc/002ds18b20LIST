@@ -142,36 +142,17 @@ BKP_Register
 01 cols
 02 coils
 
-03 GLOBALSEC
-04 globalsec
+03 GOAL
+04 GISTER
 
-05 t
-06 t
-07 t
-08 t
-09 hold28 t
-10 hold29 t
-11 hold30 t
-12 hold31 t
+05 
+06 GAS
 
-13 hold10 serv
-14 hold11
-15 hold12
-16 hold13
-17 hold14
-18 hold15
-19 hold16
-20 hold17
-21 hold18
-22 hold19 serv
+07 
+08 WATER
 
-23
-24 holdFLOAT 2 gisterezisTEMP
+09 hold28 t B1
+10 hold29 t B1 set
 
-25 input24
-26 input25 GAS
-
-27 input22
-28 intut23 WATER
 
 

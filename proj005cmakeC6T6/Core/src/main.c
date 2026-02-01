@@ -81,8 +81,7 @@ void iwdg_init(void);
 static uint16_t millisec2;
 static uint32_t globalsecs;
 static uint32_t millisec003delay_ms;
-void SETglobalsecs(uint32_t count);
-uint32_t GETglobalsecs(void);
+
 
 
 void TIM2_init(void);
@@ -270,6 +269,7 @@ int main(void) {
   uint32_t RTC_Counter01 = 0;
   uint32_t RTC_Counter02 = 0;
   uint32_t RTC_Counter03 = 0;
+  globalsecs = 0;
   //uint32_t n = 0;
   //float ds18averageTERMO =0;
   float ds18deliteldivisorTERMO =0;
@@ -347,12 +347,12 @@ int main(void) {
               COILtimerMINUTES(2, input_reg.tmp_u16[19], BKP_DR6, hold_reg.tmp_u16[29], BKP_DR10);  //B10     slave20_403:5       slave20_302:5
               COILtimerMINUTES(3, input_reg.tmp_u16[20], BKP_DR7, hold_reg.tmp_u16[30], BKP_DR11);  //B1      slave20_403:6       slave20_302:6
               COILtimerMINUTES(4, input_reg.tmp_u16[21], BKP_DR8, hold_reg.tmp_u16[31], BKP_DR12);  //B0      slave20_403:7       slave20_302:7*/
-              COILtimerMINUTES(1, 18, BKP_DR5, 28, BKP_DR9);   //B11     slave20_403:4       slave20_302:4
-              COILtimerMINUTES(2, 19, BKP_DR6, 29, BKP_DR10);  //B10     slave20_403:5       slave20_302:5
-              COILtimerMINUTES(3, 20, BKP_DR7, 30, BKP_DR11);  //B1      slave20_403:6       slave20_302:6
-              COILtimerMINUTES(4, 21, BKP_DR8, 31, BKP_DR12);  //B0      slave20_403:7       slave20_302:7
+              //COILtimerMINUTES(1, 18, BKP_DR5, 28, BKP_DR9);   //B11     slave20_403:4       slave20_302:4
+              //COILtimerMINUTES(2, 19, BKP_DR6, 29, BKP_DR10);  //B10     slave20_403:5       slave20_302:5
+              COILtimerMINUTES(3, 20, BKP_DR9, 30, BKP_DR10);  //B1      slave20_403:6       slave20_302:6
+              //COILtimerMINUTES(4, 21, BKP_DR8, 31, BKP_DR12);  //B0      slave20_403:7       slave20_302:7
 
-              BKP_WriteBackupRegister(BKP_DR13, hold_reg.tmp_u16[10]); //servo001min hold.u6[11] BKP_DR13
+              /*BKP_WriteBackupRegister(BKP_DR13, hold_reg.tmp_u16[10]); //servo001min hold.u6[11] BKP_DR13
               BKP_WriteBackupRegister(BKP_DR14, hold_reg.tmp_u16[11]); //servo001max hold.u6[11] BKP_DR14
               BKP_WriteBackupRegister(BKP_DR15, hold_reg.tmp_u16[12]);
               BKP_WriteBackupRegister(BKP_DR16, hold_reg.tmp_u16[13]);
@@ -361,48 +361,48 @@ int main(void) {
               BKP_WriteBackupRegister(BKP_DR19, hold_reg.tmp_u16[16]);
               BKP_WriteBackupRegister(BKP_DR20, hold_reg.tmp_u16[17]);
               BKP_WriteBackupRegister(BKP_DR21, hold_reg.tmp_u16[18]);
-              BKP_WriteBackupRegister(BKP_DR22, hold_reg.tmp_u16[19]);
+              BKP_WriteBackupRegister(BKP_DR22, hold_reg.tmp_u16[19]);*/
 
               /*BKP_WriteBackupRegister(BKP_DR29, hold_reg.tmp_u16[2]);
               BKP_WriteBackupRegister(BKP_DR30, hold_reg.tmp_u16[3]);
               BKP_WriteBackupRegister(BKP_DR23, hold_reg.tmp_u16[4]);
               BKP_WriteBackupRegister(BKP_DR24, hold_reg.tmp_u16[5]);*/
 
-              BKP_WriteBackupRegister(BKP_DR23, hold_reg.tmp_u16[20]);
-              BKP_WriteBackupRegister(BKP_DR24, hold_reg.tmp_u16[21]);
+              BKP_WriteBackupRegister(BKP_DR3, hold_reg.tmp_u16[20]);
+              BKP_WriteBackupRegister(BKP_DR4, hold_reg.tmp_u16[21]);
               hold_reg.tmp_float[1] = (float) ((float) hold_reg.tmp_u16[20] /100.0);
               hold_reg.tmp_float[2] = (float) ((float) hold_reg.tmp_u16[21] /100.0);
           }
 
           if (Coils_RW[9] != 0) {
-              RTC_Counter02 = (uint32_t) (RTC_Counter02 + hold_reg.tmp_float[0]);
-              SETglobalsecs(RTC_Counter02);
+              globalsecs = hold_reg.tmp_u16[0] + hold_reg.tmp_u16[1] *1000;
+              //SETglobalsecs(RTC_Counter02);
               //res_ftable[5] = 0;
               Coils_RW[9] = 0;
           }
           if (Coils_RW[10] != 0) {
             if (Coils_RW[27] == 0) {
               input_reg.tmp_u32[11] = (uint32_t) (input_reg.tmp_u32[11] + (hold_reg.tmp_u16[0] + hold_reg.tmp_u16[1] *1000));
-              BKP_WriteBackupRegister(BKP_DR27, input_reg.tmp_u16[22]);
-              BKP_WriteBackupRegister(BKP_DR28, input_reg.tmp_u16[23]);
+              BKP_WriteBackupRegister(BKP_DR7, input_reg.tmp_u16[22]);
+              BKP_WriteBackupRegister(BKP_DR8, input_reg.tmp_u16[23]);
               Coils_RW[10] = 0;
             } else {
               input_reg.tmp_u32[11] = (uint32_t) (input_reg.tmp_u32[11] - (hold_reg.tmp_u16[0] + hold_reg.tmp_u16[1] *1000));
-              BKP_WriteBackupRegister(BKP_DR27, input_reg.tmp_u16[22]);
-              BKP_WriteBackupRegister(BKP_DR28, input_reg.tmp_u16[23]);
+              BKP_WriteBackupRegister(BKP_DR7, input_reg.tmp_u16[22]);
+              BKP_WriteBackupRegister(BKP_DR8, input_reg.tmp_u16[23]);
               Coils_RW[10] = 0;
             }
           }
           if (Coils_RW[11] != 0) {
             if (Coils_RW[27] == 0) {
               input_reg.tmp_u32[12] = (uint32_t) (input_reg.tmp_u32[12] + (hold_reg.tmp_u16[0] + hold_reg.tmp_u16[1] *1000));
-              BKP_WriteBackupRegister(BKP_DR25, input_reg.tmp_u16[24]);
-              BKP_WriteBackupRegister(BKP_DR26, input_reg.tmp_u16[25]);
+              BKP_WriteBackupRegister(BKP_DR5, input_reg.tmp_u16[24]);
+              BKP_WriteBackupRegister(BKP_DR6, input_reg.tmp_u16[25]);
               Coils_RW[11] = 0;
             } else {
               input_reg.tmp_u32[12] = (uint32_t) (input_reg.tmp_u32[12] + (hold_reg.tmp_u16[0] + hold_reg.tmp_u16[1] *1000));
-              BKP_WriteBackupRegister(BKP_DR25, input_reg.tmp_u16[24]);
-              BKP_WriteBackupRegister(BKP_DR26, input_reg.tmp_u16[25]);
+              BKP_WriteBackupRegister(BKP_DR5, input_reg.tmp_u16[24]);
+              BKP_WriteBackupRegister(BKP_DR6, input_reg.tmp_u16[25]);
               Coils_RW[11] = 0;
             }
           }
@@ -535,12 +535,12 @@ void atSTART(void) {
   coilFROMback(); //######################################## coilFROMback();coilFROMback();coilFROMback(); BKP_DR2 BKP_DR1
   Coils_RW[8] = 0;
 
-  hold_reg.tmp_u16[28] = BKP_ReadBackupRegister(BKP_DR9);   //timer01
-  hold_reg.tmp_u16[29] = BKP_ReadBackupRegister(BKP_DR10);
-  hold_reg.tmp_u16[30] = BKP_ReadBackupRegister(BKP_DR11);
-  hold_reg.tmp_u16[31] = BKP_ReadBackupRegister(BKP_DR12);
+  //hold_reg.tmp_u16[28] = BKP_ReadBackupRegister(BKP_DR9);   //timer01
+  //hold_reg.tmp_u16[29] = BKP_ReadBackupRegister(BKP_DR10);
+  hold_reg.tmp_u16[30] = BKP_ReadBackupRegister(BKP_DR10);
+  //hold_reg.tmp_u16[31] = BKP_ReadBackupRegister(BKP_DR12);
 
-  hold_reg.tmp_u16[10] = BKP_ReadBackupRegister(BKP_DR13); //servo001min hold.u6[10] BKP_DR13
+  /*hold_reg.tmp_u16[10] = BKP_ReadBackupRegister(BKP_DR13); //servo001min hold.u6[10] BKP_DR13
   hold_reg.tmp_u16[11] = BKP_ReadBackupRegister(BKP_DR14); //servo001max hold.u6[11] BKP_DR14
   //servo001max = hold_reg.tmp_u16[11];
   //servo001use = 900;
@@ -561,20 +561,20 @@ void atSTART(void) {
   //servo004use = 1000;
   //servo004min = hold_reg.tmp_u16[16];
   hold_reg.tmp_u16[18] = BKP_ReadBackupRegister(BKP_DR21);
-  hold_reg.tmp_u16[19] = BKP_ReadBackupRegister(BKP_DR22);
+  hold_reg.tmp_u16[19] = BKP_ReadBackupRegister(BKP_DR22);*/
 
-  hold_reg.tmp_u16[20] = BKP_ReadBackupRegister(BKP_DR23); //goal100
-  hold_reg.tmp_u16[21] = BKP_ReadBackupRegister(BKP_DR24); // gisterezis100
+  hold_reg.tmp_u16[20] = BKP_ReadBackupRegister(BKP_DR3); //goal100
+  hold_reg.tmp_u16[21] = BKP_ReadBackupRegister(BKP_DR4); // gisterezis100
   hold_reg.tmp_float[1] = (float) ((float) hold_reg.tmp_u16[20] /100.0);
   hold_reg.tmp_float[2] = (float) ((float) hold_reg.tmp_u16[21] /100.0);
   //servo005max = hold_reg.tmp_u16[19];
   //servo005use = 1000;
   //servo005min = hold_reg.tmp_u16[18];
   //WATER COUNT
-  input_reg.tmp_u16[22] = BKP_ReadBackupRegister(BKP_DR27);
-  input_reg.tmp_u16[23] = BKP_ReadBackupRegister(BKP_DR28);
-  input_reg.tmp_u16[24] = BKP_ReadBackupRegister(BKP_DR25);
-  input_reg.tmp_u16[25] = BKP_ReadBackupRegister(BKP_DR26);
+  input_reg.tmp_u16[22] = BKP_ReadBackupRegister(BKP_DR7);
+  input_reg.tmp_u16[23] = BKP_ReadBackupRegister(BKP_DR8);//water
+  input_reg.tmp_u16[24] = BKP_ReadBackupRegister(BKP_DR5);
+  input_reg.tmp_u16[25] = BKP_ReadBackupRegister(BKP_DR6);//gas
   setCOILS(Coils_RW);
 
 
@@ -1213,14 +1213,7 @@ void iwdg_init(void) {
   IWDG_Enable();
 }
 
-void SETglobalsecs(uint32_t count) {
 
-    BKP_WriteBackupRegister(BKP_DR3, ((uint16_t) (count >> 16)));
-    BKP_WriteBackupRegister(BKP_DR4, ((uint16_t) count));
-}
-uint32_t GETglobalsecs(void) {
-    return (((uint32_t) BKP_ReadBackupRegister(BKP_DR3) << 16) + ((uint32_t) BKP_ReadBackupRegister(BKP_DR4)));
-}
 void TIM2_init(void) {
 
   /*
@@ -1288,9 +1281,9 @@ void TIM2_IRQHandler(void) {
       milisecondsfromSTART = milisecondsfromSTART + 20;
       }
       if (millisec2 >= 1000) {
-          globalsecs = GETglobalsecs();
+          //globalsecs = GETglobalsecs();
           globalsecs++;
-          SETglobalsecs(globalsecs);
+          //SETglobalsecs(globalsecs);
           millisec2 = 0;
         //TIM_SetCounter(TIM2, 0);
       }
@@ -2010,8 +2003,8 @@ void watercounter (void)
       } else {
         if (waterplusSET == 0 ) {
           input_reg.tmp_u32[11] = input_reg.tmp_u32[11] + 5;
-          BKP_WriteBackupRegister(BKP_DR27, input_reg.tmp_u16[22]);
-          BKP_WriteBackupRegister(BKP_DR28, input_reg.tmp_u16[23]);
+          BKP_WriteBackupRegister(BKP_DR7, input_reg.tmp_u16[22]);
+          BKP_WriteBackupRegister(BKP_DR8, input_reg.tmp_u16[23]);
           waterplusSET =1;
           if ( (Coils_RW[26] == 1) && (litrPERminutcountWATER > 10)) {
             input_reg.tmp_u16[28] = (uint16_t) (1800000 / litrPERminutcountWATER);
@@ -2033,8 +2026,8 @@ void watercounter (void)
       } else {
         if (waterplusSET == 0 ) {
           input_reg.tmp_u32[11] = input_reg.tmp_u32[11] + 5;
-          BKP_WriteBackupRegister(BKP_DR27, input_reg.tmp_u16[22]);
-          BKP_WriteBackupRegister(BKP_DR28, input_reg.tmp_u16[23]);
+          BKP_WriteBackupRegister(BKP_DR7, input_reg.tmp_u16[22]);
+          BKP_WriteBackupRegister(BKP_DR8, input_reg.tmp_u16[23]);
           waterplusSET =1;
         }
       }
@@ -2062,8 +2055,8 @@ void watercounter (void)
       } else {
         if (gasplusSET == 0 ) {
           input_reg.tmp_u32[12] = input_reg.tmp_u32[12] + 5;
-          BKP_WriteBackupRegister(BKP_DR25, input_reg.tmp_u16[24]);
-          BKP_WriteBackupRegister(BKP_DR26, input_reg.tmp_u16[25]);
+          BKP_WriteBackupRegister(BKP_DR5, input_reg.tmp_u16[24]);
+          BKP_WriteBackupRegister(BKP_DR6, input_reg.tmp_u16[25]);
           gasplusSET =1;
           if ((Coils_RW[25] == 1) && (litrPERminutcountGAS > 10) ) {
             input_reg.tmp_u16[29] = (uint16_t) (1800000 / litrPERminutcountGAS);
@@ -2085,8 +2078,8 @@ void watercounter (void)
         } else {
         if (gasplusSET == 0 ) {
           input_reg.tmp_u32[12] = input_reg.tmp_u32[12] + 5;
-          BKP_WriteBackupRegister(BKP_DR25, input_reg.tmp_u16[24]);
-          BKP_WriteBackupRegister(BKP_DR26, input_reg.tmp_u16[25]);
+          BKP_WriteBackupRegister(BKP_DR5, input_reg.tmp_u16[24]);
+          BKP_WriteBackupRegister(BKP_DR6, input_reg.tmp_u16[25]);
           gasplusSET =1;
           }
         }

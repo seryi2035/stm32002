@@ -430,29 +430,59 @@ int main(void) {
       }
       if ( (RTC_Counter02 % 60) == 8 ) {
         ds18b20Value = ds18b20_ReadStratcpad003("\x28\xee\x30\x10\x1a\x16\x01\xa0");
-        input_reg.tmp_float[2] = (float) (ds18b20Value / 16.0);
+        if (ds18b20Value <= 800) {
+          input_reg.tmp_float[2] = (float) (ds18b20Value / 16.0);
+          Discrete_Inputs_RO[11] = 1;
+        } else {
+          Discrete_Inputs_RO[11] = 0;
+        }
       }
       if ( (RTC_Counter02 % 60) == 12 ) {
         ds18b20Value = ds18b20_ReadStratcpad003("\x28\x13\x4d\x94\x00\x00\x00\xf6");
-        input_reg.tmp_float[3] = (float) (ds18b20Value / 16.0);
+        if (ds18b20Value <= 800) {
+          input_reg.tmp_float[3] = (float) (ds18b20Value / 16.0);
+          Discrete_Inputs_RO[12] = 1;
+        } else {
+          Discrete_Inputs_RO[12] = 0;
+        }
       }
       if ( (RTC_Counter02 % 60) == 16 ) {
         ds18b20Value = ds18b20_ReadStratcpad003("\x28\xd6\x03\x97\x00\x00\x00\x41");
-        input_reg.tmp_float[4] = (float) (ds18b20Value / 16.0);
+        if (ds18b20Value <= 800) {
+          input_reg.tmp_float[4] = (float) (ds18b20Value / 16.0);
+          Discrete_Inputs_RO[13] = 1;
+        } else {
+          Discrete_Inputs_RO[13] = 0;
+        }
       }
       if ( (RTC_Counter02 % 60) == 20 ) {
         ds18b20Value = ds18b20_ReadStratcpad003("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
-        input_reg.tmp_float[5] = (float) (ds18b20Value / 16.0);
+        if (ds18b20Value <= 800) {
+          input_reg.tmp_float[5] = (float) (ds18b20Value / 16.0);
+          Discrete_Inputs_RO[14] = 1;
+        } else {
+          Discrete_Inputs_RO[14] = 0;
+        }
       }
       if ( (RTC_Counter02 % 60) == 24 ) {
         ds18b20Value = ds18b20_ReadStratcpad003("\x28\xee\x09\x03\x1a\x16\x01\x67");
-        input_reg.tmp_float[6] = (float) (ds18b20Value / 16.0);
+        if (ds18b20Value <= 800) {
+          input_reg.tmp_float[6] = (float) (ds18b20Value / 16.0);
+          Discrete_Inputs_RO[15] = 1;
+        } else {
+          Discrete_Inputs_RO[15] = 0;
+        }
       }
       if ( (RTC_Counter02 % 60) == 28 ) {
         //ds18b20Value = schitatU16Temp("\x28\xc2\x5c\x88\x0\x0\x0\x9e");
         //ds18b20_ReadStratcpad(NO_SKIP_ROM,  RX_BUF, "\x28\xc2\x5c\x88\x0\x0\x0\x9e");
         ds18b20Value = ds18b20_ReadStratcpad003("\x28\xdf\x78\x88\x0\x0\x0\x68");
-        input_reg.tmp_float[7] = (float) (ds18b20Value / 16.0);
+        if (ds18b20Value <= 800) {
+          input_reg.tmp_float[7] = (float) (ds18b20Value / 16.0);
+          Discrete_Inputs_RO[16] = 1;
+        } else {
+          Discrete_Inputs_RO[16] = 0;
+        }
         /*cifry[2] = get_ab_xFF(ds18b20Value % 16);
         cifry[1] = get_ab_xFF((ds18b20Value / 16) % 10);
         cifry[0] = get_ab_xFF((ds18b20Value / 160) % 10);
@@ -463,10 +493,15 @@ int main(void) {
       }
       if ( (RTC_Counter02 % 60) == 32 ) {
         ds18b20Value = ds18b20_ReadStratcpad003("\x28\xee\xcd\xa9\x19\x16\x01\x0c");
-        input_reg.tmp_float[8] = (float) (ds18b20Value / 16.0);
+        if (ds18b20Value <= 800) {
+          input_reg.tmp_float[8] = (float) (ds18b20Value / 16.0);
+          Discrete_Inputs_RO[17] = 1;
+        } else {
+          Discrete_Inputs_RO[17] = 0;
+        }
       }
       if ( (RTC_Counter02 % 60) == 36 ) {
-        if (Coils_RW[17] == 1) { // запуск термостата
+
           input_reg.tmp_float[13] =0;
           ds18deliteldivisorTERMO =0;
           if (Coils_RW[18] == 1) {   //003
@@ -511,8 +546,11 @@ int main(void) {
               ds18deliteldivisorTERMO = ds18deliteldivisorTERMO + 1;
             }
           }
-          if ( ds18deliteldivisorTERMO > 0) {
-            input_reg.tmp_float[13] = input_reg.tmp_float[13] /ds18deliteldivisorTERMO;
+        if ( ds18deliteldivisorTERMO > 0) {
+          input_reg.tmp_float[13] = input_reg.tmp_float[13] /ds18deliteldivisorTERMO;
+        }
+        if (Coils_RW[17] == 1) { // запуск термостата
+
             if ( input_reg.tmp_float[13] > (hold_reg.tmp_float[1] + hold_reg.tmp_float[2])) {
               Coils_RW[3] = 0;
               setCOILS(Coils_RW);
@@ -521,9 +559,6 @@ int main(void) {
               Coils_RW[3] = 1;
               setCOILS(Coils_RW);
             }
-          } else {
-            Coils_RW[17] = 0;
-          }
         }
       }
     }
@@ -1737,12 +1772,7 @@ void read_Discrete_Inputs_RO(void)
   if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_6)   == (uint8_t)Bit_SET) { Discrete_Inputs_RO[9] = 1; }else{ Discrete_Inputs_RO[9] = 0;}
   if(GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_5)   == (uint8_t)Bit_SET) { Discrete_Inputs_RO[10] = 1; }else{ Discrete_Inputs_RO[10] = 0;}
   Discrete_Inputs_RO[7] = 0;
-  for(u8 i = 11; i < 16; i++) {
-      Discrete_Inputs_RO[i] = 0;
-    }
-  for(u8 i = 16; i < 32; i++) {
-      Discrete_Inputs_RO[i] = Discrete_Inputs_RO[i-16];
-    }
+
 }
 
 /*void startCOILS(uint8_t *Coils_RW) {

@@ -134,9 +134,16 @@ read_Discrete_Inputs_RO
 07
 
 08 A7 IPU
-09 A6 IPU
+09 A6 IPU gas
 10 A5 IPU water
 
+11 ds18
+12
+13
+14
+15
+16
+17 ds18
 
 BKP_Register
 01 cols

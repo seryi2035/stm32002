@@ -2036,6 +2036,7 @@ void watercounter (void)
           BKP_WriteBackupRegister(BKP_DR7, input_reg.tmp_u16[22]);
           BKP_WriteBackupRegister(BKP_DR8, input_reg.tmp_u16[23]);
           waterplusSET =1;
+          waterplus =0;
           if ( (Coils_RW[26] == 1) && (litrPERminutcountWATER > 10)) {
             input_reg.tmp_u16[28] = (uint16_t) (1800000 / litrPERminutcountWATER);
             litrPERminutcountWATER = 0;
@@ -2043,10 +2044,9 @@ void watercounter (void)
         }
       }
     } else {
-    waterplus =1;
     waterpluscount =0;
     }
-  }else{  //A5-
+  } else {  //A5-
     if (waterplus == 0 ) {
       if (waterpluscount <= 9) {
         waterpluscount++;
@@ -2059,10 +2059,10 @@ void watercounter (void)
           BKP_WriteBackupRegister(BKP_DR7, input_reg.tmp_u16[22]);
           BKP_WriteBackupRegister(BKP_DR8, input_reg.tmp_u16[23]);
           waterplusSET =1;
+          waterplus =1;
         }
       }
     } else {
-    waterplus =0;
     waterpluscount =0;
     }
 
@@ -2088,6 +2088,7 @@ void watercounter (void)
           BKP_WriteBackupRegister(BKP_DR5, input_reg.tmp_u16[24]);
           BKP_WriteBackupRegister(BKP_DR6, input_reg.tmp_u16[25]);
           gasplusSET =1;
+          gasplus =0;
           if ((Coils_RW[25] == 1) && (litrPERminutcountGAS > 10) ) {
             input_reg.tmp_u16[29] = (uint16_t) (1800000 / litrPERminutcountGAS);
             litrPERminutcountGAS =0;
@@ -2095,10 +2096,9 @@ void watercounter (void)
         }
       }
     } else {
-    gasplus =1;
     gaspluscount =0;
     }
-  }else{
+  } else {
     if (gasplus == 0 ) {
       if (gaspluscount <= 9) {
         gaspluscount++;
@@ -2111,10 +2111,10 @@ void watercounter (void)
           BKP_WriteBackupRegister(BKP_DR5, input_reg.tmp_u16[24]);
           BKP_WriteBackupRegister(BKP_DR6, input_reg.tmp_u16[25]);
           gasplusSET =1;
+          gasplus =1;
           }
         }
     } else {
-    gasplus =0;
     gaspluscount =0;
     }
 

@@ -194,10 +194,12 @@ void COILtimerMINUTES (uint8_t coilSETED, uint16_t inREGcount, uint16_t inREGbkp
 //счетчик воды
 uint8_t waterplus;
 uint8_t waterpluscount;
+uint8_t waterminuscount;
 uint8_t waterplusSET;
 uint16_t milisecondsfromSTART;
 uint8_t gasplus;
 uint8_t gaspluscount;
+uint8_t gasminuscount;
 uint8_t gasplusSET;
 uint32_t litrPERminutcountWATER;
 uint32_t litrPERminutcountGAS;
@@ -2037,7 +2039,7 @@ void watercounter (void)
           BKP_WriteBackupRegister(BKP_DR8, input_reg.tmp_u16[23]);
           waterplusSET =1;
           waterplus =0;
-          waterpluscount =0;
+          waterminuscount =0;
           if ( (Coils_RW[26] == 1) && (litrPERminutcountWATER > 10)) {
             input_reg.tmp_u16[28] = (uint16_t) (1800000 / litrPERminutcountWATER);
             litrPERminutcountWATER = 0;
@@ -2047,9 +2049,9 @@ void watercounter (void)
     }
   } else {  //A5-
     if (waterplus == 0 ) {
-      if (waterpluscount <= 9) {
-        waterpluscount++;
-        if (waterpluscount == 9) {
+      if (waterminuscount <= 9) {
+        waterminuscount++;
+        if (waterminuscount == 9) {
           waterplusSET =0;
         }
       } else {
@@ -2086,7 +2088,7 @@ void watercounter (void)
           BKP_WriteBackupRegister(BKP_DR6, input_reg.tmp_u16[25]);
           gasplusSET =1;
           gasplus =0;
-          gaspluscount =0;
+          gasminuscount =0;
           if ((Coils_RW[25] == 1) && (litrPERminutcountGAS > 10) ) {
             input_reg.tmp_u16[29] = (uint16_t) (1800000 / litrPERminutcountGAS);
             litrPERminutcountGAS =0;
@@ -2096,9 +2098,9 @@ void watercounter (void)
     }
   } else {
     if (gasplus == 0 ) {
-      if (gaspluscount <= 9) {
-        gaspluscount++;
-        if (gaspluscount == 9) {
+      if (gasminuscount <= 9) {
+        gasminuscount++;
+        if (gasminuscount == 9) {
           gasplusSET =0;
         }
       } else {
